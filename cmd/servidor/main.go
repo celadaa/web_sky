@@ -73,6 +73,8 @@ func main() {
 	mux.HandleFunc("/estaciones", app.Estaciones)
 	mux.HandleFunc("/estacion/", app.Estacion)
 	mux.HandleFunc("/noticias", app.Noticias)
+	mux.HandleFunc("/forfaits", app.Forfaits)
+	mux.HandleFunc("/cesta", app.Cesta)
 	mux.HandleFunc("/registro", app.Registro)
 	mux.HandleFunc("/legal/aviso-legal", app.AvisoLegal)
 	mux.HandleFunc("/legal/privacidad", app.PoliticaPrivacidad)

@@ -1226,3 +1226,673 @@ button {
     grid-template-columns: 2fr 1fr 1fr;
   }
 }
+
+/* ============================================================
+   E-commerce: cesta de la compra y forfaits
+   ============================================================ */
+
+/* --- Botón de cesta en el header (icono + badge + dropdown) --- */
+.cart-wrapper {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+}
+
+.cart-button {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 46px;
+  height: 46px;
+  border-radius: 14px;
+  background: #eef4fb;
+  color: #10243b;
+  border: 1px solid #d3dde8;
+  cursor: pointer;
+}
+
+.cart-button:hover {
+  background: #e2ecf6;
+}
+
+.cart-button--has-items {
+  color: #0f5ecd;
+}
+
+.cart-button--active {
+  background: #10243b;
+  color: #fff;
+}
+
+.cart-button__badge {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  min-width: 22px;
+  height: 22px;
+  padding: 0 6px;
+  border-radius: 999px;
+  background: #0f5ecd;
+  color: #fff;
+  font-size: 0.78rem;
+  font-weight: 800;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 0 2px #fff;
+}
+
+.cart-dropdown {
+  position: absolute;
+  top: calc(100% + 0.4rem);
+  right: 0;
+  width: min(320px, 90vw);
+  background: #fff;
+  border: 1px solid #dbe6f0;
+  border-radius: 18px;
+  box-shadow: 0 24px 60px rgba(15, 23, 42, 0.18);
+  padding: 1rem;
+  z-index: 200;
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+
+  /* Por defecto oculto; se muestra al pasar el ratón sobre el botón
+     o cuando hay foco dentro (accesibilidad: teclado). */
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transform: translateY(-6px);
+  transition:
+    opacity 0.18s ease,
+    visibility 0.18s ease,
+    transform 0.18s ease;
+}
+
+/* Puente invisible entre botón y dropdown para que el ratón pueda
+   atravesar el hueco sin que se cierre. */
+.cart-dropdown::before {
+  content: "";
+  position: absolute;
+  top: -0.4rem;
+  left: 0;
+  right: 0;
+  height: 0.4rem;
+}
+
+.cart-wrapper:hover .cart-dropdown,
+.cart-wrapper:focus-within .cart-dropdown {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+  transform: translateY(0);
+}
+
+/* Mientras el HTML aún tenga el atributo `hidden` (antes de que el JS lo
+   quite), no debe ocupar espacio ni recibir eventos. */
+.cart-dropdown[hidden] {
+  display: none;
+}
+
+.cart-dropdown__header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 700;
+  color: #10243b;
+  padding-bottom: 0.4rem;
+  border-bottom: 1px solid #e5edf5;
+}
+
+.cart-dropdown__items {
+  max-height: 260px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.cart-dropdown__item {
+  background: #f8fafc;
+  border-radius: 12px;
+  padding: 0.6rem 0.75rem;
+}
+
+.cart-dropdown__item-title {
+  font-weight: 700;
+  font-size: 0.92rem;
+  color: #10243b;
+}
+
+.cart-dropdown__item-meta {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 0.25rem;
+  font-size: 0.85rem;
+  color: #4b6075;
+}
+
+.cart-dropdown__empty {
+  text-align: center;
+  color: #597086;
+  padding: 0.5rem 0;
+  margin: 0;
+}
+
+.cart-dropdown__footer {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding-top: 0.5rem;
+  border-top: 1px solid #e5edf5;
+}
+
+.cart-dropdown__subtotal {
+  display: flex;
+  justify-content: space-between;
+  font-weight: 700;
+  color: #10243b;
+}
+
+.cart-dropdown__btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 42px;
+  padding: 0.55rem 1rem;
+  border-radius: 12px;
+  font-weight: 700;
+  text-align: center;
+}
+
+.cart-dropdown__btn--ghost {
+  background: #eff4f9;
+  color: #10243b;
+  border: 1px solid #d3dde8;
+}
+
+.cart-dropdown__btn--ghost:hover {
+  background: #e2ecf6;
+}
+
+.cart-dropdown__btn--primary {
+  background: #10243b;
+  color: #fff;
+}
+
+.cart-dropdown__btn--primary:hover {
+  background: #0b1728;
+}
+
+@media (max-width: 899px) {
+  .cart-dropdown {
+    right: auto;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+}
+
+/* --- Tarjeta de compra dentro de la página de estación --- */
+.forfait-card {
+  background: rgba(255, 255, 255, 0.98);
+  border: 1px solid rgba(203, 213, 225, 0.65);
+  border-radius: 22px;
+  box-shadow: 0 18px 45px rgba(15, 23, 42, 0.07);
+  padding: 1.6rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.forfait-card__header {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  border-bottom: 1px solid #e5edf5;
+  padding-bottom: 0.8rem;
+}
+
+.forfait-card__title {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: #10243b;
+}
+
+.forfait-card__price {
+  display: flex;
+  align-items: baseline;
+  gap: 0.35rem;
+  margin: 0;
+}
+
+.forfait-card__price strong {
+  font-size: 1.9rem;
+  font-weight: 800;
+  color: #0f5ecd;
+}
+
+.forfait-card__price span {
+  color: #597086;
+  font-weight: 600;
+}
+
+.forfait-card__row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.65rem;
+}
+
+.forfait-card__field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.forfait-card__label {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #516377;
+}
+
+.forfait-card__input,
+.forfait-card__select {
+  width: 100%;
+  min-height: 42px;
+  padding: 0.55rem 0.7rem;
+  border: 1px solid #cbd5e1;
+  border-radius: 10px;
+  background: #fff;
+  font-size: 0.95rem;
+  color: #10243b;
+}
+
+.forfait-card__input:focus,
+.forfait-card__select:focus {
+  border-color: #0ea5e9;
+  outline: none;
+}
+
+.forfait-card__summary {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.95rem;
+  color: #4b6075;
+  background: #f1f5f9;
+  border-radius: 10px;
+  padding: 0.55rem 0.75rem;
+}
+
+.forfait-card__summary strong {
+  color: #10243b;
+}
+
+.forfait-card__cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  min-height: 48px;
+  padding: 0.75rem 1.1rem;
+  border-radius: 12px;
+  background: #16a34a;
+  color: #fff;
+  font-weight: 800;
+  font-size: 1rem;
+  cursor: pointer;
+  border: 0;
+  transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.forfait-card__cta:hover:not([disabled]) {
+  background: #15803d;
+  transform: translateY(-1px);
+}
+
+.forfait-card__cta[disabled] {
+  background: #94a3b8;
+  cursor: not-allowed;
+}
+
+.forfait-card__feedback {
+  margin: 0;
+  min-height: 1.2em;
+  font-size: 0.9rem;
+  font-weight: 600;
+  text-align: center;
+}
+
+.forfait-card__feedback--success {
+  color: #15803d;
+}
+
+.forfait-card__feedback--error {
+  color: #991b1b;
+}
+
+/* --- Listado /forfaits (tarjetas de estación con precios) --- */
+.forfait-grid {
+  margin-top: 2rem;
+}
+
+.forfait-station-card {
+  background: rgba(255, 255, 255, 0.98);
+  border: 1px solid rgba(203, 213, 225, 0.65);
+  border-radius: 22px;
+  box-shadow: 0 18px 45px rgba(15, 23, 42, 0.07);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.forfait-station-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 24px 55px rgba(15, 23, 42, 0.1);
+}
+
+.forfait-station-card__figure {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  background: #dbe6f0;
+  overflow: hidden;
+}
+
+.forfait-station-card__image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.forfait-station-card__price-tag {
+  position: absolute;
+  top: 0.75rem;
+  right: 0.75rem;
+  background: #16a34a;
+  color: #fff;
+  padding: 0.4rem 0.85rem;
+  border-radius: 999px;
+  font-weight: 800;
+  font-size: 0.85rem;
+  box-shadow: 0 8px 20px rgba(22, 163, 74, 0.25);
+}
+
+.forfait-station-card__body {
+  padding: 1.2rem;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  gap: 0.75rem;
+}
+
+.forfait-station-card__name {
+  margin: 0;
+  font-size: 1.2rem;
+  font-weight: 800;
+  color: #10243b;
+}
+
+.forfait-station-card__location {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  color: #597086;
+  font-size: 0.92rem;
+  margin: 0;
+}
+
+.forfait-station-card__price-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  background: #f1f5f9;
+  border-radius: 10px;
+  padding: 0.65rem 0.85rem;
+  margin: 0;
+}
+
+.forfait-station-card__price-list li {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.92rem;
+  color: #4b6075;
+}
+
+.forfait-station-card__price-list strong {
+  color: #10243b;
+}
+
+.forfait-station-card__cta {
+  margin-top: auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  min-height: 46px;
+  padding: 0.65rem 1rem;
+  border-radius: 12px;
+  background: #10243b;
+  color: #fff;
+  font-weight: 700;
+}
+
+.forfait-station-card__cta:hover {
+  background: #0b1728;
+  color: #fff;
+}
+
+/* --- Página /cesta --- */
+.cart-page__layout {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2rem;
+  margin: 2rem 0 3rem;
+}
+
+.cart-page__list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.cart-line {
+  display: grid;
+  grid-template-columns: 100px 1fr;
+  gap: 1rem;
+  padding: 1rem;
+  background: #fff;
+  border: 1px solid #dbe6f0;
+  border-radius: 18px;
+  box-shadow: 0 12px 30px rgba(15, 23, 42, 0.05);
+}
+
+.cart-line__media {
+  width: 100px;
+  height: 100px;
+  border-radius: 12px;
+  overflow: hidden;
+  background: #e5edf5;
+}
+
+.cart-line__media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.cart-line__media-placeholder {
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, #dbeafe, #bfdbfe);
+}
+
+.cart-line__body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.cart-line__title {
+  margin: 0;
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: #10243b;
+}
+
+.cart-line__meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1.25rem;
+  font-size: 0.88rem;
+  color: #597086;
+  margin: 0;
+}
+
+.cart-line__meta div {
+  display: flex;
+  flex-direction: column;
+}
+
+.cart-line__meta dt {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-weight: 700;
+  color: #94a3b8;
+}
+
+.cart-line__meta dd {
+  margin: 0;
+  font-weight: 600;
+  color: #10243b;
+}
+
+.cart-line__controls {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-top: 0.25rem;
+}
+
+.cart-line__qty {
+  width: 76px;
+  min-height: 38px;
+  padding: 0.4rem 0.5rem;
+  border: 1px solid #cbd5e1;
+  border-radius: 10px;
+  font-weight: 600;
+}
+
+.cart-line__remove {
+  background: #fef2f2;
+  color: #991b1b;
+  border: 1px solid #fecaca;
+  border-radius: 10px;
+  padding: 0.45rem 0.85rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.cart-line__remove:hover {
+  background: #fee2e2;
+}
+
+.cart-line__total {
+  grid-column: 1 / -1;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 0.75rem;
+  border-top: 1px solid #e5edf5;
+  font-weight: 700;
+}
+
+.cart-line__total strong {
+  font-size: 1.15rem;
+  color: #0f5ecd;
+}
+
+.cart-page__summary {
+  position: sticky;
+  top: 100px;
+  align-self: start;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.cart-page__summary-title {
+  margin: 0;
+}
+
+.cart-page__summary-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.cart-page__summary-row {
+  display: flex;
+  justify-content: space-between;
+  color: #4b6075;
+}
+
+.cart-page__summary-row dt,
+.cart-page__summary-row dd {
+  margin: 0;
+}
+
+.cart-page__summary-row--total {
+  padding-top: 0.65rem;
+  border-top: 1px solid #e5edf5;
+  font-weight: 800;
+  color: #10243b;
+  font-size: 1.1rem;
+}
+
+.cart-page__checkout {
+  width: 100%;
+}
+
+.cart-page__clear {
+  background: transparent;
+  color: #991b1b;
+  border: 1px solid #fecaca;
+  border-radius: 10px;
+  padding: 0.55rem 1rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.cart-page__clear:hover {
+  background: #fef2f2;
+}
+
+.cart-page__note {
+  font-size: 0.85rem;
+  color: #597086;
+  margin: 0;
+}
+
+@media (min-width: 900px) {
+  .cart-page__layout {
+    grid-template-columns: 2fr 1fr;
+  }
+
+  .cart-line {
+    grid-template-columns: 120px 1fr 160px;
+  }
+
+  .cart-line__total {
+    grid-column: 3;
+    border-top: 0;
+    padding-top: 0;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 0.25rem;
+  }
+}
+

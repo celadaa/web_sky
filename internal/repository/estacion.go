@@ -23,7 +23,8 @@ func (r *EstacionRepo) ListarPorDistancia() ([]models.Estacion, error) {
 		SELECT id, nombre, ubicacion, distancia, temperatura, nieve_base,
 		       nieve_nueva, pistas_abiertas, pistas_totales, remontes_op,
 		       remontes_tot, ultima_nevada, altitud, km_esquiables,
-		       dificultad, telefono, imagen, descripcion
+		       dificultad, telefono, imagen, descripcion,
+		       precio_adulto, precio_nino, precio_senior
 		FROM estaciones
 		ORDER BY distancia ASC
 	`)
@@ -39,7 +40,8 @@ func (r *EstacionRepo) ListarPorDistancia() ([]models.Estacion, error) {
 			&e.Temperatura, &e.NieveBase, &e.NieveNueva,
 			&e.PistasAbiertas, &e.PistasTotales, &e.RemontesOp, &e.RemontesTot,
 			&e.UltimaNevada, &e.Altitud, &e.KmEsquiables, &e.Dificultad,
-			&e.Telefono, &e.Imagen, &e.Descripcion); err != nil {
+			&e.Telefono, &e.Imagen, &e.Descripcion,
+			&e.PrecioAdulto, &e.PrecioNino, &e.PrecioSenior); err != nil {
 			return nil, err
 		}
 		lista = append(lista, e)
@@ -54,13 +56,15 @@ func (r *EstacionRepo) ObtenerPorID(id int64) (*models.Estacion, error) {
 		SELECT id, nombre, ubicacion, distancia, temperatura, nieve_base,
 		       nieve_nueva, pistas_abiertas, pistas_totales, remontes_op,
 		       remontes_tot, ultima_nevada, altitud, km_esquiables,
-		       dificultad, telefono, imagen, descripcion
+		       dificultad, telefono, imagen, descripcion,
+		       precio_adulto, precio_nino, precio_senior
 		FROM estaciones WHERE id = ?`, id,
 	).Scan(&e.ID, &e.Nombre, &e.Ubicacion, &e.Distancia,
 		&e.Temperatura, &e.NieveBase, &e.NieveNueva,
 		&e.PistasAbiertas, &e.PistasTotales, &e.RemontesOp, &e.RemontesTot,
 		&e.UltimaNevada, &e.Altitud, &e.KmEsquiables, &e.Dificultad,
-		&e.Telefono, &e.Imagen, &e.Descripcion)
+		&e.Telefono, &e.Imagen, &e.Descripcion,
+		&e.PrecioAdulto, &e.PrecioNino, &e.PrecioSenior)
 	if err != nil {
 		return nil, err
 	}

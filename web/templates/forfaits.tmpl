@@ -1,0 +1,39 @@
+{{define "contenido"}}
+<section class="hero hero--home">
+  <h1 class="hero__title">Comprar Forfaits</h1>
+  <p class="hero__subtitle">
+    Elige una estación y disfruta de la nieve al mejor precio. Selecciona fechas, tipo de pase y añádelo a tu cesta en segundos.
+  </p>
+</section>
+
+<section class="container">
+  <ul class="grid-cards forfait-grid">
+    {{range .Estaciones}}
+    <li>
+      <article class="forfait-station-card">
+        <figure class="forfait-station-card__figure">
+          <img src="{{.Imagen}}" alt="Vista de {{.Nombre}}" loading="lazy" class="forfait-station-card__image">
+          <span class="forfait-station-card__price-tag">Desde {{printf "%.0f" .PrecioNino}}€/día</span>
+        </figure>
+        <div class="forfait-station-card__body">
+          <h3 class="forfait-station-card__name">{{.Nombre}}</h3>
+          <p class="forfait-station-card__location">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+            {{.Ubicacion}}
+          </p>
+          <ul class="forfait-station-card__price-list">
+            <li><span>Adulto</span><strong>{{printf "%.2f" .PrecioAdulto}} €</strong></li>
+            <li><span>Niño</span><strong>{{printf "%.2f" .PrecioNino}} €</strong></li>
+            <li><span>Senior</span><strong>{{printf "%.2f" .PrecioSenior}} €</strong></li>
+          </ul>
+          <a href="/estacion/{{.ID}}#comprar" class="forfait-station-card__cta">
+            Seleccionar Fechas
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+          </a>
+        </div>
+      </article>
+    </li>
+    {{end}}
+  </ul>
+</section>
+{{end}}

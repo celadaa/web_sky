@@ -16,6 +16,7 @@
   </main>
   {{template "footer" .}}
   <script src="/static/nav.js"></script>
+  <script src="/static/cart.js"></script>
 </body>
 </html>
 {{end}}
@@ -44,6 +45,7 @@
         <li><a href="/" class="navbar__link {{if eq .Activa "inicio"}}navbar__link--active{{end}}">Inicio</a></li>
         <li><a href="/estaciones" class="navbar__link {{if eq .Activa "estaciones"}}navbar__link--active{{end}}">Estaciones</a></li>
         <li><a href="/noticias" class="navbar__link {{if eq .Activa "noticias"}}navbar__link--active{{end}}">Noticias</a></li>
+        <li><a href="/forfaits" class="navbar__link {{if eq .Activa "forfaits"}}navbar__link--active{{end}}">Comprar Forfaits</a></li>
         {{if .Usuario}}
           <li><a href="/favoritos" class="navbar__link {{if eq .Activa "favoritos"}}navbar__link--active{{end}}">Favoritas</a></li>
           {{if .Usuario.EsAdmin}}
@@ -56,6 +58,7 @@
         {{if .Usuario}}
           <span class="navbar__welcome">Hola, <strong>{{.Usuario.Nombre}}</strong></span>
           <a href="/cambiar-password" class="navbar__link navbar__link--secondary {{if eq .Activa "cambiar_password"}}navbar__link--active{{end}}" title="Cambiar contraseña">Contraseña</a>
+          {{template "cart_button" .}}
           <form method="POST" action="/logout" class="inline-form">
             <button type="submit" class="navbar__btn navbar__btn--ghost">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" x2="9" y1="12" y2="12"/></svg>
@@ -64,6 +67,7 @@
           </form>
         {{else}}
           <a href="/login" class="navbar__link {{if eq .Activa "login"}}navbar__link--active{{end}}">Iniciar sesión</a>
+          {{template "cart_button" .}}
           <a href="/registro" class="navbar__btn navbar__btn--link">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
             Registrarse
@@ -73,6 +77,35 @@
     </nav>
   </div>
 </header>
+{{end}}
+
+{{define "cart_button"}}
+<div class="cart-wrapper">
+  <a href="/cesta" class="cart-button {{if eq .Activa "cesta"}}cart-button--active{{end}}" id="cart-button" aria-label="Cesta de la compra" aria-haspopup="true" aria-expanded="false">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="9" cy="21" r="1"/>
+      <circle cx="20" cy="21" r="1"/>
+      <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
+    </svg>
+    <span class="cart-button__badge" id="cart-count" hidden>0</span>
+  </a>
+  <div class="cart-dropdown" id="cart-dropdown" role="dialog" aria-label="Resumen de la cesta" hidden>
+    <header class="cart-dropdown__header">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+      <span>Cesta</span>
+    </header>
+    <ul class="cart-dropdown__items" id="cart-dropdown-items"></ul>
+    <p class="cart-dropdown__empty" id="cart-dropdown-empty">Tu cesta está vacía.</p>
+    <div class="cart-dropdown__footer" id="cart-dropdown-footer" hidden>
+      <div class="cart-dropdown__subtotal">
+        <span>Subtotal</span>
+        <strong id="cart-dropdown-subtotal">0,00 €</strong>
+      </div>
+      <a href="/cesta" class="cart-dropdown__btn cart-dropdown__btn--ghost">Ver Cesta</a>
+      <a href="/cesta" class="cart-dropdown__btn cart-dropdown__btn--primary">Proceder al Pago</a>
+    </div>
+  </div>
+</div>
 {{end}}
 
 {{define "footer"}}

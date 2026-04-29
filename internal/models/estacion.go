@@ -23,6 +23,12 @@ type Estacion struct {
 	Imagen         string
 	Descripcion    string
 
+	// Precios del forfait (por día) según el tipo de pase. Se usan en el
+	// widget de compra y en la página de listado de forfaits.
+	PrecioAdulto float64
+	PrecioNino   float64
+	PrecioSenior float64
+
 	// EsFavorita no se persiste en la tabla estaciones; lo rellena el
 	// servicio en función del usuario autenticado que vea la página.
 	EsFavorita bool

@@ -93,6 +93,60 @@
       <p class="info-widget__note">Distancia en línea recta desde Madrid</p>
     </section>
 
+    <section id="comprar"
+             class="forfait-card"
+             data-forfait-widget
+             data-estacion-id="{{.ID}}"
+             data-estacion-nombre="{{.Nombre}}"
+             data-estacion-imagen="{{.Imagen}}"
+             data-precio-adulto="{{printf "%.2f" .PrecioAdulto}}"
+             data-precio-nino="{{printf "%.2f" .PrecioNino}}"
+             data-precio-senior="{{printf "%.2f" .PrecioSenior}}">
+      <header class="forfait-card__header">
+        <h2 class="forfait-card__title">Compra tu Forfait</h2>
+        <p class="forfait-card__price">
+          <strong data-precio>{{printf "%.2f" .PrecioAdulto}} €</strong>
+          <span>/ día</span>
+        </p>
+      </header>
+
+      <div class="forfait-card__field">
+        <label for="forfait-tipo" class="forfait-card__label">Tipo de pase</label>
+        <select id="forfait-tipo" data-tipo-pase class="forfait-card__select">
+          <option value="adulto">Adulto ({{printf "%.2f" .PrecioAdulto}} €)</option>
+          <option value="nino">Niño ({{printf "%.2f" .PrecioNino}} €)</option>
+          <option value="senior">Senior ({{printf "%.2f" .PrecioSenior}} €)</option>
+        </select>
+      </div>
+
+      <div class="forfait-card__row">
+        <div class="forfait-card__field">
+          <label for="forfait-inicio" class="forfait-card__label">Fecha inicio</label>
+          <input type="date" id="forfait-inicio" data-fecha-inicio class="forfait-card__input">
+        </div>
+        <div class="forfait-card__field">
+          <label for="forfait-fin" class="forfait-card__label">Fecha fin</label>
+          <input type="date" id="forfait-fin" data-fecha-fin class="forfait-card__input">
+        </div>
+      </div>
+
+      <div class="forfait-card__field">
+        <label for="forfait-cantidad" class="forfait-card__label">Cantidad</label>
+        <input type="number" id="forfait-cantidad" data-cantidad min="1" value="1" class="forfait-card__input">
+      </div>
+
+      <div class="forfait-card__summary">
+        <span>Duración: <strong data-dias>1 día</strong></span>
+        <span>Total: <strong data-total>{{printf "%.2f" .PrecioAdulto}} €</strong></span>
+      </div>
+
+      <button type="button" class="forfait-card__cta" data-add-cart>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+        Añadir a la cesta
+      </button>
+      <p class="forfait-card__feedback" data-feedback role="status" aria-live="polite"></p>
+    </section>
+
     <section class="info-widget">
       <h2 class="info-widget__title">Información rápida</h2>
       <ul class="info-widget__list">

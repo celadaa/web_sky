@@ -59,7 +59,10 @@ func Migrar(bd *sql.DB) error {
 			dificultad       TEXT NOT NULL,
 			telefono         TEXT NOT NULL,
 			imagen           TEXT NOT NULL,
-			descripcion      TEXT NOT NULL
+			descripcion      TEXT NOT NULL,
+			precio_adulto    REAL NOT NULL DEFAULT 0,
+			precio_nino      REAL NOT NULL DEFAULT 0,
+			precio_senior    REAL NOT NULL DEFAULT 0
 		)`,
 		`CREATE TABLE IF NOT EXISTS noticias (
 			id              INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -97,6 +100,58 @@ func Migrar(bd *sql.DB) error {
 		if !strings.Contains(err.Error(), "duplicate column") {
 			return fmt.Errorf("alter usuarios es_admin: %w", err)
 		}
+	}
+
+	// Migración incremental para BBDD anteriores a la inclusión del módulo
+	// de venta de forfaits. Se añaden las columnas de precio y se rellenan
+	// con valores razonables si están a 0.
+	for _, alter := range []string{
+		`ALTER TABLE estaciones ADD COLUMN precio_adulto REAL NOT NULL DEFAULT 0`,
+		`ALTER TABLE estaciones ADD COLUMN precio_nino REAL NOT NULL DEFAULT 0`,
+		`ALTER TABLE estaciones ADD COLUMN precio_senior REAL NOT NULL DEFAULT 0`,
+	} {
+		if _, err := bd.Exec(alter); err != nil {
+			if !strings.Contains(err.Error(), "duplicate column") {
+				return fmt.Errorf("alter estaciones precios: %w", err)
+			}
+		}
+	}
+
+	// Si las estaciones existentes aún no tienen precios definidos (precio_adulto = 0),
+	// los actualizamos con valores por defecto razonables. Esto es seguro
+	// porque el cero no es un precio válido para un forfait.
+	if _, err := bd.Exec(`
+		UPDATE estaciones SET
+			precio_adulto = CASE
+				WHEN nombre = 'Candanchú' THEN 49.0
+				WHEN nombre = 'Sierra Nevada' THEN 58.0
+				WHEN nombre = 'Grandvalira' THEN 62.0
+				WHEN nombre = 'Formigal' THEN 55.0
+				WHEN nombre = 'Baqueira Beret' THEN 65.0
+				WHEN nombre = 'Cerler' THEN 47.0
+				ELSE 50.0
+			END,
+			precio_nino = CASE
+				WHEN nombre = 'Candanchú' THEN 35.0
+				WHEN nombre = 'Sierra Nevada' THEN 42.0
+				WHEN nombre = 'Grandvalira' THEN 45.0
+				WHEN nombre = 'Formigal' THEN 40.0
+				WHEN nombre = 'Baqueira Beret' THEN 47.0
+				WHEN nombre = 'Cerler' THEN 33.0
+				ELSE 36.0
+			END,
+			precio_senior = CASE
+				WHEN nombre = 'Candanchú' THEN 42.0
+				WHEN nombre = 'Sierra Nevada' THEN 50.0
+				WHEN nombre = 'Grandvalira' THEN 54.0
+				WHEN nombre = 'Formigal' THEN 48.0
+				WHEN nombre = 'Baqueira Beret' THEN 56.0
+				WHEN nombre = 'Cerler' THEN 41.0
+				ELSE 43.0
+			END
+		WHERE precio_adulto = 0
+	`); err != nil {
+		return fmt.Errorf("update precios estaciones: %w", err)
 	}
 
 	log.Println("Esquema de BD actualizado")
@@ -166,44 +221,51 @@ func seedEstaciones(bd *sql.DB) error {
 		ultima, altitud                          string
 		kmEsq                                    float64
 		dificultad, telefono, imagen, descripcion string
+		precioAdulto, precioNino, precioSenior   float64
 	}{
 		{"Candanchú", "Huesca, España", 368.8, -2, 120, 15, 42, 51, 22, 24,
 			"Hace 4 días", "1.530m - 2.400m", 50.5,
 			"Avanzado", "+34 974 373 194",
 			"https://images.unsplash.com/photo-1478265409131-1f65c88f965c?q=80&w=1200&auto=format&fit=crop",
-			"Candanchú es una estación de esquí pionera en España, conocida por su ambiente alpino y su exigente orografía. Con una cota máxima de 2.400 metros, ofrece algunas de las pistas más desafiantes del Pirineo, como el famoso Tubo de la Zapatilla. Además de sus pistas negras y rojas, cuenta con una excelente zona de debutantes protegida del viento, lo que la hace ideal para familias y principiantes."},
+			"Candanchú es una estación de esquí pionera en España, conocida por su ambiente alpino y su exigente orografía. Con una cota máxima de 2.400 metros, ofrece algunas de las pistas más desafiantes del Pirineo, como el famoso Tubo de la Zapatilla. Además de sus pistas negras y rojas, cuenta con una excelente zona de debutantes protegida del viento, lo que la hace ideal para familias y principiantes.",
+			49.0, 35.0, 42.0},
 		{"Sierra Nevada", "Granada, España", 415.2, 1, 85, 5, 80, 131, 19, 21,
 			"Hace 6 días", "2.100m - 3.300m", 110.0,
 			"Medio", "+34 902 708 090",
 			"https://images.unsplash.com/photo-1528048228650-0d2f4deedc67?q=80&w=1200&auto=format&fit=crop",
-			"Sierra Nevada es la estación más al sur de Europa y la de mayor cota esquiable de España. Ofrece vistas impresionantes del Mediterráneo y una gran variedad de pistas para todos los niveles."},
+			"Sierra Nevada es la estación más al sur de Europa y la de mayor cota esquiable de España. Ofrece vistas impresionantes del Mediterráneo y una gran variedad de pistas para todos los niveles.",
+			58.0, 42.0, 50.0},
 		{"Grandvalira", "Andorra", 480.5, -4, 140, 25, 120, 138, 65, 70,
 			"Hace 2 días", "1.710m - 2.640m", 210.0,
 			"Todos los niveles", "+376 891 800",
 			"https://images.unsplash.com/photo-1551524559-8af4e6624178?q=80&w=1200&auto=format&fit=crop",
-			"Grandvalira es el mayor dominio esquiable de los Pirineos, con más de 200 km de pistas balizadas y modernas infraestructuras."},
+			"Grandvalira es el mayor dominio esquiable de los Pirineos, con más de 200 km de pistas balizadas y modernas infraestructuras.",
+			62.0, 45.0, 54.0},
 		{"Formigal", "Huesca, España", 355.2, -3, 105, 10, 95, 147, 24, 28,
 			"Hace 3 días", "1.500m - 2.250m", 182.0,
 			"Medio", "+34 974 490 000",
 			"https://images.unsplash.com/photo-1565992441121-4367c2967103?q=80&w=1200&auto=format&fit=crop",
-			"Formigal ofrece cuatro valles conectados con gran variedad de pistas y una intensa vida de après-ski."},
+			"Formigal ofrece cuatro valles conectados con gran variedad de pistas y una intensa vida de après-ski.",
+			55.0, 40.0, 48.0},
 		{"Baqueira Beret", "Lleida, España", 460.1, -5, 160, 20, 108, 167, 33, 36,
 			"Hace 1 día", "1.500m - 2.610m", 167.0,
 			"Avanzado", "+34 902 415 415",
 			"https://images.unsplash.com/photo-1605540436563-5bca919ae766?q=80&w=1200&auto=format&fit=crop",
-			"Baqueira Beret es la estación más grande del Pirineo catalán, famosa por la calidad de su nieve y sus amplias pistas."},
+			"Baqueira Beret es la estación más grande del Pirineo catalán, famosa por la calidad de su nieve y sus amplias pistas.",
+			65.0, 47.0, 56.0},
 		{"Cerler", "Huesca, España", 402.7, -1, 90, 8, 58, 74, 17, 19,
 			"Hace 5 días", "1.500m - 2.630m", 80.0,
 			"Medio", "+34 974 551 111",
 			"https://images.unsplash.com/photo-1724775640162-699696d70e6c?q=80&w=1200&auto=format&fit=crop",
-			"Cerler es la estación de mayor altitud del Pirineo aragonés, ideal para esquiadores que buscan paisajes alpinos."},
+			"Cerler es la estación de mayor altitud del Pirineo aragonés, ideal para esquiadores que buscan paisajes alpinos.",
+			47.0, 33.0, 41.0},
 	}
 	stmt, err := bd.Prepare(`INSERT INTO estaciones
 		(nombre, ubicacion, distancia, temperatura, nieve_base, nieve_nueva,
 		 pistas_abiertas, pistas_totales, remontes_op, remontes_tot,
 		 ultima_nevada, altitud, km_esquiables, dificultad, telefono,
-		 imagen, descripcion)
-		VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`)
+		 imagen, descripcion, precio_adulto, precio_nino, precio_senior)
+		VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`)
 	if err != nil {
 		return err
 	}
@@ -212,7 +274,8 @@ func seedEstaciones(bd *sql.DB) error {
 		if _, err := stmt.Exec(e.nombre, e.ubicacion, e.distancia, e.temp,
 			e.nBase, e.nNueva, e.pAb, e.pTot, e.rOp, e.rTot,
 			e.ultima, e.altitud, e.kmEsq, e.dificultad, e.telefono,
-			e.imagen, e.descripcion); err != nil {
+			e.imagen, e.descripcion,
+			e.precioAdulto, e.precioNino, e.precioSenior); err != nil {
 			return err
 		}
 	}

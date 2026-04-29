@@ -1,0 +1,42 @@
+{{define "contenido"}}
+<section class="hero hero--home">
+  <h1 class="hero__title">Tu cesta</h1>
+  <p class="hero__subtitle">Revisa los forfaits seleccionados antes de proceder al pago.</p>
+</section>
+
+<section class="container" id="cart-page">
+  <div class="cart-page__layout">
+    <div class="cart-page__main">
+      <div id="cart-page-list" class="cart-page__list"></div>
+      <div id="cart-page-empty" class="panel panel--empty" hidden>
+        <p class="empty-state__icon" aria-hidden="true">🛒</p>
+        <h2>Aún no has añadido forfaits</h2>
+        <p>Visita la sección de <a href="/forfaits" class="text-link">comprar forfaits</a> para empezar a planificar tu escapada.</p>
+      </div>
+    </div>
+
+    <aside id="cart-page-summary" class="cart-page__summary panel" hidden>
+      <h2 class="cart-page__summary-title">Resumen</h2>
+      <dl class="cart-page__summary-list">
+        <div class="cart-page__summary-row">
+          <dt>Subtotal</dt>
+          <dd id="cart-page-subtotal">0,00 €</dd>
+        </div>
+        <div class="cart-page__summary-row">
+          <dt>Gastos de gestión</dt>
+          <dd>Incluidos</dd>
+        </div>
+        <div class="cart-page__summary-row cart-page__summary-row--total">
+          <dt>Total</dt>
+          <dd id="cart-page-total">0,00 €</dd>
+        </div>
+      </dl>
+      <button type="button" class="forfait-card__cta cart-page__checkout" disabled>
+        Proceder al Pago (próximamente)
+      </button>
+      <button type="button" id="cart-page-clear" class="cart-page__clear">Vaciar cesta</button>
+      <p class="cart-page__note">El pago se habilitará cuando esté integrada la pasarela. De momento la cesta funciona localmente en tu navegador.</p>
+    </aside>
+  </div>
+</section>
+{{end}}
