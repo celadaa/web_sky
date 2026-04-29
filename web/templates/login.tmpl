@@ -1,0 +1,45 @@
+{{define "contenido"}}
+<section class="hero hero--home">
+  <h1 class="hero__title">Inicia sesión en SkiHub</h1>
+  <p class="hero__subtitle">Accede a tu cuenta para guardar estaciones favoritas y tenerlas siempre a mano.</p>
+</section>
+
+<section class="container">
+  <div style="max-width:520px;margin:0 auto;background:#fff;padding:2rem;border-radius:12px;box-shadow:0 2px 12px rgba(0,0,0,.06)">
+    {{if .Mensaje}}
+      <div style="background:#DCFCE7;color:#166534;padding:.75rem 1rem;border-radius:8px;margin-bottom:1rem">
+        {{.Mensaje}}
+      </div>
+    {{end}}
+    {{if .Error}}
+      <div style="background:#FEE2E2;color:#991B1B;padding:.75rem 1rem;border-radius:8px;margin-bottom:1rem">
+        {{.Error}}
+      </div>
+    {{end}}
+
+    <form method="POST" action="/login" novalidate>
+      <div style="margin-bottom:1rem">
+        <label for="email" style="display:block;font-weight:600;margin-bottom:.35rem">Correo electrónico</label>
+        <input id="email" name="email" type="email" required maxlength="120"
+               value="{{.Email}}"
+               autocomplete="email"
+               style="width:100%;padding:.6rem .8rem;border:1px solid #CBD5E1;border-radius:8px;font-size:1rem">
+      </div>
+
+      <div style="margin-bottom:1.5rem">
+        <label for="password" style="display:block;font-weight:600;margin-bottom:.35rem">Contraseña</label>
+        <input id="password" name="password" type="password" required minlength="8" maxlength="128"
+               autocomplete="current-password"
+               style="width:100%;padding:.6rem .8rem;border:1px solid #CBD5E1;border-radius:8px;font-size:1rem">
+      </div>
+
+      <button type="submit" class="navbar__btn" style="width:100%;justify-content:center">Entrar</button>
+    </form>
+
+    <p style="text-align:center;margin-top:1.25rem;color:#64748B">
+      ¿Todavía no tienes cuenta?
+      <a href="/registro" style="color:#2563EB;font-weight:600;text-decoration:none">Regístrate</a>
+    </p>
+  </div>
+</section>
+{{end}}

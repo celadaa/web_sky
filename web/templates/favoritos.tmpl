@@ -1,0 +1,56 @@
+{{define "contenido"}}
+<section class="hero hero--home">
+  <h1 class="hero__title">Mis estaciones favoritas</h1>
+  <p class="hero__subtitle">Hola <strong>{{.Usuario.Nombre}}</strong>. Estas son las estaciones que has marcado como favoritas.</p>
+</section>
+
+<section class="container">
+  {{if .Estaciones}}
+  <ul class="grid-cards">
+    {{range .Estaciones}}
+    <li>
+      <article class="station-card">
+        <figure class="station-card__figure">
+          <span class="station-card__badge">{{printf "%.1f" .Distancia}} km</span>
+          <a href="/estacion/{{.ID}}" tabindex="-1" aria-hidden="true">
+            <img src="{{.Imagen}}" alt="Vista de {{.Nombre}}" loading="lazy" class="station-card__image">
+          </a>
+        </figure>
+        <a href="/estacion/{{.ID}}" class="station-card__content">
+          <h3 class="station-card__name">{{.Nombre}}</h3>
+          <p class="station-card__location">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+            {{.Ubicacion}}
+          </p>
+          <dl class="station-card__data">
+            <div class="station-card__data-item">
+              <dt class="visually-hidden">Temperatura</dt>
+              <dd>🌡️ {{.Temperatura}}°C</dd>
+            </div>
+            <div class="station-card__data-item">
+              <dt class="visually-hidden">Nieve base</dt>
+              <dd>❄️ {{.NieveBase}} cm</dd>
+            </div>
+          </dl>
+        </a>
+        <form method="POST" action="/favorito/toggle" style="padding:0 1rem 1rem">
+          <input type="hidden" name="estacion_id" value="{{.ID}}">
+          <input type="hidden" name="redirigir" value="/favoritos">
+          <button type="submit" style="width:100%;background:#FEE2E2;color:#991B1B;border:1px solid #FCA5A5;border-radius:8px;padding:.5rem;cursor:pointer;font-weight:600">
+            💔 Quitar de favoritas
+          </button>
+        </form>
+      </article>
+    </li>
+    {{end}}
+  </ul>
+  {{else}}
+  <div style="max-width:520px;margin:2rem auto;text-align:center;background:#fff;padding:2rem;border-radius:12px;box-shadow:0 2px 12px rgba(0,0,0,.06)">
+    <p style="font-size:3rem;margin-bottom:.5rem">🤍</p>
+    <h2 style="margin-bottom:.75rem">Todavía no tienes favoritas</h2>
+    <p style="color:#64748B;margin-bottom:1.25rem">Explora las estaciones y marca con ❤️ las que más te gusten para tenerlas siempre a mano.</p>
+    <a href="/estaciones" class="navbar__btn" style="text-decoration:none;display:inline-flex;align-items:center;gap:.4rem">Ver estaciones</a>
+  </div>
+  {{end}}
+</section>
+{{end}}

@@ -1,0 +1,65 @@
+{{define "contenido"}}
+{{with .Detalle}}
+<section class="hero hero--home">
+  <h1 class="hero__title">{{.Nombre}}</h1>
+  <p class="hero__subtitle">
+    {{.Email}}
+    {{if .EsAdmin}} · <span style="background:#DBEAFE;color:#1E40AF;padding:.1rem .55rem;border-radius:999px;font-size:.8rem">Admin</span>{{end}}
+  </p>
+</section>
+
+<section class="container" style="margin-top:1.5rem">
+  <p><a href="/admin/usuarios" style="color:#2563EB;text-decoration:none;font-weight:600">&larr; Volver al listado</a></p>
+
+  <div style="background:#fff;border-radius:12px;box-shadow:0 2px 12px rgba(0,0,0,.06);padding:1.5rem;margin-top:1rem">
+    <h2 style="margin-bottom:1rem">Datos de la cuenta</h2>
+    <dl style="display:grid;grid-template-columns:140px 1fr;gap:.5rem 1rem;color:#1E293B">
+      <dt style="color:#64748B">ID</dt><dd>{{.ID}}</dd>
+      <dt style="color:#64748B">Nombre</dt><dd>{{.Nombre}}</dd>
+      <dt style="color:#64748B">Correo</dt><dd>{{.Email}}</dd>
+      <dt style="color:#64748B">Alta</dt><dd>{{.FechaRegistro.Format "02/01/2006 15:04"}}</dd>
+      <dt style="color:#64748B">Rol</dt><dd>{{if .EsAdmin}}Administrador{{else}}Usuario{{end}}</dd>
+    </dl>
+
+    <div style="margin-top:1.25rem;display:flex;gap:.5rem;flex-wrap:wrap">
+      <form method="POST" action="/admin/usuarios/reset" style="display:inline">
+        <input type="hidden" name="usuario_id" value="{{.ID}}">
+        <button type="submit" onclick="return confirm('¿Resetear contraseña?')" style="padding:.5rem .9rem;background:#FEF3C7;color:#92400E;border:1px solid #FCD34D;border-radius:8px;font-weight:600;cursor:pointer">🔑 Resetear contraseña</button>
+      </form>
+      <form method="POST" action="/admin/usuarios/toggle-admin" style="display:inline">
+        <input type="hidden" name="usuario_id" value="{{.ID}}">
+        <button type="submit" onclick="return confirm('¿Cambiar rol?')" style="padding:.5rem .9rem;background:#EDE9FE;color:#5B21B6;border:1px solid #C4B5FD;border-radius:8px;font-weight:600;cursor:pointer">
+          {{if .EsAdmin}}↓ Quitar admin{{else}}↑ Hacer admin{{end}}
+        </button>
+      </form>
+      {{if not $.EsActual}}
+      <form method="POST" action="/admin/usuarios/borrar" style="display:inline">
+        <input type="hidden" name="usuario_id" value="{{.ID}}">
+        <button type="submit" onclick="return confirm('¿SEGURO que quieres borrar a {{.Email}}?')" style="padding:.5rem .9rem;background:#FEE2E2;color:#991B1B;border:1px solid #FCA5A5;border-radius:8px;font-weight:600;cursor:pointer">🗑 Borrar cuenta</button>
+      </form>
+      {{end}}
+    </div>
+  </div>
+
+  <div style="background:#fff;border-radius:12px;box-shadow:0 2px 12px rgba(0,0,0,.06);padding:1.5rem;margin-top:1.5rem">
+    <h2 style="margin-bottom:1rem">Estaciones favoritas ({{len $.Favoritas}})</h2>
+    {{if $.Favoritas}}
+      <ul style="list-style:none;padding:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:1rem">
+        {{range $.Favoritas}}
+          <li style="border:1px solid #E2E8F0;border-radius:10px;overflow:hidden;background:#F8FAFC">
+            <img src="{{.Imagen}}" alt="{{.Nombre}}" loading="lazy" style="width:100%;height:120px;object-fit:cover">
+            <div style="padding:.75rem 1rem">
+              <strong>{{.Nombre}}</strong>
+              <p style="color:#64748B;font-size:.85rem;margin-top:.25rem">{{.Ubicacion}}</p>
+              <p style="margin-top:.4rem"><a href="/estacion/{{.ID}}" style="color:#2563EB;font-size:.85rem;text-decoration:none">Ver ficha →</a></p>
+            </div>
+          </li>
+        {{end}}
+      </ul>
+    {{else}}
+      <p style="color:#64748B">Este usuario todavía no ha marcado ninguna estación como favorita.</p>
+    {{end}}
+  </div>
+</section>
+{{end}}
+{{end}}

@@ -1,0 +1,47 @@
+{{define "contenido"}}
+<section class="hero hero--home">
+  <h1 class="hero__title">Crea tu cuenta en SkiHub</h1>
+  <p class="hero__subtitle">Regístrate para guardar tus estaciones favoritas y recibir alertas de nevadas.</p>
+</section>
+
+<section class="container">
+  <div style="max-width:520px;margin:0 auto;background:#fff;padding:2rem;border-radius:12px;box-shadow:0 2px 12px rgba(0,0,0,.06)">
+    {{if .Error}}
+      <div style="background:#FEE2E2;color:#991B1B;padding:.75rem 1rem;border-radius:8px;margin-bottom:1rem">
+        {{.Error}}
+      </div>
+    {{end}}
+
+    <form method="POST" action="/registro" novalidate>
+      <div style="margin-bottom:1rem">
+        <label for="nombre" style="display:block;font-weight:600;margin-bottom:.35rem">Nombre</label>
+        <input id="nombre" name="nombre" type="text" required minlength="2" maxlength="60"
+               value="{{.Form.Nombre}}"
+               style="width:100%;padding:.6rem .8rem;border:1px solid #CBD5E1;border-radius:8px;font-size:1rem">
+      </div>
+
+      <div style="margin-bottom:1rem">
+        <label for="email" style="display:block;font-weight:600;margin-bottom:.35rem">Correo electrónico</label>
+        <input id="email" name="email" type="email" required maxlength="120"
+               value="{{.Form.Email}}"
+               style="width:100%;padding:.6rem .8rem;border:1px solid #CBD5E1;border-radius:8px;font-size:1rem">
+      </div>
+
+      <div style="margin-bottom:1rem">
+        <label for="password" style="display:block;font-weight:600;margin-bottom:.35rem">Contraseña</label>
+        <input id="password" name="password" type="password" required minlength="8" maxlength="128"
+               style="width:100%;padding:.6rem .8rem;border:1px solid #CBD5E1;border-radius:8px;font-size:1rem">
+        <small style="color:#64748B">Mínimo 8 caracteres.</small>
+      </div>
+
+      <div style="margin-bottom:1.5rem">
+        <label for="password2" style="display:block;font-weight:600;margin-bottom:.35rem">Repite la contraseña</label>
+        <input id="password2" name="password2" type="password" required minlength="8" maxlength="128"
+               style="width:100%;padding:.6rem .8rem;border:1px solid #CBD5E1;border-radius:8px;font-size:1rem">
+      </div>
+
+      <button type="submit" class="navbar__btn" style="width:100%;justify-content:center">Crear cuenta</button>
+    </form>
+  </div>
+</section>
+{{end}}

@@ -1,0 +1,124 @@
+{{define "contenido"}}
+{{with .Estacion}}
+<section class="hero hero--station">
+  <a href="/estaciones" class="hero__btn-back">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m15 18-6-6 6-6"/></svg>
+    Volver
+  </a>
+  <img src="{{.Imagen}}" alt="Vista panorámica de {{.Nombre}}" fetchpriority="high" class="hero__bg-img">
+
+  <div class="hero__content">
+    <div>
+      <h1 class="hero__title">{{.Nombre}}</h1>
+      <div class="hero__info-group">
+        <p class="hero__info-text">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+          {{.Ubicacion}}
+        </p>
+        <p class="hero__info-text hero__info-text--success">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#16A34A" stroke-width="2"><polygon points="3 11 22 2 13 21 11 13 3 11"/></svg>
+          A {{printf "%.0f" .Distancia}} km de tu ubicación
+        </p>
+      </div>
+    </div>
+    {{if $.Usuario}}
+      <form method="POST" action="/favorito/toggle" style="margin:0">
+        <input type="hidden" name="estacion_id" value="{{.ID}}">
+        <input type="hidden" name="redirigir" value="/estacion/{{.ID}}">
+        {{if .EsFavorita}}
+          <button type="submit" class="hero__btn-action" style="background:#FEE2E2;color:#991B1B;border-color:#FCA5A5">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="#991B1B" stroke="#991B1B" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+            En favoritas
+          </button>
+        {{else}}
+          <button type="submit" class="hero__btn-action">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+            Añadir a favoritas
+          </button>
+        {{end}}
+      </form>
+    {{else}}
+      <a href="/login" class="hero__btn-action" style="text-decoration:none">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+        Inicia sesión para añadir a favoritas
+      </a>
+    {{end}}
+  </div>
+</section>
+
+<div class="station-layout">
+  <div class="station-layout__main">
+    <article class="info-widget">
+      <h2 class="info-widget__title">Sobre la estación</h2>
+      <p>{{.Descripcion}}</p>
+    </article>
+
+    <section class="conditions">
+      <h2>Condiciones actuales</h2>
+      <dl class="conditions__grid">
+        <div class="conditions__item">
+          <dt class="conditions__label">Temperatura</dt>
+          <dd class="conditions__value">🌡️ {{.Temperatura}}°C</dd>
+        </div>
+        <div class="conditions__item">
+          <dt class="conditions__label">Nieve base</dt>
+          <dd class="conditions__value">❄️ {{.NieveBase}} cm</dd>
+        </div>
+        <div class="conditions__item">
+          <dt class="conditions__label">Nuevas nieves (24h)</dt>
+          <dd class="conditions__value text-success">+ {{.NieveNueva}} cm</dd>
+        </div>
+      </dl>
+
+      <dl class="conditions__row">
+        <div class="conditions__item">
+          <dt class="conditions__label">Pistas abiertas</dt>
+          <dd class="conditions__value">{{.PistasAbiertas}} / {{.PistasTotales}}</dd>
+        </div>
+        <div class="conditions__item">
+          <dt class="conditions__label">Remontes operativos</dt>
+          <dd class="conditions__value">{{.RemontesOp}} / {{.RemontesTot}}</dd>
+        </div>
+      </dl>
+
+      <p class="conditions__separator">Última nevada: {{.UltimaNevada}}</p>
+    </section>
+  </div>
+
+  <aside class="station-layout__aside">
+    <section class="info-widget info-widget--highlight">
+      <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#16A34A" stroke-width="2"><path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/></svg>
+      <h2 class="visually-hidden">Distancia desde tu ubicación</h2>
+      <p class="info-widget__value">{{printf "%.0f" .Distancia}} km</p>
+      <p class="info-widget__note">Distancia en línea recta desde Madrid</p>
+    </section>
+
+    <section class="info-widget">
+      <h2 class="info-widget__title">Información rápida</h2>
+      <ul class="info-widget__list">
+        <li class="info-widget__list-item">
+          <span class="info-widget__label">Altitud</span>
+          <span class="info-widget__data">{{.Altitud}}</span>
+        </li>
+        <li class="info-widget__list-item">
+          <span class="info-widget__label">Km esquiables</span>
+          <span class="info-widget__data">{{.KmEsquiables}} km</span>
+        </li>
+        <li class="info-widget__list-item">
+          <span class="info-widget__label">Pistas totales</span>
+          <span class="info-widget__data">{{.PistasTotales}}</span>
+        </li>
+        <li class="info-widget__list-item">
+          <span class="info-widget__label">Nivel de dificultad</span>
+          <span class="info-widget__data">{{.Dificultad}}</span>
+        </li>
+        <li class="info-widget__list-item">
+          <span class="info-widget__label">Teléfono info.</span>
+          <span class="info-widget__data">{{.Telefono}}</span>
+        </li>
+      </ul>
+    </section>
+  </aside>
+</div>
+{{end}}
+{{end}}
