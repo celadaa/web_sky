@@ -20,7 +20,7 @@ type datosError struct {
 func (a *App) NotFound(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNotFound)
 	render(w, r, a.Plantillas, "error", datosError{
-		Titulo:      "Página no encontrada - SkiHub",
+		Titulo:      "Página no encontrada - Snowbreak",
 		Descripcion: "La página solicitada no existe.",
 		Activa:      "",
 		Codigo:      http.StatusNotFound,

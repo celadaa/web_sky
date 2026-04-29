@@ -1,4 +1,4 @@
-// Package services implementa la lógica de negocio de SkiHub.
+// Package services implementa la lógica de negocio de Snowbreak.
 // Los handlers llaman a los servicios, nunca a los repositorios directamente.
 package services
 

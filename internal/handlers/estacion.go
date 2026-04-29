@@ -42,8 +42,8 @@ func (a *App) Estaciones(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	render(w, r, a.Plantillas, "estaciones", datosEstaciones{
-		Titulo:      "Estaciones - SkiHub",
-		Descripcion: "Listado de estaciones de esquí disponibles en SkiHub.",
+		Titulo:      "Estaciones - Snowbreak",
+		Descripcion: "Listado de estaciones de esquí disponibles en Snowbreak.",
 		Activa:      "estaciones",
 		Estaciones:  lista,
 		Usuario:     u,
@@ -78,7 +78,7 @@ func (a *App) Estacion(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	render(w, r, a.Plantillas, "estacion", datosEstacion{
-		Titulo:      e.Nombre + " - SkiHub",
+		Titulo:      e.Nombre + " - Snowbreak",
 		Descripcion: "Estado y condiciones de la estación de esquí de " + e.Nombre + ".",
 		Activa:      "estaciones",
 		Estacion:    e,

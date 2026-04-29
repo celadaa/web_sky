@@ -43,8 +43,8 @@ func (a *App) Home(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	render(w, r, a.Plantillas, "index", datosHome{
-		Titulo:            "SkiHub - Inicio | Encuentra tu estación de esquí",
-		Descripcion:       "Encuentra tu estación de esquí perfecta, información meteorológica y distancias en SkiHub.",
+		Titulo:            "Snowbreak - Inicio | Encuentra tu estación de esquí",
+		Descripcion:       "Encuentra tu estación de esquí perfecta, información meteorológica y distancias en Snowbreak.",
 		Activa:            "inicio",
 		Estaciones:        estaciones,
 		MasCercana:        cercana,

@@ -160,6 +160,18 @@ button {
   font-size: 1.45rem;
 }
 
+.navbar__logo {
+  height: 38px;
+  width: auto;
+  display: block;
+}
+
+.footer__logo {
+  height: 44px;
+  width: auto;
+  display: block;
+}
+
 .navbar__toggle {
   width: 48px;
   height: 48px;

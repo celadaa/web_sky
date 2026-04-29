@@ -86,7 +86,7 @@ func (a *App) AdminUsuarios(w http.ResponseWriter, r *http.Request) {
 
 	render(w, r, a.Plantillas, "admin_usuarios", datosAdminUsuarios{
 		Titulo:      "Administración - Usuarios registrados",
-		Descripcion: "Panel de administración de SkiHub.",
+		Descripcion: "Panel de administración de Snowbreak.",
 		Activa:      "admin",
 		Usuarios:    filas,
 		Total:       len(filas),

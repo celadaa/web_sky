@@ -33,7 +33,7 @@ func (a *App) Forfaits(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	render(w, r, a.Plantillas, "forfaits", datosForfaits{
-		Titulo:      "Comprar Forfaits - SkiHub",
+		Titulo:      "Comprar Forfaits - Snowbreak",
 		Descripcion: "Compra forfaits de día para las estaciones de esquí del Pirineo y Sierra Nevada.",
 		Activa:      "forfaits",
 		Estaciones:  lista,
@@ -56,7 +56,7 @@ type datosCesta struct {
 // de los datos persistidos en localStorage.
 func (a *App) Cesta(w http.ResponseWriter, r *http.Request) {
 	render(w, r, a.Plantillas, "cesta", datosCesta{
-		Titulo:      "Tu cesta - SkiHub",
+		Titulo:      "Tu cesta - Snowbreak",
 		Descripcion: "Revisa los forfaits añadidos a tu cesta de la compra.",
 		Activa:      "cesta",
 		Usuario:     a.UsuarioActual(r),

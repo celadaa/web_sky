@@ -29,8 +29,8 @@ func (a *App) FavoritosPagina(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	render(w, r, a.Plantillas, "favoritos", datosFavoritos{
-		Titulo:      "Mis favoritas - SkiHub",
-		Descripcion: "Tus estaciones favoritas guardadas en SkiHub.",
+		Titulo:      "Mis favoritas - Snowbreak",
+		Descripcion: "Tus estaciones favoritas guardadas en Snowbreak.",
 		Activa:      "favoritos",
 		Estaciones:  lista,
 		Usuario:     u,

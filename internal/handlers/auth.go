@@ -28,8 +28,8 @@ func (a *App) Login(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		render(w, r, a.Plantillas, "login", datosLogin{
-			Titulo:      "Iniciar sesión - SkiHub",
-			Descripcion: "Accede a tu cuenta de SkiHub.",
+			Titulo:      "Iniciar sesión - Snowbreak",
+			Descripcion: "Accede a tu cuenta de Snowbreak.",
 			Activa:      "login",
 			Mensaje:     r.URL.Query().Get("mensaje"),
 		})
@@ -53,8 +53,8 @@ func (a *App) procesarLogin(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		if errors.Is(err, services.ErrCredenciales) {
 			render(w, r, a.Plantillas, "login", datosLogin{
-				Titulo:      "Iniciar sesión - SkiHub",
-				Descripcion: "Accede a tu cuenta de SkiHub.",
+				Titulo:      "Iniciar sesión - Snowbreak",
+				Descripcion: "Accede a tu cuenta de Snowbreak.",
 				Activa:      "login",
 				Error:       "Correo o contraseña incorrectos.",
 				Email:       email,
@@ -103,7 +103,7 @@ func (a *App) CambiarPassword(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
 	case http.MethodGet:
 		render(w, r, a.Plantillas, "cambiar_password", datosCambiarPwd{
-			Titulo:      "Cambiar contraseña - SkiHub",
+			Titulo:      "Cambiar contraseña - Snowbreak",
 			Descripcion: "Actualiza la contraseña de tu cuenta.",
 			Activa:      "cambiar_password",
 			Mensaje:     r.URL.Query().Get("mensaje"),
@@ -134,7 +134,7 @@ func (a *App) CambiarPassword(w http.ResponseWriter, r *http.Request) {
 				log.Printf("ERROR cambiando password usuario id=%d: %v", u.ID, err)
 			}
 			render(w, r, a.Plantillas, "cambiar_password", datosCambiarPwd{
-				Titulo:      "Cambiar contraseña - SkiHub",
+				Titulo:      "Cambiar contraseña - Snowbreak",
 				Descripcion: "Actualiza la contraseña de tu cuenta.",
 				Activa:      "cambiar_password",
 				Error:       msg,

@@ -5,7 +5,7 @@ import (
 	"time"
 )
 
-// Noticia representa una entrada del blog de noticias de SkiHub.
+// Noticia representa una entrada del blog de noticias de Snowbreak.
 // CategoriaClase se usa en la plantilla para aplicar la clase CSS
 // correcta (nevada, consejos, evento, general).
 type Noticia struct {

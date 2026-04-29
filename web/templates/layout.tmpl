@@ -24,9 +24,8 @@
 {{define "navbar"}}
 <header class="navbar">
   <div class="navbar__container">
-    <a href="/" class="navbar__brand">
-      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m8 3 4 8 5-5 5 15H2L8 3z"/></svg>
-      SkiHub
+    <a href="/" class="navbar__brand" aria-label="Snowbreak - Inicio">
+      <img src="/static/snowbreak-logo.svg" alt="Snowbreak" class="navbar__logo">
     </a>
 
     <button
@@ -113,8 +112,7 @@
   <div class="footer__grid">
     <div>
       <h2 class="footer__brand-title">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m8 3 4 8 5-5 5 15H2L8 3z"/></svg>
-        SkiHub
+        <img src="/static/snowbreak-logo-light.svg" alt="Snowbreak" class="footer__logo">
       </h2>
       <p>Tu portal de referencia para encontrar la mejor nieve, comprobar condiciones y planificar tu próximo viaje de esquí en la península.</p>
     </div>
@@ -142,7 +140,7 @@
     </div>
   </div>
   <div class="footer__legal">
-    <p>&copy; 2026 SkiHub. Datos proporcionados con fines académicos.</p>
+    <p>&copy; 2026 Snowbreak. Datos proporcionados con fines académicos.</p>
   </div>
 </footer>
 {{end}}

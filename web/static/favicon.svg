@@ -1,3 +1,13 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
-  <text x="50%" y="50%" dominant-baseline="central" text-anchor="middle" font-size="56">⛷️</text>
+  <defs>
+    <linearGradient id="fv-mountain" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#3b82f6"/>
+      <stop offset="100%" stop-color="#10243b"/>
+    </linearGradient>
+  </defs>
+  <rect width="64" height="64" rx="14" fill="#ffffff"/>
+  <path d="M6 52 L26 14 L36 32 L46 18 L60 52 Z" fill="url(#fv-mountain)"/>
+  <path d="M20 24 L26 14 L30 22 L28 26 Z" fill="#ffffff"/>
+  <path d="M42 24 L46 18 L52 30 L48 28 Z" fill="#ffffff"/>
+  <path d="M6 56 Q32 62 60 54 L60 58 Q32 64 6 58 Z" fill="#f97316"/>
 </svg>

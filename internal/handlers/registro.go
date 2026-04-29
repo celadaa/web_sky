@@ -36,8 +36,8 @@ func (a *App) Registro(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
 	case http.MethodGet:
 		a.mostrarFormulario(w, r, datosRegistro{
-			Titulo:      "Crear cuenta - SkiHub",
-			Descripcion: "Regístrate en SkiHub.",
+			Titulo:      "Crear cuenta - Snowbreak",
+			Descripcion: "Regístrate en Snowbreak.",
 			Activa:      "registro",
 			Usuario:     a.UsuarioActual(r),
 		})
@@ -71,8 +71,8 @@ func (a *App) procesarRegistro(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		if esErrorDeValidacion(err) {
 			a.mostrarFormulario(w, r, datosRegistro{
-				Titulo:      "Crear cuenta - SkiHub",
-				Descripcion: "Regístrate en SkiHub.",
+				Titulo:      "Crear cuenta - Snowbreak",
+				Descripcion: "Regístrate en Snowbreak.",
 				Activa:      "registro",
 				Error:       err.Error(),
 				Form:        formRegistro{Nombre: datos.Nombre, Email: datos.Email},
@@ -86,8 +86,8 @@ func (a *App) procesarRegistro(w http.ResponseWriter, r *http.Request) {
 	}
 
 	render(w, r, a.Plantillas, "registro_ok", datosRegistroOK{
-		Titulo:      "Registro completado - SkiHub",
-		Descripcion: "Tu cuenta se ha creado correctamente en SkiHub.",
+		Titulo:      "Registro completado - Snowbreak",
+		Descripcion: "Tu cuenta se ha creado correctamente en Snowbreak.",
 		Activa:      "registro",
 		Nombre:      u.Nombre,
 		Email:       u.Email,

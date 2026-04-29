@@ -24,8 +24,8 @@ func (a *App) Noticias(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	render(w, r, a.Plantillas, "noticias", datosNoticias{
-		Titulo:      "Noticias de esquí - SkiHub",
-		Descripcion: "Últimas noticias de esquí, reportes de nieve, eventos y consejos para esquiadores en SkiHub.",
+		Titulo:      "Noticias de esquí - Snowbreak",
+		Descripcion: "Últimas noticias de esquí, reportes de nieve, eventos y consejos para esquiadores en Snowbreak.",
 		Activa:      "noticias",
 		Noticias:    lista,
 		Usuario:     a.UsuarioActual(r),

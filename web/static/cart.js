@@ -1,5 +1,5 @@
 /**
- * cart.js — Cesta de la compra de SkiHub.
+ * cart.js — Cesta de la compra de Snowbreak.
  *
  * Estructura de un ítem (estado local en localStorage):
  * {
@@ -146,7 +146,7 @@
     tipoLabel: tipoLabel
   };
 
-  window.SkiHubCart = Cart;
+  window.SnowbreakCart = Cart;
 
   // ---------- UI: header (badge + dropdown) ----------
 
