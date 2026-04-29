@@ -3,9 +3,9 @@
   <h1 class="hero__title">Estaciones de esquí</h1>
   <p class="hero__subtitle">
     {{if .Usuario}}
-      Hola <strong>{{.Usuario.Nombre}}</strong>. Marca con ❤️ tus pistas favoritas para guardarlas en tu cuenta.
+      Hola <strong>{{.Usuario.Nombre}}</strong>. Marca tus pistas favoritas para guardarlas en tu cuenta.
     {{else}}
-      Consulta el listado completo y <a href="/login" style="color:#fff;text-decoration:underline">inicia sesión</a> para guardar tus favoritas.
+      Consulta el listado completo e <a href="/login" class="hero__inline-link">inicia sesión</a> para guardar tus favoritas.
     {{end}}
   </p>
 </section>
@@ -30,31 +30,31 @@
           <dl class="station-card__data">
             <div class="station-card__data-item">
               <dt class="visually-hidden">Temperatura</dt>
-              <dd>🌡️ {{.Temperatura}}°C</dd>
+              <dd>{{.Temperatura}} °C</dd>
             </div>
             <div class="station-card__data-item">
               <dt class="visually-hidden">Nieve base</dt>
-              <dd>❄️ {{.NieveBase}} cm</dd>
+              <dd>{{.NieveBase}} cm</dd>
             </div>
           </dl>
         </a>
         {{if $.Usuario}}
-        <form method="POST" action="/favorito/toggle" style="padding:0 1rem 1rem">
+        <form method="POST" action="/favorito/toggle" class="station-card__footer">
           <input type="hidden" name="estacion_id" value="{{.ID}}">
           <input type="hidden" name="redirigir" value="/estaciones">
           {{if .EsFavorita}}
-            <button type="submit" aria-label="Quitar {{.Nombre}} de favoritas" style="width:100%;background:#FEE2E2;color:#991B1B;border:1px solid #FCA5A5;border-radius:8px;padding:.5rem;cursor:pointer;font-weight:600">
-              ❤️ En favoritas
+            <button type="submit" class="action-btn action-btn--danger" aria-label="Quitar {{.Nombre}} de favoritas">
+              En favoritas
             </button>
           {{else}}
-            <button type="submit" aria-label="Añadir {{.Nombre}} a favoritas" style="width:100%;background:#F1F5F9;color:#1E293B;border:1px solid #CBD5E1;border-radius:8px;padding:.5rem;cursor:pointer;font-weight:600">
-              🤍 Añadir a favoritas
+            <button type="submit" class="action-btn action-btn--neutral" aria-label="Añadir {{.Nombre}} a favoritas">
+              Añadir a favoritas
             </button>
           {{end}}
         </form>
         {{else}}
-        <p style="padding:0 1rem 1rem;color:#64748B;font-size:.85rem;text-align:center">
-          <a href="/login" style="color:#2563EB;font-weight:600;text-decoration:none">Inicia sesión</a> para marcar favoritas
+        <p class="station-card__hint">
+          <a href="/login" class="text-link">Inicia sesión</a> para marcar favoritas
         </p>
         {{end}}
       </article>

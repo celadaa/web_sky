@@ -3,8 +3,8 @@
   <h1 class="hero__title">Encuentra tu estación de esquí perfecta</h1>
   <p class="hero__subtitle">Descubre las mejores condiciones, distancias desde tu ubicación y el estado en tiempo real de las pistas.</p>
   <ul class="hero__pills">
-    <li class="hero__pill">📍 Ubicación activada – Madrid, España</li>
-    {{with .MasCercana}}<li class="hero__pill">❄️ Más cercana: {{.Nombre}} – A {{printf "%.1f" .Distancia}} km de distancia</li>{{end}}
+    <li class="hero__pill">Ubicación de referencia: Madrid, España</li>
+    {{with .MasCercana}}<li class="hero__pill">Más cercana: {{.Nombre}} a {{printf "%.1f" .Distancia}} km</li>{{end}}
   </ul>
 </section>
 
@@ -38,17 +38,17 @@
       <p>Basado en tu ubicación actual</p>
     </div>
     <div class="filters__controls">
-      <button type="button" class="filters__view-btn filters__view-btn--active" data-vista="lista">Lista</button>
-      <button type="button" class="filters__view-btn" data-vista="mapa">Mapa</button>
+      <button type="button" class="filters__view-btn filters__view-btn--active" data-vista="lista" aria-pressed="true">Lista</button>
+      <button type="button" class="filters__view-btn" data-vista="mapa" aria-pressed="false">Mapa</button>
     </div>
   </div>
 
   <nav class="filters" aria-label="Filtros de estaciones">
     <ul class="filters__list" id="filtros-estaciones">
-      <li><button class="filters__btn filters__btn--active" data-orden="cercanas">Más cercanas</button></li>
-      <li><button class="filters__btn" data-orden="nieve">Más nieve</button></li>
-      <li><button class="filters__btn" data-orden="pistas">Más pistas</button></li>
-      <li><button class="filters__btn" data-orden="recien">Recién nevado</button></li>
+      <li><button type="button" class="filters__btn filters__btn--active" data-orden="cercanas" aria-pressed="true">Más cercanas</button></li>
+      <li><button type="button" class="filters__btn" data-orden="nieve" aria-pressed="false">Más nieve</button></li>
+      <li><button type="button" class="filters__btn" data-orden="pistas" aria-pressed="false">Más pistas</button></li>
+      <li><button type="button" class="filters__btn" data-orden="recien" aria-pressed="false">Recién nevado</button></li>
     </ul>
   </nav>
 
@@ -59,10 +59,10 @@
         <figure class="station-card__figure">
           <span class="station-card__badge">{{printf "%.1f" .Distancia}} km</span>
           {{if $.Usuario}}
-          <form method="POST" action="/favorito/toggle" style="position:absolute;top:.75rem;right:.75rem;margin:0">
+          <form method="POST" action="/favorito/toggle" class="station-card__favorite-form">
             <input type="hidden" name="estacion_id" value="{{.ID}}">
             <input type="hidden" name="redirigir" value="/">
-            <button type="submit" class="station-card__favorite" aria-label="{{if .EsFavorita}}Quitar {{.Nombre}} de favoritas{{else}}Añadir {{.Nombre}} a favoritas{{end}}" style="background:#fff;border:none;border-radius:999px;width:36px;height:36px;display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 2px 6px rgba(0,0,0,.12)">
+            <button type="submit" class="station-card__favorite" aria-label="{{if .EsFavorita}}Quitar {{.Nombre}} de favoritas{{else}}Añadir {{.Nombre}} a favoritas{{end}}">
               {{if .EsFavorita}}
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="#DC2626" stroke="#DC2626" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
               {{else}}
@@ -84,11 +84,11 @@
           <dl class="station-card__data">
             <div class="station-card__data-item">
               <dt class="visually-hidden">Temperatura</dt>
-              <dd>🌡️ {{.Temperatura}}°C</dd>
+              <dd>{{.Temperatura}} °C</dd>
             </div>
             <div class="station-card__data-item">
               <dt class="visually-hidden">Nieve base</dt>
-              <dd>❄️ {{.NieveBase}} cm</dd>
+              <dd>{{.NieveBase}} cm</dd>
             </div>
           </dl>
         </a>
@@ -97,14 +97,11 @@
     {{end}}
   </ul>
 
-  <!-- Contenedor del mapa (oculto por defecto, lo activa el botón "Mapa"). -->
-  <div id="mapa-container" class="oculto" style="background:#fff;border-radius:12px;box-shadow:0 1px 3px rgba(0,0,0,.08);overflow:hidden;margin-bottom:3rem">
-    <div id="mapa-leaflet" style="height:520px;width:100%"></div>
+  <div id="mapa-container" class="map-card oculto" aria-live="polite">
+    <div id="mapa-leaflet" class="map-card__canvas"></div>
   </div>
 </section>
 
-<!-- Filtros de estaciones (ordenación cliente). -->
 <script src="/static/filtros.js"></script>
-<!-- Visor de mapa (Leaflet, se carga bajo demanda). -->
 <script src="/static/mapa.js"></script>
 {{end}}

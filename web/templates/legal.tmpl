@@ -1,0 +1,19 @@
+{{define "contenido"}}
+<section class="hero hero--home">
+  <h1 class="hero__title">{{.Heading}}</h1>
+  <p class="hero__subtitle">{{.Intro}}</p>
+</section>
+
+<section class="container section-stack">
+  <article class="legal-card">
+    {{range .Sections}}
+    <section class="legal-card__section">
+      <h2>{{.Title}}</h2>
+      {{range .Paragraphs}}
+      <p>{{.}}</p>
+      {{end}}
+    </section>
+    {{end}}
+  </article>
+</section>
+{{end}}

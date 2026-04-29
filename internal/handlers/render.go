@@ -23,7 +23,7 @@ func CargarPlantillas(dir string) (Cache, error) {
 		"index", "estaciones", "estacion", "noticias",
 		"registro", "registro_ok", "error",
 		"login", "favoritos", "cambiar_password",
-		"admin_usuarios", "admin_usuario",
+		"admin_usuarios", "admin_usuario", "legal",
 	}
 	layout := filepath.Join(dir, "layout.tmpl")
 	for _, p := range paginas {
@@ -38,8 +38,8 @@ func CargarPlantillas(dir string) (Cache, error) {
 }
 
 // render ejecuta la plantilla en un bytes.Buffer antes de escribir la
-// respuesta, siguiendo la buena práctica del Tema 3 (p. 72): si la
-// renderización falla, podemos devolver un 500 limpio sin enviar HTML roto.
+// respuesta, de modo que si la renderización falla podamos devolver un
+// 500 limpio sin enviar HTML parcial.
 func render(w http.ResponseWriter, r *http.Request, c Cache, pagina string, datos any) {
 	ts, ok := c[pagina]
 	if !ok {

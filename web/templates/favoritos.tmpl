@@ -25,19 +25,19 @@
           <dl class="station-card__data">
             <div class="station-card__data-item">
               <dt class="visually-hidden">Temperatura</dt>
-              <dd>🌡️ {{.Temperatura}}°C</dd>
+              <dd>{{.Temperatura}} °C</dd>
             </div>
             <div class="station-card__data-item">
               <dt class="visually-hidden">Nieve base</dt>
-              <dd>❄️ {{.NieveBase}} cm</dd>
+              <dd>{{.NieveBase}} cm</dd>
             </div>
           </dl>
         </a>
-        <form method="POST" action="/favorito/toggle" style="padding:0 1rem 1rem">
+        <form method="POST" action="/favorito/toggle" class="station-card__footer">
           <input type="hidden" name="estacion_id" value="{{.ID}}">
           <input type="hidden" name="redirigir" value="/favoritos">
-          <button type="submit" style="width:100%;background:#FEE2E2;color:#991B1B;border:1px solid #FCA5A5;border-radius:8px;padding:.5rem;cursor:pointer;font-weight:600">
-            💔 Quitar de favoritas
+          <button type="submit" class="action-btn action-btn--danger">
+            Quitar de favoritas
           </button>
         </form>
       </article>
@@ -45,11 +45,11 @@
     {{end}}
   </ul>
   {{else}}
-  <div style="max-width:520px;margin:2rem auto;text-align:center;background:#fff;padding:2rem;border-radius:12px;box-shadow:0 2px 12px rgba(0,0,0,.06)">
-    <p style="font-size:3rem;margin-bottom:.5rem">🤍</p>
-    <h2 style="margin-bottom:.75rem">Todavía no tienes favoritas</h2>
-    <p style="color:#64748B;margin-bottom:1.25rem">Explora las estaciones y marca con ❤️ las que más te gusten para tenerlas siempre a mano.</p>
-    <a href="/estaciones" class="navbar__btn" style="text-decoration:none;display:inline-flex;align-items:center;gap:.4rem">Ver estaciones</a>
+  <div class="panel panel--empty">
+    <p class="empty-state__icon">♡</p>
+    <h2>Todavía no tienes favoritas</h2>
+    <p>Explora las estaciones y marca como favoritas las que más te gusten para tenerlas siempre a mano.</p>
+    <a href="/estaciones" class="navbar__btn navbar__btn--link">Ver estaciones</a>
   </div>
   {{end}}
 </section>

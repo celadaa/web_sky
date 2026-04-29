@@ -51,9 +51,7 @@ func (a *App) Estaciones(w http.ResponseWriter, r *http.Request) {
 }
 
 // Estacion responde a GET /estacion/{id} con la ficha de una estación concreta.
-// Usamos el enrutador de la biblioteca estándar con prefijo "/estacion/".
 func (a *App) Estacion(w http.ResponseWriter, r *http.Request) {
-	// Extraer el ID del path: /estacion/3 -> "3"
 	idStr := strings.TrimPrefix(r.URL.Path, "/estacion/")
 	if idStr == "" || strings.Contains(idStr, "/") {
 		a.NotFound(w, r)

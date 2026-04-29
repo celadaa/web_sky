@@ -10,7 +10,6 @@ import (
 	"skihub/internal/services"
 )
 
-// datosLogin es lo que necesita la plantilla login.tmpl.
 type datosLogin struct {
 	Titulo      string
 	Descripcion string
@@ -21,21 +20,18 @@ type datosLogin struct {
 	Usuario     *models.Usuario
 }
 
-// Login responde a GET/POST /login.
 func (a *App) Login(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
 	case http.MethodGet:
-		// Si ya hay sesión iniciada, redirigimos a favoritos.
 		if u := a.UsuarioActual(r); u != nil {
 			http.Redirect(w, r, "/favoritos", http.StatusSeeOther)
 			return
 		}
-		mensaje := r.URL.Query().Get("mensaje")
 		render(w, r, a.Plantillas, "login", datosLogin{
 			Titulo:      "Iniciar sesión - SkiHub",
 			Descripcion: "Accede a tu cuenta de SkiHub.",
 			Activa:      "login",
-			Mensaje:     mensaje,
+			Mensaje:     r.URL.Query().Get("mensaje"),
 		})
 	case http.MethodPost:
 		a.procesarLogin(w, r)
@@ -52,7 +48,6 @@ func (a *App) procesarLogin(w http.ResponseWriter, r *http.Request) {
 	}
 	email := r.FormValue("email")
 	password := r.FormValue("password")
-	log.Printf("POST /login email=%s", email)
 
 	u, err := a.UsuarioSvc.IniciarSesion(email, password)
 	if err != nil {
@@ -78,7 +73,6 @@ func (a *App) procesarLogin(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Cookie HttpOnly que vive lo mismo que la sesión.
 	http.SetCookie(w, &http.Cookie{
 		Name:     CookieSesion,
 		Value:    sesion.Token,
@@ -87,14 +81,10 @@ func (a *App) procesarLogin(w http.ResponseWriter, r *http.Request) {
 		HttpOnly: true,
 		SameSite: http.SameSiteLaxMode,
 	})
-	log.Printf("Sesión creada para usuario id=%d email=%s", u.ID, u.Email)
 
-	// Tras login mandamos al usuario a la lista de estaciones, donde ya
-	// puede marcar sus favoritas.
 	http.Redirect(w, r, "/estaciones", http.StatusSeeOther)
 }
 
-// datosCambiarPwd es lo que necesita la plantilla cambiar_password.tmpl.
 type datosCambiarPwd struct {
 	Titulo      string
 	Descripcion string
@@ -104,8 +94,6 @@ type datosCambiarPwd struct {
 	Usuario     *models.Usuario
 }
 
-// CambiarPassword responde a GET/POST /cambiar-password.
-// Requiere sesión iniciada; el usuario cambia su PROPIA contraseña.
 func (a *App) CambiarPassword(w http.ResponseWriter, r *http.Request) {
 	u := a.UsuarioActual(r)
 	if u == nil {
@@ -154,7 +142,6 @@ func (a *App) CambiarPassword(w http.ResponseWriter, r *http.Request) {
 			})
 			return
 		}
-		log.Printf("Password cambiada para usuario id=%d email=%s", u.ID, u.Email)
 		http.Redirect(w, r, "/cambiar-password?mensaje=Contrase%C3%B1a+actualizada+correctamente", http.StatusSeeOther)
 	default:
 		w.Header().Set("Allow", "GET, POST")
@@ -162,7 +149,6 @@ func (a *App) CambiarPassword(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-// Logout cierra la sesión actual (POST /logout).
 func (a *App) Logout(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		w.Header().Set("Allow", "POST")
@@ -172,7 +158,6 @@ func (a *App) Logout(w http.ResponseWriter, r *http.Request) {
 	if c, err := r.Cookie(CookieSesion); err == nil {
 		_ = a.SesionSvc.Cerrar(c.Value)
 	}
-	// Borrar la cookie en el navegador.
 	http.SetCookie(w, &http.Cookie{
 		Name:     CookieSesion,
 		Value:    "",

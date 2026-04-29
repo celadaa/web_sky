@@ -4,81 +4,71 @@
   <p class="hero__subtitle">Bienvenido, <strong>{{.Usuario.Nombre}}</strong>. Hay <strong>{{.Total}}</strong> {{if eq .Total 1}}cuenta registrada{{else}}cuentas registradas{{end}}.</p>
 </section>
 
-<section class="container" style="margin-top:1.5rem">
-
+<section class="container section-stack">
   {{if .Mensaje}}
-    <div style="background:#DCFCE7;color:#166534;padding:.9rem 1.1rem;border-radius:10px;margin-bottom:1rem">
-      ✓ {{.Mensaje}}
-    </div>
+    <div class="alert alert--success" role="status">{{.Mensaje}}</div>
   {{end}}
   {{if .Error}}
-    <div style="background:#FEE2E2;color:#991B1B;padding:.9rem 1.1rem;border-radius:10px;margin-bottom:1rem">
-      ✗ {{.Error}}
-    </div>
+    <div class="alert alert--error" role="alert">{{.Error}}</div>
   {{end}}
   {{if .NuevaPwd}}
-    <div style="background:#FEF3C7;color:#92400E;padding:1rem 1.2rem;border-radius:10px;margin-bottom:1rem;border:1px solid #FCD34D">
-      🔑 Se ha generado una nueva contraseña para <strong>{{.PwdUsuario}}</strong>:
-      <code style="display:inline-block;margin-left:.5rem;padding:.2rem .5rem;background:#fff;border:1px solid #FCD34D;border-radius:6px;font-size:1.05rem;font-weight:700">{{.NuevaPwd}}</code>
-      <br><small style="color:#78350F">Apúntala o cópiala ahora; no volverá a mostrarse. El usuario debe usarla para entrar y cambiarla después.</small>
+    <div class="alert alert--warning" role="status">
+      Se ha generado una nueva contraseña para <strong>{{.PwdUsuario}}</strong>:
+      <code>{{.NuevaPwd}}</code>
+      <br>
+      <small>Apúntala ahora; no volverá a mostrarse. El usuario deberá cambiarla después.</small>
     </div>
   {{end}}
 
-  <div style="background:#fff;border-radius:12px;box-shadow:0 2px 12px rgba(0,0,0,.06);overflow-x:auto">
+  <div class="panel admin-table-wrap">
     {{if .Usuarios}}
-    <table style="width:100%;border-collapse:collapse;font-size:.93rem">
+    <table class="admin-table">
       <thead>
-        <tr style="background:#F1F5F9;text-align:left">
-          <th style="padding:.85rem 1rem">#</th>
-          <th style="padding:.85rem 1rem">Nombre</th>
-          <th style="padding:.85rem 1rem">Correo</th>
-          <th style="padding:.85rem 1rem">Alta</th>
-          <th style="padding:.85rem 1rem">Favs.</th>
-          <th style="padding:.85rem 1rem">Rol</th>
-          <th style="padding:.85rem 1rem;text-align:right">Acciones</th>
+        <tr>
+          <th>#</th>
+          <th>Nombre</th>
+          <th>Correo</th>
+          <th>Alta</th>
+          <th>Favs.</th>
+          <th>Rol</th>
+          <th>Acciones</th>
         </tr>
       </thead>
       <tbody>
         {{range .Usuarios}}
-        <tr style="border-top:1px solid #E2E8F0">
-          <td style="padding:.7rem 1rem;color:#64748B">{{.ID}}</td>
-          <td style="padding:.7rem 1rem;font-weight:600">
-            <a href="/admin/usuario/{{.ID}}" style="color:#1E293B;text-decoration:none">{{.Nombre}}</a>
-            {{if .EsActual}}<small style="color:#2563EB;margin-left:.4rem">(tú)</small>{{end}}
+        <tr>
+          <td class="admin-muted">{{.ID}}</td>
+          <td>
+            <a href="/admin/usuario/{{.ID}}" class="text-link">{{.Nombre}}</a>
+            {{if .EsActual}}<small class="admin-muted">(tú)</small>{{end}}
           </td>
-          <td style="padding:.7rem 1rem">{{.Email}}</td>
-          <td style="padding:.7rem 1rem;color:#64748B;white-space:nowrap">{{.FechaRegistro}}</td>
-          <td style="padding:.7rem 1rem">❤️ {{.NumFavoritos}}</td>
-          <td style="padding:.7rem 1rem">
+          <td>{{.Email}}</td>
+          <td class="admin-muted">{{.FechaRegistro}}</td>
+          <td>{{.NumFavoritos}}</td>
+          <td>
             {{if .EsAdmin}}
-              <span style="background:#DBEAFE;color:#1E40AF;padding:.2rem .6rem;border-radius:999px;font-size:.75rem;font-weight:600">Admin</span>
+              <span class="admin-pill admin-pill--info">Admin</span>
             {{else}}
-              <span style="background:#F1F5F9;color:#475569;padding:.2rem .6rem;border-radius:999px;font-size:.75rem">Usuario</span>
+              <span class="admin-pill admin-pill--muted">Usuario</span>
             {{end}}
           </td>
-          <td style="padding:.65rem 1rem;text-align:right;white-space:nowrap">
-            <a href="/admin/usuario/{{.ID}}" style="display:inline-block;padding:.35rem .7rem;background:#EFF6FF;color:#1D4ED8;border:1px solid #BFDBFE;border-radius:6px;text-decoration:none;font-size:.82rem;margin-right:.25rem">Ver</a>
+          <td class="admin-table__actions">
+            <a href="/admin/usuario/{{.ID}}" class="admin-action admin-action--view">Ver</a>
 
-            <form method="POST" action="/admin/usuarios/reset" style="display:inline">
+            <form method="POST" action="/admin/usuarios/reset" class="inline-form">
               <input type="hidden" name="usuario_id" value="{{.ID}}">
-              <button type="submit" onclick="return confirm('¿Resetear contraseña de {{.Email}}?\n\nSe generará una nueva contraseña aleatoria.')" style="padding:.35rem .7rem;background:#FEF3C7;color:#92400E;border:1px solid #FCD34D;border-radius:6px;font-size:.82rem;cursor:pointer;margin-right:.25rem">
-                🔑 Reset
-              </button>
+              <button type="submit" class="admin-action admin-action--warn" onclick="return confirm('¿Resetear contraseña de {{.Email}}?\n\nSe generará una nueva contraseña aleatoria.')">Reset</button>
             </form>
 
-            <form method="POST" action="/admin/usuarios/toggle-admin" style="display:inline">
+            <form method="POST" action="/admin/usuarios/toggle-admin" class="inline-form">
               <input type="hidden" name="usuario_id" value="{{.ID}}">
-              <button type="submit" onclick="return confirm('¿Cambiar el rol de este usuario?')" style="padding:.35rem .7rem;background:#EDE9FE;color:#5B21B6;border:1px solid #C4B5FD;border-radius:6px;font-size:.82rem;cursor:pointer;margin-right:.25rem">
-                {{if .EsAdmin}}↓ Quitar admin{{else}}↑ Hacer admin{{end}}
-              </button>
+              <button type="submit" class="admin-action admin-action--role" onclick="return confirm('¿Cambiar el rol de este usuario?')">{{if .EsAdmin}}Quitar admin{{else}}Hacer admin{{end}}</button>
             </form>
 
             {{if not .EsActual}}
-            <form method="POST" action="/admin/usuarios/borrar" style="display:inline">
+            <form method="POST" action="/admin/usuarios/borrar" class="inline-form">
               <input type="hidden" name="usuario_id" value="{{.ID}}">
-              <button type="submit" onclick="return confirm('¿SEGURO que quieres borrar a {{.Email}}?\n\nSe perderán también sus favoritas y sesiones. Esta acción es irreversible.')" style="padding:.35rem .7rem;background:#FEE2E2;color:#991B1B;border:1px solid #FCA5A5;border-radius:6px;font-size:.82rem;cursor:pointer">
-                🗑 Borrar
-              </button>
+              <button type="submit" class="admin-action admin-action--danger" onclick="return confirm('¿Seguro que quieres borrar a {{.Email}}?\n\nSe perderán también sus favoritas y sesiones. Esta acción es irreversible.')">Borrar</button>
             </form>
             {{end}}
           </td>
@@ -87,100 +77,75 @@
       </tbody>
     </table>
     {{else}}
-    <p style="padding:2rem;text-align:center;color:#64748B">No hay usuarios registrados todavía.</p>
+    <p class="admin-muted">No hay usuarios registrados todavía.</p>
     {{end}}
   </div>
 
-  <aside style="margin-top:2rem;background:#F8FAFC;border:1px solid #E2E8F0;border-radius:12px;padding:1.25rem 1.5rem">
-    <h2 style="font-size:1.1rem;margin-bottom:.5rem">Ayuda rápida</h2>
-    <ul style="color:#475569;padding-left:1.25rem;line-height:1.6">
+  <aside class="panel admin-help">
+    <h2>Ayuda rápida</h2>
+    <ul>
       <li><strong>Ver</strong> abre la ficha del usuario con sus estaciones favoritas.</li>
       <li><strong>Reset</strong> genera una contraseña aleatoria nueva y la muestra una sola vez.</li>
-      <li><strong>Hacer / Quitar admin</strong> cambia el rol. No puedes dejar el sistema sin administradores.</li>
-      <li><strong>Borrar</strong> elimina la cuenta y todo lo asociado (sesiones, favoritas). No puedes borrarte a ti mismo.</li>
+      <li><strong>Hacer / Quitar admin</strong> cambia el rol.</li>
+      <li><strong>Borrar</strong> elimina la cuenta y todo lo asociado.</li>
     </ul>
   </aside>
 
-  <!-- ===========================================================
-       Sección PEC 3 — Cliente JavaScript de la API REST.
-       La tabla se rellena dinámicamente con fetch contra /api/usuarios.
-       =========================================================== -->
-  <section style="margin-top:2rem">
-    <h2 style="font-size:1.25rem;margin-bottom:.75rem">API REST (PEC 3)</h2>
-    <p style="color:#475569;margin-bottom:1rem">
+  <section class="section-stack">
+    <h2>API REST (PEC 3)</h2>
+    <p class="admin-muted">
       Esta tabla se carga dinámicamente vía <code>fetch</code> contra
       <code>/api/usuarios</code>. Las acciones de <em>Editar</em> y
       <em>Eliminar</em> usan los métodos PUT y DELETE de la API.
     </p>
 
-    <div style="background:#fff;border-radius:12px;box-shadow:0 2px 12px rgba(0,0,0,.06);overflow-x:auto">
-      <table style="width:100%;border-collapse:collapse;font-size:.93rem">
+    <div class="panel admin-table-wrap">
+      <table class="admin-table">
         <thead>
-          <tr style="background:#F1F5F9;text-align:left">
-            <th style="padding:.85rem 1rem">Nombre</th>
-            <th style="padding:.85rem 1rem">Email</th>
-            <th style="padding:.85rem 1rem">Rol</th>
-            <th style="padding:.85rem 1rem;text-align:right">Acciones</th>
+          <tr>
+            <th>Nombre</th>
+            <th>Email</th>
+            <th>Rol</th>
+            <th>Acciones</th>
           </tr>
         </thead>
-        <!-- tbody que rellena admin-api.js (cargarUsuarios) -->
         <tbody id="lista-usuarios"></tbody>
       </table>
 
-      <!-- Plantilla HTML5 nativa: cada usuario clona este nodo. -->
       <template id="template-usuario">
-        <tr style="border-top:1px solid #E2E8F0">
-          <td style="padding:.7rem 1rem;font-weight:600" data-campo="nombre"></td>
-          <td style="padding:.7rem 1rem" data-campo="email"></td>
-          <td style="padding:.7rem 1rem" data-campo="rol"></td>
-          <td style="padding:.65rem 1rem;text-align:right;white-space:nowrap">
-            <button type="button" data-accion="editar"
-              style="padding:.35rem .7rem;background:#EFF6FF;color:#1D4ED8;border:1px solid #BFDBFE;border-radius:6px;cursor:pointer;font-size:.82rem;margin-right:.25rem">
-              Editar
-            </button>
-            <button type="button" data-accion="eliminar"
-              style="padding:.35rem .7rem;background:#FEE2E2;color:#991B1B;border:1px solid #FCA5A5;border-radius:6px;cursor:pointer;font-size:.82rem">
-              Eliminar
-            </button>
+        <tr>
+          <td data-campo="nombre"></td>
+          <td data-campo="email"></td>
+          <td data-campo="rol"></td>
+          <td class="admin-table__actions">
+            <button type="button" data-accion="editar" class="admin-template-btn admin-template-btn--edit">Editar</button>
+            <button type="button" data-accion="eliminar" class="admin-template-btn admin-template-btn--delete">Eliminar</button>
           </td>
         </tr>
       </template>
     </div>
   </section>
 
-  <!-- Caja de notificaciones (la clase "visible" la pone/quita el JS). -->
-  <div id="notificacion" class="notificacion"
-       style="position:fixed;bottom:1.5rem;right:1.5rem;background:#1E293B;color:#fff;padding:.85rem 1.2rem;border-radius:10px;box-shadow:0 4px 16px rgba(0,0,0,.2);max-width:360px;z-index:1000"></div>
+  <div id="notificacion" class="notificacion" aria-live="polite"></div>
 
-  <!-- Formulario de edición (la clase "activo" lo muestra/oculta). -->
-  <div id="form-edicion" class="form-oculto"
-       style="margin-top:1.5rem;background:#fff;border:1px solid #E2E8F0;border-radius:12px;padding:1.25rem 1.5rem;box-shadow:0 2px 12px rgba(0,0,0,.06)">
-    <h3 style="font-size:1.1rem;margin-bottom:.75rem">Editar usuario</h3>
-    <div style="display:flex;flex-direction:column;gap:.75rem;max-width:480px">
-      <label style="display:flex;flex-direction:column;gap:.25rem;font-size:.9rem">
-        Nombre
-        <input id="edit-nombre" type="text" required
-          style="padding:.55rem .75rem;border:1px solid #CBD5E1;border-radius:8px;font-size:.95rem">
+  <div id="form-edicion" class="panel panel--form form-oculto">
+    <h3>Editar usuario</h3>
+    <div class="form-stack">
+      <label class="form-field">
+        <span class="form-label">Nombre</span>
+        <input id="edit-nombre" type="text" required class="form-input">
       </label>
-      <label style="display:flex;flex-direction:column;gap:.25rem;font-size:.9rem">
-        Email
-        <input id="edit-email" type="email" required
-          style="padding:.55rem .75rem;border:1px solid #CBD5E1;border-radius:8px;font-size:.95rem">
+      <label class="form-field">
+        <span class="form-label">Email</span>
+        <input id="edit-email" type="email" required class="form-input">
       </label>
-      <div style="display:flex;gap:.5rem;margin-top:.25rem">
-        <button id="edit-guardar" type="button"
-          style="padding:.55rem 1rem;background:#2563EB;color:#fff;border:none;border-radius:8px;cursor:pointer;font-weight:600">
-          Guardar
-        </button>
-        <button id="edit-cancelar" type="button"
-          style="padding:.55rem 1rem;background:#F1F5F9;color:#1E293B;border:1px solid #CBD5E1;border-radius:8px;cursor:pointer">
-          Cancelar
-        </button>
+      <div class="button-row">
+        <button id="edit-guardar" type="button" class="navbar__btn">Guardar</button>
+        <button id="edit-cancelar" type="button" class="navbar__btn navbar__btn--ghost">Cancelar</button>
       </div>
     </div>
   </div>
 </section>
 
-<!-- Cliente JS de la API REST (PEC 3). Sin librerías externas. -->
 <script src="/static/admin-api.js"></script>
 {{end}}

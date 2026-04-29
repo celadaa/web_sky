@@ -9,11 +9,13 @@
   <link rel="stylesheet" href="/static/css/main.css" fetchpriority="high">
 </head>
 <body>
+  <a href="#contenido-principal" class="skip-link">Saltar al contenido</a>
   {{template "navbar" .}}
-  <main>
+  <main id="contenido-principal">
     {{template "contenido" .}}
   </main>
   {{template "footer" .}}
+  <script src="/static/nav.js"></script>
 </body>
 </html>
 {{end}}
@@ -25,36 +27,49 @@
       <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m8 3 4 8 5-5 5 15H2L8 3z"/></svg>
       SkiHub
     </a>
-    <nav class="navbar__nav">
+
+    <button
+      type="button"
+      class="navbar__toggle"
+      aria-expanded="false"
+      aria-controls="navbar-nav"
+      aria-label="Abrir menú de navegación">
+      <span class="navbar__toggle-bar"></span>
+      <span class="navbar__toggle-bar"></span>
+      <span class="navbar__toggle-bar"></span>
+    </button>
+
+    <nav class="navbar__nav" id="navbar-nav">
       <ul class="navbar__list">
         <li><a href="/" class="navbar__link {{if eq .Activa "inicio"}}navbar__link--active{{end}}">Inicio</a></li>
         <li><a href="/estaciones" class="navbar__link {{if eq .Activa "estaciones"}}navbar__link--active{{end}}">Estaciones</a></li>
         <li><a href="/noticias" class="navbar__link {{if eq .Activa "noticias"}}navbar__link--active{{end}}">Noticias</a></li>
         {{if .Usuario}}
-          <li><a href="/favoritos" class="navbar__link {{if eq .Activa "favoritos"}}navbar__link--active{{end}}">❤️ Favoritas</a></li>
+          <li><a href="/favoritos" class="navbar__link {{if eq .Activa "favoritos"}}navbar__link--active{{end}}">Favoritas</a></li>
           {{if .Usuario.EsAdmin}}
             <li><a href="/admin/usuarios" class="navbar__link {{if eq .Activa "admin"}}navbar__link--active{{end}}">Admin</a></li>
           {{end}}
         {{end}}
       </ul>
-      {{if .Usuario}}
-        <span style="color:#475569;font-size:.9rem;margin-right:.5rem">
-          Hola, <strong>{{.Usuario.Nombre}}</strong>
-        </span>
-        <a href="/cambiar-password" class="navbar__link {{if eq .Activa "cambiar_password"}}navbar__link--active{{end}}" style="margin-right:.25rem;font-size:.85rem" title="Cambiar contraseña">🔒 Contraseña</a>
-        <form method="POST" action="/logout" style="margin:0">
-          <button type="submit" class="navbar__btn" style="background:#F1F5F9;color:#1E293B;border:1px solid #CBD5E1;cursor:pointer;display:inline-flex;align-items:center;gap:.4rem">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" x2="9" y1="12" y2="12"/></svg>
-            Cerrar sesión
-          </button>
-        </form>
-      {{else}}
-        <a href="/login" class="navbar__link {{if eq .Activa "login"}}navbar__link--active{{end}}" style="margin-right:.25rem">Iniciar sesión</a>
-        <a href="/registro" class="navbar__btn" style="text-decoration:none;display:inline-flex;align-items:center;gap:.4rem">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-          Registrarse
-        </a>
-      {{end}}
+
+      <div class="navbar__actions">
+        {{if .Usuario}}
+          <span class="navbar__welcome">Hola, <strong>{{.Usuario.Nombre}}</strong></span>
+          <a href="/cambiar-password" class="navbar__link navbar__link--secondary {{if eq .Activa "cambiar_password"}}navbar__link--active{{end}}" title="Cambiar contraseña">Contraseña</a>
+          <form method="POST" action="/logout" class="inline-form">
+            <button type="submit" class="navbar__btn navbar__btn--ghost">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" x2="9" y1="12" y2="12"/></svg>
+              Cerrar sesión
+            </button>
+          </form>
+        {{else}}
+          <a href="/login" class="navbar__link {{if eq .Activa "login"}}navbar__link--active{{end}}">Iniciar sesión</a>
+          <a href="/registro" class="navbar__btn navbar__btn--link">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            Registrarse
+          </a>
+        {{end}}
+      </div>
     </nav>
   </div>
 </header>
@@ -85,11 +100,11 @@
       </ul>
     </nav>
     <div>
-      <h3 class="footer__title">Información Legal</h3>
+      <h3 class="footer__title">Información legal</h3>
       <ul class="footer__list">
-        <li><a href="#" class="footer__link">Aviso Legal</a></li>
-        <li><a href="#" class="footer__link">Política de Privacidad</a></li>
-        <li><a href="#" class="footer__link">Política de Cookies</a></li>
+        <li><a href="/legal/aviso-legal" class="footer__link">Aviso legal</a></li>
+        <li><a href="/legal/privacidad" class="footer__link">Política de privacidad</a></li>
+        <li><a href="/legal/cookies" class="footer__link">Política de cookies</a></li>
       </ul>
     </div>
   </div>

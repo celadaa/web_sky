@@ -16,8 +16,6 @@ type datosFavoritos struct {
 	Usuario     *models.Usuario
 }
 
-// FavoritosPagina muestra en /favoritos las estaciones marcadas como
-// favoritas por el usuario autenticado. Si no hay sesión se redirige a /login.
 func (a *App) FavoritosPagina(w http.ResponseWriter, r *http.Request) {
 	u := a.UsuarioActual(r)
 	if u == nil {
@@ -39,9 +37,6 @@ func (a *App) FavoritosPagina(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
-// FavoritoToggle procesa POST /favorito/toggle con el campo "estacion_id".
-// Alterna el estado de favorita: si lo era la quita, si no la añade.
-// Redirige a la URL indicada en "redirigir" (o a /favoritos por defecto).
 func (a *App) FavoritoToggle(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		w.Header().Set("Allow", "POST")
@@ -57,8 +52,7 @@ func (a *App) FavoritoToggle(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "datos de formulario incorrectos", http.StatusBadRequest)
 		return
 	}
-	idStr := r.FormValue("estacion_id")
-	id, err := strconv.ParseInt(idStr, 10, 64)
+	id, err := strconv.ParseInt(r.FormValue("estacion_id"), 10, 64)
 	if err != nil || id <= 0 {
 		http.Error(w, "estacion_id inválido", http.StatusBadRequest)
 		return

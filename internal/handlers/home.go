@@ -21,7 +21,6 @@ type datosHome struct {
 
 // Home responde a GET / con el listado de estaciones más cercanas y el resumen.
 func (a *App) Home(w http.ResponseWriter, r *http.Request) {
-	// net/http enruta "/" a cualquier ruta no reconocida; filtramos aquí.
 	if r.URL.Path != "/" {
 		a.NotFound(w, r)
 		return
