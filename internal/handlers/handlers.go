@@ -20,6 +20,9 @@ type App struct {
 	NoticiaSvc  *services.NoticiaService
 	SesionSvc   *services.SesionService
 	FavoritoSvc *services.FavoritoService
+	// NieveSvc añade datos en directo de pistas vía infonieve.es.
+	// Es opcional: si es nil, los handlers /api/nieve/* devuelven 503.
+	NieveSvc *services.NieveService
 }
 
 // UsuarioActual intenta recuperar el usuario autenticado a partir de la

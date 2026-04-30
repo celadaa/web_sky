@@ -31,6 +31,17 @@
   </ul>
 </section>
 
+<section class="container pistas-home" id="home-pistas-directo">
+  <div class="pistas-home__header">
+    <div>
+      <h2>Estado de pistas en directo</h2>
+      <p class="pistas-home__aviso" data-home-pistas-aviso>Cargando…</p>
+    </div>
+    <a href="/pistas" class="text-link">Ver todas las pistas →</a>
+  </div>
+  <ul class="pistas-home__list" data-home-pistas-lista></ul>
+</section>
+
 <section class="container">
   <div class="filters__header">
     <div>
@@ -104,4 +115,6 @@
 
 <script src="/static/filtros.js"></script>
 <script src="/static/mapa.js"></script>
+<script src="/static/geolocation.js"></script>
+<script src="/static/pistas-home.js"></script>
 {{end}}

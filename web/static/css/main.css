@@ -1908,3 +1908,291 @@ button {
   }
 }
 
+
+/* ─── Estado de pistas en directo (página /pistas y widget home) ──── */
+
+.pistas-state {
+  margin: 1.5rem 0;
+  padding: 1.25rem 1.5rem;
+  background: rgba(255, 255, 255, 0.85);
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  border-radius: 16px;
+  box-shadow: 0 6px 18px rgba(15, 23, 42, 0.04);
+  color: #4b6075;
+}
+
+.pistas-state p {
+  margin: 0;
+  text-align: center;
+}
+
+.pistas-state__aviso {
+  margin-top: 0.5rem !important;
+  font-size: 0.9rem;
+  color: #597086;
+}
+
+.pistas-state--cargando {
+  border-color: #bfdbfe;
+  background: #eff6ff;
+  color: #1e40af;
+}
+
+.pistas-state--error {
+  border-color: #fecaca;
+  background: #fef2f2;
+  color: #991b1b;
+}
+
+.pistas-state--vacio {
+  background: #f8fafc;
+  color: #4b6075;
+}
+
+.pistas-cities {
+  margin: 1rem 0;
+  padding: 1rem 1.25rem;
+  background: rgba(255, 255, 255, 0.85);
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  border-radius: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.pistas-cities__label {
+  margin: 0;
+  font-weight: 600;
+  color: #10243b;
+}
+
+.pistas-cities__grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.pistas-cities__chip {
+  padding: 0.45rem 0.95rem;
+  background: #eef4fb;
+  border-radius: 999px;
+  font-weight: 600;
+  color: #0f5ecd;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.pistas-cities__chip:hover {
+  background: #dbeafe;
+}
+
+.pistas-cities__form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: flex-end;
+}
+
+.pistas-cities__field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  flex: 1;
+  min-width: 200px;
+}
+
+.pistas-cities__field span {
+  font-size: 0.85rem;
+  color: #597086;
+}
+
+.pistas-cities__field input {
+  padding: 0.55rem 0.75rem;
+  border: 1px solid #cbd5e1;
+  border-radius: 10px;
+  background: #fff;
+}
+
+.pistas-cities__field input:focus-visible {
+  outline: none;
+  border-color: #0ea5e9;
+  box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.25);
+}
+
+/* Tarjetas de pista en /pistas */
+
+.pista-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  padding: 1.25rem;
+}
+
+.pista-card__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 0.75rem;
+}
+
+.pista-card__name {
+  margin: 0;
+  font-size: 1.15rem;
+  color: #10243b;
+}
+
+.pista-card__status {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.25rem 0.7rem;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  background: #f1f5f9;
+  color: #475569;
+}
+
+.pista-card__status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+.pista-card__status--abierta {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.pista-card__status--parcial {
+  background: #fef9c3;
+  color: #854d0e;
+}
+
+.pista-card__status--cerrada {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.pista-card__distance {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  margin: 0;
+  color: #16a34a;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.pista-card__metrics {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.5rem 1rem;
+  margin: 0;
+}
+
+.pista-card__metric {
+  display: flex;
+  flex-direction: column;
+}
+
+.pista-card__metric dt {
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #597086;
+  font-weight: 600;
+}
+
+.pista-card__metric dd {
+  margin: 0;
+  font-weight: 700;
+  color: #10243b;
+}
+
+.pista-card__footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.5rem;
+  padding-top: 0.5rem;
+  border-top: 1px solid #e5edf5;
+  font-size: 0.85rem;
+}
+
+.pista-card__quality {
+  color: #4b6075;
+}
+
+/* Widget de home: 3 pistas en directo */
+
+.pistas-home {
+  margin-top: 2rem;
+}
+
+.pistas-home__header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 0.75rem;
+}
+
+.pistas-home__aviso {
+  margin: 0;
+  color: #597086;
+  font-size: 0.9rem;
+}
+
+.pistas-home__list {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 760px) {
+  .pistas-home__list {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.pistas-home__card {
+  background: #fff;
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  border-radius: 16px;
+  padding: 1rem 1.15rem;
+  box-shadow: 0 6px 18px rgba(15, 23, 42, 0.05);
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.pistas-home__name {
+  margin: 0;
+  font-size: 1.05rem;
+  color: #10243b;
+}
+
+.pistas-home__status {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.2rem 0.6rem;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  align-self: flex-start;
+}
+
+.pistas-home__data {
+  margin: 0;
+  font-size: 0.88rem;
+  color: #4b6075;
+}
+
+.pistas-home__link {
+  align-self: flex-end;
+  font-size: 0.9rem;
+}

@@ -43,6 +43,7 @@
       <ul class="navbar__list">
         <li><a href="/" class="navbar__link {{if eq .Activa "inicio"}}navbar__link--active{{end}}">Inicio</a></li>
         <li><a href="/estaciones" class="navbar__link {{if eq .Activa "estaciones"}}navbar__link--active{{end}}">Estaciones</a></li>
+        <li><a href="/pistas" class="navbar__link {{if eq .Activa "pistas"}}navbar__link--active{{end}}">Estado pistas</a></li>
         <li><a href="/noticias" class="navbar__link {{if eq .Activa "noticias"}}navbar__link--active{{end}}">Noticias</a></li>
         <li><a href="/forfaits" class="navbar__link {{if eq .Activa "forfaits"}}navbar__link--active{{end}}">Comprar Forfaits</a></li>
         {{if .Usuario}}

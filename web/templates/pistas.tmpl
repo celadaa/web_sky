@@ -1,0 +1,101 @@
+{{define "contenido"}}
+<section class="hero hero--home">
+  <h1 class="hero__title">Estado de pistas en directo</h1>
+  <p class="hero__subtitle">
+    Datos actualizados desde <a href="https://www.infonieve.es" rel="noopener" target="_blank" class="hero__inline-link">infonieve.es</a>.
+    Comparte tu ubicación para ver primero las estaciones más cercanas.
+  </p>
+  <ul class="hero__pills" id="pistas-meta" hidden>
+    <li class="hero__pill" id="pistas-meta-ubicacion">Ubicación: —</li>
+    <li class="hero__pill" id="pistas-meta-total">— estaciones</li>
+    <li class="hero__pill" id="pistas-meta-actualizado">Actualizado: —</li>
+  </ul>
+</section>
+
+<section class="container">
+  <div class="filters__header">
+    <div>
+      <h2>Pistas cercanas a ti</h2>
+      <p id="pistas-resumen">Activa la geolocalización para ordenar por proximidad.</p>
+    </div>
+    <div class="filters__controls">
+      <button type="button" class="filters__view-btn filters__view-btn--active" data-pistas-recargar aria-label="Volver a pedir mi ubicación">
+        Mi ubicación
+      </button>
+      <button type="button" class="filters__view-btn" data-pistas-elegir>
+        Elegir ciudad
+      </button>
+    </div>
+  </div>
+
+  <nav class="filters" aria-label="Filtros de estado">
+    <ul class="filters__list" id="pistas-filtros">
+      <li><button type="button" class="filters__btn filters__btn--active" data-filtro="todas" aria-pressed="true">Todas</button></li>
+      <li><button type="button" class="filters__btn" data-filtro="abierta" aria-pressed="false">Abiertas</button></li>
+      <li><button type="button" class="filters__btn" data-filtro="parcial" aria-pressed="false">Parciales</button></li>
+      <li><button type="button" class="filters__btn" data-filtro="cerrada" aria-pressed="false">Cerradas</button></li>
+    </ul>
+  </nav>
+
+  <div id="pistas-ciudades" class="pistas-cities" hidden>
+    <p class="pistas-cities__label">No has compartido tu ubicación. Elige una ciudad o introdúcela manualmente:</p>
+    <div class="pistas-cities__grid" data-ciudad-presets></div>
+    <form class="pistas-cities__form" data-ciudad-form>
+      <label class="pistas-cities__field">
+        <span>Ciudad</span>
+        <input type="text" name="ciudad" autocomplete="off" placeholder="Ej. Pamplona" required>
+      </label>
+      <button type="submit" class="filters__view-btn filters__view-btn--active">Buscar</button>
+    </form>
+  </div>
+
+  <div id="pistas-estado" class="pistas-state" role="status" aria-live="polite">
+    <p>Pidiendo permiso de ubicación…</p>
+  </div>
+
+  <ul class="grid-cards" id="pistas-grid" hidden></ul>
+</section>
+
+<template id="tpl-pista-card">
+  <li class="pista-card-item">
+    <article class="station-card pista-card">
+      <header class="pista-card__header">
+        <h3 class="station-card__name pista-card__name"></h3>
+        <span class="pista-card__status" data-estado>
+          <span class="pista-card__status-dot" aria-hidden="true"></span>
+          <span class="pista-card__status-text"></span>
+        </span>
+      </header>
+      <p class="pista-card__distance" data-distancia hidden>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/></svg>
+        <span></span>
+      </p>
+      <dl class="pista-card__metrics">
+        <div class="pista-card__metric">
+          <dt>Pistas</dt>
+          <dd data-pistas>—</dd>
+        </div>
+        <div class="pista-card__metric">
+          <dt>Km abiertos</dt>
+          <dd data-km>—</dd>
+        </div>
+        <div class="pista-card__metric">
+          <dt>Remontes</dt>
+          <dd data-remontes>—</dd>
+        </div>
+        <div class="pista-card__metric">
+          <dt>Nieve</dt>
+          <dd data-nieve>—</dd>
+        </div>
+      </dl>
+      <footer class="pista-card__footer">
+        <span class="pista-card__quality" data-calidad></span>
+        <a class="text-link" data-detalle target="_blank" rel="noopener">Ver en infonieve →</a>
+      </footer>
+    </article>
+  </li>
+</template>
+
+<script src="/static/geolocation.js"></script>
+<script src="/static/pistas.js"></script>
+{{end}}

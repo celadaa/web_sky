@@ -60,6 +60,9 @@ func main() {
 		NoticiaSvc:  services.NuevoNoticiaService(repository.NuevoNoticiaRepo(bd)),
 		SesionSvc:   services.NuevoSesionService(sesionRepo, usuarioRepo),
 		FavoritoSvc: services.NuevoFavoritoService(favoritoRepo),
+		// Servicio de pistas en directo (scraping cacheado de infonieve.es).
+		// Si en el futuro quieres deshabilitarlo, basta con dejarlo a nil.
+		NieveSvc: services.NuevoNieveService(),
 	}
 
 	plantillas, err := handlers.CargarPlantillas(dirPlantillas)
@@ -96,6 +99,12 @@ func main() {
 	mux.HandleFunc("/api/usuarios", app.ApiUsuarios)
 	mux.HandleFunc("/api/usuarios/", app.ApiUsuario)
 	mux.HandleFunc("/api/estaciones", app.ApiEstaciones)
+
+	// Pistas en directo (scraping de infonieve.es, cacheado)
+	mux.HandleFunc("/pistas", app.Pistas)
+	mux.HandleFunc("/api/nieve/estaciones", app.ApiNieveEstaciones)
+	mux.HandleFunc("/api/nieve/estaciones/", app.ApiNieveEstacion)
+	mux.HandleFunc("/api/nieve/regiones", app.ApiNieveRegiones)
 
 	mux.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir(dirEstaticos))))
 
