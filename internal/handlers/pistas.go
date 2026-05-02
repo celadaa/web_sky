@@ -24,7 +24,7 @@ func (a *App) Pistas(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	render(w, r, a.Plantillas, "pistas", datosPistas{
-		Titulo:      "Estado de pistas en directo - Snowbreak",
+		Titulo:      "Estado de pistas en directo - SnowBreak",
 		Descripcion: "Consulta el estado de apertura, kilómetros abiertos, remontes y nieve de las estaciones de esquí más cercanas a tu ubicación.",
 		Activa:      "pistas",
 		Usuario:     a.UsuarioActual(r),

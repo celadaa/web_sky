@@ -13,8 +13,7 @@ import (
 	"skihub/internal/services"
 )
 
-// filaUsuarioAdmin adapta un models.Usuario para la vista: añade el nº de
-// favoritos y oculta el hash de la contraseña (no se muestra nunca).
+// filaUsuarioAdmin adapta un models.Usuario para la vista del panel.
 type filaUsuarioAdmin struct {
 	ID            int64
 	Nombre        string
@@ -22,7 +21,7 @@ type filaUsuarioAdmin struct {
 	FechaRegistro string
 	NumFavoritos  int
 	EsAdmin       bool
-	EsActual      bool // true si esta fila corresponde al admin que está viendo el panel
+	EsActual      bool
 }
 
 type datosAdminUsuarios struct {
@@ -33,8 +32,8 @@ type datosAdminUsuarios struct {
 	Total       int
 	Mensaje     string
 	Error       string
-	NuevaPwd    string // contraseña recién generada por reset (se muestra una única vez)
-	PwdUsuario  string // a qué usuario pertenece esa nueva contraseña
+	NuevaPwd    string
+	PwdUsuario  string
 	Usuario     *models.Usuario
 }
 
@@ -49,14 +48,13 @@ type datosAdminUsuario struct {
 }
 
 // AdminUsuarios muestra en /admin/usuarios el listado completo.
-// Solo visible para usuarios con rol admin.
 func (a *App) AdminUsuarios(w http.ResponseWriter, r *http.Request) {
 	actual := a.requerirAdmin(w, r)
 	if actual == nil {
 		return
 	}
 
-	lista, err := a.UsuarioSvc.Listar()
+	lista, err := a.UsuarioSvc.Listar(r.Context())
 	if err != nil {
 		log.Printf("ERROR listar usuarios: %v", err)
 		http.Error(w, "error interno del servidor", http.StatusInternalServerError)
@@ -64,7 +62,7 @@ func (a *App) AdminUsuarios(w http.ResponseWriter, r *http.Request) {
 	}
 	conteo := map[int64]int{}
 	if a.FavoritoSvc != nil {
-		conteo, err = a.FavoritoSvc.ContarPorUsuario()
+		conteo, err = a.FavoritoSvc.ContarPorUsuario(r.Context())
 		if err != nil {
 			log.Printf("ERROR contar favoritos: %v", err)
 			conteo = map[int64]int{}
@@ -86,7 +84,7 @@ func (a *App) AdminUsuarios(w http.ResponseWriter, r *http.Request) {
 
 	render(w, r, a.Plantillas, "admin_usuarios", datosAdminUsuarios{
 		Titulo:      "Administración - Usuarios registrados",
-		Descripcion: "Panel de administración de Snowbreak.",
+		Descripcion: "Panel de administración de SnowBreak.",
 		Activa:      "admin",
 		Usuarios:    filas,
 		Total:       len(filas),
@@ -98,9 +96,7 @@ func (a *App) AdminUsuarios(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
-// AdminUsuarioDetalle muestra la ficha individual de un usuario,
-// con su lista de estaciones favoritas.
-// Ruta: GET /admin/usuario/{id}
+// AdminUsuarioDetalle muestra la ficha de un usuario y sus favoritas.
 func (a *App) AdminUsuarioDetalle(w http.ResponseWriter, r *http.Request) {
 	actual := a.requerirAdmin(w, r)
 	if actual == nil {
@@ -117,7 +113,7 @@ func (a *App) AdminUsuarioDetalle(w http.ResponseWriter, r *http.Request) {
 		a.NotFound(w, r)
 		return
 	}
-	u, err := a.UsuarioSvc.ObtenerPorID(id)
+	u, err := a.UsuarioSvc.ObtenerPorID(r.Context(), id)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			a.NotFound(w, r)
@@ -127,7 +123,7 @@ func (a *App) AdminUsuarioDetalle(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "error interno del servidor", http.StatusInternalServerError)
 		return
 	}
-	favs, err := a.FavoritoSvc.ListarDeUsuario(id)
+	favs, err := a.FavoritoSvc.ListarDeUsuario(r.Context(), id)
 	if err != nil {
 		log.Printf("ERROR listar favoritas de %d: %v", id, err)
 		http.Error(w, "error interno del servidor", http.StatusInternalServerError)
@@ -161,7 +157,7 @@ func (a *App) AdminBorrarUsuario(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/admin/usuarios?err=ID+inv%C3%A1lido", http.StatusSeeOther)
 		return
 	}
-	if err := a.UsuarioSvc.Borrar(actual.ID, id); err != nil {
+	if err := a.UsuarioSvc.Borrar(r.Context(), actual.ID, id); err != nil {
 		mensaje := "Error al borrar"
 		switch {
 		case errors.Is(err, services.ErrBorrarseASiMismo):
@@ -178,8 +174,7 @@ func (a *App) AdminBorrarUsuario(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, "/admin/usuarios?msg=Usuario+eliminado", http.StatusSeeOther)
 }
 
-// AdminResetPassword genera una contraseña aleatoria para el usuario
-// indicado (POST /admin/usuarios/reset).
+// AdminResetPassword genera una contraseña nueva (POST /admin/usuarios/reset).
 func (a *App) AdminResetPassword(w http.ResponseWriter, r *http.Request) {
 	actual := a.requerirAdmin(w, r)
 	if actual == nil {
@@ -195,12 +190,12 @@ func (a *App) AdminResetPassword(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/admin/usuarios?err=ID+inv%C3%A1lido", http.StatusSeeOther)
 		return
 	}
-	u, err := a.UsuarioSvc.ObtenerPorID(id)
+	u, err := a.UsuarioSvc.ObtenerPorID(r.Context(), id)
 	if err != nil {
 		http.Redirect(w, r, "/admin/usuarios?err=Usuario+no+encontrado", http.StatusSeeOther)
 		return
 	}
-	nueva, err := a.UsuarioSvc.ResetPassword(id)
+	nueva, err := a.UsuarioSvc.ResetPassword(r.Context(), id)
 	if err != nil {
 		log.Printf("ERROR reset password %d: %v", id, err)
 		http.Redirect(w, r, "/admin/usuarios?err=Error+al+resetear", http.StatusSeeOther)
@@ -212,8 +207,7 @@ func (a *App) AdminResetPassword(w http.ResponseWriter, r *http.Request) {
 		http.StatusSeeOther)
 }
 
-// AdminToggleAdmin promueve / revoca el rol admin de un usuario
-// (POST /admin/usuarios/toggle-admin).
+// AdminToggleAdmin alterna el rol admin (POST /admin/usuarios/toggle-admin).
 func (a *App) AdminToggleAdmin(w http.ResponseWriter, r *http.Request) {
 	actual := a.requerirAdmin(w, r)
 	if actual == nil {
@@ -229,7 +223,7 @@ func (a *App) AdminToggleAdmin(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/admin/usuarios?err=ID+inv%C3%A1lido", http.StatusSeeOther)
 		return
 	}
-	nuevo, err := a.UsuarioSvc.ToggleAdmin(id)
+	nuevo, err := a.UsuarioSvc.ToggleAdmin(r.Context(), id)
 	if err != nil {
 		mensaje := "Error al cambiar rol"
 		if errors.Is(err, services.ErrUltimoAdmin) {

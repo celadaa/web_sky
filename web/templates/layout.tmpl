@@ -3,9 +3,33 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0b1d3a">
   <meta name="description" content="{{.Descripcion}}">
+  <meta name="keywords" content="estaciones de esquí, forfaits, nieve, pistas, esquí España, Pirineos, Sierra Nevada, partes de nieve">
+  <meta name="author" content="SnowBreak">
   <title>{{.Titulo}}</title>
+
+  <!-- Favicons -->
   <link rel="icon" type="image/svg+xml" href="/static/favicon.svg">
+  <link rel="alternate icon" href="/static/favicon.svg">
+  <link rel="apple-touch-icon" href="/static/favicon.svg">
+  <link rel="mask-icon" href="/static/favicon.svg" color="#0b1d3a">
+
+  <!-- Open Graph / Facebook / WhatsApp -->
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="SnowBreak">
+  <meta property="og:locale" content="es_ES">
+  <meta property="og:title" content="{{.Titulo}}">
+  <meta property="og:description" content="{{.Descripcion}}">
+  <meta property="og:image" content="/static/og-image.svg">
+  <meta property="og:image:alt" content="SnowBreak — Estaciones de esquí y forfaits">
+
+  <!-- Twitter / Discord -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="{{.Titulo}}">
+  <meta name="twitter:description" content="{{.Descripcion}}">
+  <meta name="twitter:image" content="/static/og-image.svg">
+
   <link rel="stylesheet" href="/static/css/main.css" fetchpriority="high">
 </head>
 <body>
@@ -24,8 +48,8 @@
 {{define "navbar"}}
 <header class="navbar">
   <div class="navbar__container">
-    <a href="/" class="navbar__brand" aria-label="Snowbreak - Inicio">
-      <img src="/static/snowbreak-logo.svg" alt="Snowbreak" class="navbar__logo">
+    <a href="/" class="navbar__brand" aria-label="SnowBreak - Inicio">
+      <img src="/static/snowbreak-logo.svg" alt="SnowBreak" class="navbar__logo" width="190" height="44">
     </a>
 
     <button
@@ -113,9 +137,9 @@
   <div class="footer__grid">
     <div>
       <h2 class="footer__brand-title">
-        <img src="/static/snowbreak-logo-light.svg" alt="Snowbreak" class="footer__logo">
+        <img src="/static/snowbreak-logo-light.svg" alt="SnowBreak" class="footer__logo" width="220" height="50">
       </h2>
-      <p>Tu portal de referencia para encontrar la mejor nieve, comprobar condiciones y planificar tu próximo viaje de esquí en la península.</p>
+      <p>Compara estaciones, consulta el estado de las pistas y reserva forfaits para tu próxima escapada a la nieve. Toda la información que necesitas, en un solo lugar.</p>
     </div>
     <nav aria-label="Navegación del pie de página">
       <h3 class="footer__title">Navegación</h3>
@@ -141,7 +165,7 @@
     </div>
   </div>
   <div class="footer__legal">
-    <p>&copy; 2026 Snowbreak. Datos proporcionados con fines académicos.</p>
+    <p>&copy; 2026 SnowBreak. Datos proporcionados con fines académicos.</p>
   </div>
 </footer>
 {{end}}

@@ -85,7 +85,7 @@
         ev.preventDefault();
         var input = refs.formCiu.querySelector('input[name="ciudad"]');
         if (!input || !input.value.trim()) { return; }
-        mostrarEstado('Buscando "' + input.value + '"…', 'cargando');
+        mostrarEstado('Buscando estaciones cercanas a "' + input.value + '"…', 'cargando');
         window.SnowbreakGeo.desdeCiudad(input.value)
           .then(function (u) { usarUbicacion(u); refs.ciudades.hidden = true; })
           .catch(function (err) { mostrarErrorGeo(err); });
@@ -110,7 +110,7 @@
   }
 
   function pedirUbicacion() {
-    mostrarEstado('Pidiendo permiso de ubicación…', 'cargando');
+    mostrarEstado('Buscando estaciones cercanas a tu ubicación…', 'cargando');
     window.SnowbreakGeo.obtener()
       .then(usarUbicacion)
       .catch(function (err) {
@@ -135,7 +135,7 @@
     if (state.cargando || !state.ubicacion) { return; }
     state.cargando = true;
     state.error = null;
-    mostrarEstado('Consultando estado de pistas…', 'cargando');
+    mostrarEstado('Consultando el estado actualizado de las pistas…', 'cargando');
 
     var url = ENDPOINT
       + '?lat=' + encodeURIComponent(state.ubicacion.lat)
@@ -270,12 +270,35 @@
   function mostrarEstado(texto, clase) {
     if (!refs.estado) { return; }
     refs.estado.hidden = false;
-    if (refs.grid) { refs.grid.hidden = true; }
     refs.estado.className = 'pistas-state pistas-state--' + (clase || 'info');
     refs.estado.innerHTML = '';
     var p = document.createElement('p');
-    p.textContent = texto;
+    p.className = 'pistas-state__msg';
+    if (clase === 'cargando') {
+      var spin = document.createElement('span');
+      spin.className = 'pistas-state__spinner';
+      spin.setAttribute('aria-hidden', 'true');
+      p.appendChild(spin);
+    }
+    p.appendChild(document.createTextNode(texto));
     refs.estado.appendChild(p);
+    if (refs.grid) {
+      if (clase === 'cargando') {
+        refs.grid.hidden = false;
+        refs.grid.innerHTML = '';
+        for (var i = 0; i < 6; i++) {
+          var li = document.createElement('li');
+          li.className = 'pista-card-item';
+          var sk = document.createElement('div');
+          sk.className = 'skeleton skeleton--card';
+          sk.setAttribute('aria-hidden', 'true');
+          li.appendChild(sk);
+          refs.grid.appendChild(li);
+        }
+      } else {
+        refs.grid.hidden = true;
+      }
+    }
   }
 
   function mostrarErrorGeo(err) {

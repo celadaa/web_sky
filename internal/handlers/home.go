@@ -25,7 +25,8 @@ func (a *App) Home(w http.ResponseWriter, r *http.Request) {
 		a.NotFound(w, r)
 		return
 	}
-	cercana, lejana, promedio, _, err := a.EstacionSvc.ResumenHome()
+	ctx := r.Context()
+	cercana, lejana, promedio, _, err := a.EstacionSvc.ResumenHome(ctx)
 	if err != nil {
 		log.Printf("ERROR resumen home: %v", err)
 		http.Error(w, "error interno", http.StatusInternalServerError)
@@ -36,15 +37,15 @@ func (a *App) Home(w http.ResponseWriter, r *http.Request) {
 	if u != nil {
 		uid = u.ID
 	}
-	estaciones, err := a.EstacionSvc.Listar(uid)
+	estaciones, err := a.EstacionSvc.Listar(ctx, uid)
 	if err != nil {
 		log.Printf("ERROR listar estaciones: %v", err)
 		http.Error(w, "error interno", http.StatusInternalServerError)
 		return
 	}
 	render(w, r, a.Plantillas, "index", datosHome{
-		Titulo:            "Snowbreak - Inicio | Encuentra tu estación de esquí",
-		Descripcion:       "Encuentra tu estación de esquí perfecta, información meteorológica y distancias en Snowbreak.",
+		Titulo:            "SnowBreak | Estaciones de esquí y forfaits",
+		Descripcion:       "Compara estaciones de esquí, consulta el estado de pistas y encuentra forfaits para tu próxima escapada a la nieve con SnowBreak.",
 		Activa:            "inicio",
 		Estaciones:        estaciones,
 		MasCercana:        cercana,

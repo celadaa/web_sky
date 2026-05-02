@@ -1,0 +1,45 @@
+# docker-compose.yml — entorno de desarrollo OPCIONAL para SkiHub.
+#
+# Levanta una instancia de PostgreSQL pensada para desarrollo local. La
+# aplicación Go se sigue ejecutando con `go run ./cmd/servidor` desde tu
+# máquina y se conecta al Postgres del contenedor.
+#
+# Uso típico:
+#   docker compose up -d         # arranca Postgres en background
+#   go run ./cmd/servidor        # arranca la web (lee .env)
+#   docker compose down          # para Postgres (los datos persisten)
+#   docker compose down -v       # para Postgres y BORRA los datos
+#
+# En producción NO uses este compose tal cual: usa una BD gestionada o un
+# Postgres con su propio backup, monitorización y reglas de seguridad.
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: skihub_postgres
+    restart: unless-stopped
+    environment:
+      # Estos valores se cargan desde .env (en la raíz del proyecto). Si
+      # ejecutas `docker compose` desde otra carpeta tendrás que pasar
+      # --env-file .env explícitamente.
+      POSTGRES_USER: ${DB_USER:-skihub}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:?DB_PASSWORD es obligatorio}
+      POSTGRES_DB: ${DB_NAME:-skihub}
+      # Locale español (acentos, ordenación correcta).
+      LANG: es_ES.utf8
+    ports:
+      # Solo se expone en localhost para no abrirlo accidentalmente al
+      # exterior. Cambia a "5432:5432" si necesitas acceso remoto durante
+      # el desarrollo (no recomendado).
+      - "127.0.0.1:${DB_PORT:-5432}:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  pgdata:
+    driver: local

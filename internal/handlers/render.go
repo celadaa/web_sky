@@ -1,4 +1,4 @@
-// Package handlers contiene los controladores HTTP de Snowbreak.
+// Package handlers contiene los controladores HTTP de SnowBreak.
 // Cada archivo agrupa los manejadores de una sección de la web.
 package handlers
 

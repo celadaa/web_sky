@@ -9,6 +9,14 @@
 
   var ENDPOINT = '/api/nieve/estaciones';
 
+  function pintarSkeletons(contenedor) {
+    if (!contenedor) { return; }
+    contenedor.innerHTML =
+      '<li class="pistas-home__item"><div class="skeleton skeleton--pista" aria-hidden="true"></div></li>' +
+      '<li class="pistas-home__item"><div class="skeleton skeleton--pista" aria-hidden="true"></div></li>' +
+      '<li class="pistas-home__item"><div class="skeleton skeleton--pista" aria-hidden="true"></div></li>';
+  }
+
   function iniciar() {
     var contenedor = document.getElementById('home-pistas-directo');
     if (!contenedor) { return; }
@@ -16,13 +24,15 @@
     var aviso = contenedor.querySelector('[data-home-pistas-aviso]');
     if (!lista) { return; }
 
+    pintarSkeletons(lista);
+
     var ubic = (window.SnowbreakGeo && window.SnowbreakGeo.leerPreferencia()) || null;
     if (!ubic) {
       ubic = { lat: 40.4168, lng: -3.7038, etiqueta: 'Madrid' };
     }
 
     if (aviso) {
-      aviso.textContent = 'Mostrando datos cercanos a ' + ubic.etiqueta + '.';
+      aviso.textContent = 'Calculando la distancia desde ' + ubic.etiqueta + '\u2026';
     }
 
     var url = ENDPOINT
@@ -35,14 +45,19 @@
       .then(function (j) {
         var data = (j && j.data) || [];
         if (data.length === 0) {
+          lista.innerHTML = '';
           if (aviso) { aviso.textContent = 'No hay datos en directo disponibles ahora mismo.'; }
           return;
+        }
+        if (aviso) {
+          aviso.textContent = 'Datos en directo cercanos a ' + ubic.etiqueta + '.';
         }
         renderTarjetas(lista, data);
       })
       .catch(function (err) {
+        lista.innerHTML = '';
         if (aviso) {
-          aviso.textContent = 'No se pudieron obtener datos en directo (' + (err.message || 'error') + ').';
+          aviso.textContent = 'No hemos podido cargar el estado en directo (' + (err.message || 'error') + ').';
         }
       });
   }

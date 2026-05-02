@@ -28,8 +28,8 @@ func (a *App) Login(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		render(w, r, a.Plantillas, "login", datosLogin{
-			Titulo:      "Iniciar sesión - Snowbreak",
-			Descripcion: "Accede a tu cuenta de Snowbreak.",
+			Titulo:      "Iniciar sesión - SnowBreak",
+			Descripcion: "Accede a tu cuenta de SnowBreak.",
 			Activa:      "login",
 			Mensaje:     r.URL.Query().Get("mensaje"),
 		})
@@ -49,12 +49,12 @@ func (a *App) procesarLogin(w http.ResponseWriter, r *http.Request) {
 	email := r.FormValue("email")
 	password := r.FormValue("password")
 
-	u, err := a.UsuarioSvc.IniciarSesion(email, password)
+	u, err := a.UsuarioSvc.IniciarSesion(r.Context(), email, password)
 	if err != nil {
 		if errors.Is(err, services.ErrCredenciales) {
 			render(w, r, a.Plantillas, "login", datosLogin{
-				Titulo:      "Iniciar sesión - Snowbreak",
-				Descripcion: "Accede a tu cuenta de Snowbreak.",
+				Titulo:      "Iniciar sesión - SnowBreak",
+				Descripcion: "Accede a tu cuenta de SnowBreak.",
 				Activa:      "login",
 				Error:       "Correo o contraseña incorrectos.",
 				Email:       email,
@@ -66,7 +66,7 @@ func (a *App) procesarLogin(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	sesion, err := a.SesionSvc.Crear(u.ID)
+	sesion, err := a.SesionSvc.Crear(r.Context(), u.ID)
 	if err != nil {
 		log.Printf("ERROR creando sesión: %v", err)
 		http.Error(w, "error interno del servidor", http.StatusInternalServerError)
@@ -103,7 +103,7 @@ func (a *App) CambiarPassword(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
 	case http.MethodGet:
 		render(w, r, a.Plantillas, "cambiar_password", datosCambiarPwd{
-			Titulo:      "Cambiar contraseña - Snowbreak",
+			Titulo:      "Cambiar contraseña - SnowBreak",
 			Descripcion: "Actualiza la contraseña de tu cuenta.",
 			Activa:      "cambiar_password",
 			Mensaje:     r.URL.Query().Get("mensaje"),
@@ -118,7 +118,7 @@ func (a *App) CambiarPassword(w http.ResponseWriter, r *http.Request) {
 		nueva := r.FormValue("password_nueva")
 		nueva2 := r.FormValue("password_nueva2")
 
-		err := a.UsuarioSvc.CambiarPassword(u.ID, actual, nueva, nueva2)
+		err := a.UsuarioSvc.CambiarPassword(r.Context(), u.ID, actual, nueva, nueva2)
 		if err != nil {
 			msg := "Error al cambiar la contraseña."
 			switch {
@@ -134,7 +134,7 @@ func (a *App) CambiarPassword(w http.ResponseWriter, r *http.Request) {
 				log.Printf("ERROR cambiando password usuario id=%d: %v", u.ID, err)
 			}
 			render(w, r, a.Plantillas, "cambiar_password", datosCambiarPwd{
-				Titulo:      "Cambiar contraseña - Snowbreak",
+				Titulo:      "Cambiar contraseña - SnowBreak",
 				Descripcion: "Actualiza la contraseña de tu cuenta.",
 				Activa:      "cambiar_password",
 				Error:       msg,
@@ -156,7 +156,7 @@ func (a *App) Logout(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if c, err := r.Cookie(CookieSesion); err == nil {
-		_ = a.SesionSvc.Cerrar(c.Value)
+		_ = a.SesionSvc.Cerrar(r.Context(), c.Value)
 	}
 	http.SetCookie(w, &http.Cookie{
 		Name:     CookieSesion,

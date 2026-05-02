@@ -22,15 +22,15 @@ func (a *App) FavoritosPagina(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/login?mensaje=Inicia+sesi%C3%B3n+para+ver+tus+favoritas", http.StatusSeeOther)
 		return
 	}
-	lista, err := a.FavoritoSvc.ListarDeUsuario(u.ID)
+	lista, err := a.FavoritoSvc.ListarDeUsuario(r.Context(), u.ID)
 	if err != nil {
 		log.Printf("ERROR listar favoritos: %v", err)
 		http.Error(w, "error interno del servidor", http.StatusInternalServerError)
 		return
 	}
 	render(w, r, a.Plantillas, "favoritos", datosFavoritos{
-		Titulo:      "Mis favoritas - Snowbreak",
-		Descripcion: "Tus estaciones favoritas guardadas en Snowbreak.",
+		Titulo:      "Mis favoritas - SnowBreak",
+		Descripcion: "Tus estaciones favoritas guardadas en SnowBreak.",
 		Activa:      "favoritos",
 		Estaciones:  lista,
 		Usuario:     u,
@@ -58,7 +58,7 @@ func (a *App) FavoritoToggle(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	esFav, err := a.FavoritoSvc.Toggle(u.ID, id)
+	esFav, err := a.FavoritoSvc.Toggle(r.Context(), u.ID, id)
 	if err != nil {
 		log.Printf("ERROR toggle favorito: %v", err)
 		http.Error(w, "error interno del servidor", http.StatusInternalServerError)

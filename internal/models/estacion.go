@@ -2,7 +2,8 @@ package models
 
 // Estacion representa una estación de esquí que aparece en el catálogo
 // y en las fichas individuales. Todos los campos se leen/escriben desde
-// la tabla `estaciones` de la base de datos SQLite.
+// la tabla `stations` de PostgreSQL (los nombres de columna en SQL están
+// en inglés; en Go conservamos los identificadores en español).
 type Estacion struct {
 	ID             int64
 	Nombre         string

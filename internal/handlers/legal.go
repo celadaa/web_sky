@@ -19,15 +19,15 @@ type datosLegal struct {
 
 func (a *App) AvisoLegal(w http.ResponseWriter, r *http.Request) {
 	render(w, r, a.Plantillas, "legal", datosLegal{
-		Titulo:      "Aviso legal - Snowbreak",
-		Descripcion: "Información legal de Snowbreak.",
+		Titulo:      "Aviso legal - SnowBreak",
+		Descripcion: "Información legal de SnowBreak.",
 		Heading:     "Aviso legal",
 		Intro:       "Información básica sobre este sitio web académico y su alcance.",
 		Sections: []legalSection{
 			{
 				Title: "Titularidad del sitio",
 				Paragraphs: []string{
-					"Snowbreak es un proyecto académico desarrollado con fines docentes dentro de la asignatura de Sistemas Web.",
+					"SnowBreak es un proyecto académico desarrollado con fines docentes dentro de la asignatura de Sistemas Web.",
 					"El contenido del sitio se ofrece como demostración técnica y no constituye un servicio comercial real.",
 				},
 			},
@@ -45,8 +45,8 @@ func (a *App) AvisoLegal(w http.ResponseWriter, r *http.Request) {
 
 func (a *App) PoliticaPrivacidad(w http.ResponseWriter, r *http.Request) {
 	render(w, r, a.Plantillas, "legal", datosLegal{
-		Titulo:      "Política de privacidad - Snowbreak",
-		Descripcion: "Política de privacidad de Snowbreak.",
+		Titulo:      "Política de privacidad - SnowBreak",
+		Descripcion: "Política de privacidad de SnowBreak.",
 		Heading:     "Política de privacidad",
 		Intro:       "Resumen del tratamiento de datos dentro de este proyecto académico.",
 		Sections: []legalSection{
@@ -71,15 +71,15 @@ func (a *App) PoliticaPrivacidad(w http.ResponseWriter, r *http.Request) {
 
 func (a *App) PoliticaCookies(w http.ResponseWriter, r *http.Request) {
 	render(w, r, a.Plantillas, "legal", datosLegal{
-		Titulo:      "Política de cookies - Snowbreak",
-		Descripcion: "Política de cookies de Snowbreak.",
+		Titulo:      "Política de cookies - SnowBreak",
+		Descripcion: "Política de cookies de SnowBreak.",
 		Heading:     "Política de cookies",
 		Intro:       "Uso de cookies técnicas dentro de la aplicación.",
 		Sections: []legalSection{
 			{
 				Title: "Cookies necesarias",
 				Paragraphs: []string{
-					"Snowbreak utiliza una cookie de sesión para mantener al usuario autenticado tras iniciar sesión.",
+					"SnowBreak utiliza una cookie de sesión para mantener al usuario autenticado tras iniciar sesión.",
 					"Esta cookie es técnica y necesaria para funcionalidades como favoritos, cambio de contraseña y panel de administración.",
 				},
 			},

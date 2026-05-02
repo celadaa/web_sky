@@ -26,14 +26,14 @@ func (a *App) Forfaits(w http.ResponseWriter, r *http.Request) {
 	if u != nil {
 		uid = u.ID
 	}
-	lista, err := a.EstacionSvc.Listar(uid)
+	lista, err := a.EstacionSvc.Listar(r.Context(), uid)
 	if err != nil {
 		log.Printf("ERROR listar forfaits: %v", err)
 		http.Error(w, "error interno", http.StatusInternalServerError)
 		return
 	}
 	render(w, r, a.Plantillas, "forfaits", datosForfaits{
-		Titulo:      "Comprar Forfaits - Snowbreak",
+		Titulo:      "Comprar Forfaits - SnowBreak",
 		Descripcion: "Compra forfaits de día para las estaciones de esquí del Pirineo y Sierra Nevada.",
 		Activa:      "forfaits",
 		Estaciones:  lista,
@@ -56,7 +56,7 @@ type datosCesta struct {
 // de los datos persistidos en localStorage.
 func (a *App) Cesta(w http.ResponseWriter, r *http.Request) {
 	render(w, r, a.Plantillas, "cesta", datosCesta{
-		Titulo:      "Tu cesta - Snowbreak",
+		Titulo:      "Tu cesta - SnowBreak",
 		Descripcion: "Revisa los forfaits añadidos a tu cesta de la compra.",
 		Activa:      "cesta",
 		Usuario:     a.UsuarioActual(r),

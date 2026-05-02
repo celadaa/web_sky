@@ -1,23 +1,25 @@
 // Package services implementa la lógica de negocio de Snowbreak.
-// Los handlers llaman a los servicios, nunca a los repositorios directamente.
+// Los handlers llaman a los servicios; los servicios llaman a los
+// repositorios. Toda operación que toque la BD recibe context.Context.
 package services
 
 import (
+	"context"
 	"crypto/rand"
-	"crypto/sha256"
 	"database/sql"
-	"encoding/hex"
 	"errors"
 	"fmt"
 	"regexp"
 	"strings"
 	"unicode/utf8"
 
+	"golang.org/x/crypto/bcrypt"
+
 	"skihub/internal/models"
 	"skihub/internal/repository"
 )
 
-// Errores de negocio que el handler traducirá a mensajes para el usuario.
+// Errores de negocio que el handler traduce a mensajes para el usuario.
 var (
 	ErrNombreInvalido   = errors.New("el nombre debe tener entre 2 y 60 caracteres")
 	ErrEmailInvalido    = errors.New("el correo electrónico no es válido")
@@ -33,8 +35,12 @@ var (
 
 var reEmail = regexp.MustCompile(`^[^\s@]+@[^\s@]+\.[^\s@]+$`)
 
-// UsuarioService ofrece operaciones de negocio sobre usuarios:
-// registro, validación y hash de contraseña.
+// bcryptCost es el factor de coste usado por bcrypt. 12 es un valor
+// razonable en hardware actual (~250ms por hash). Se puede subir a 14
+// para mayor seguridad si se demuestra que la latencia es aceptable.
+const bcryptCost = 12
+
+// UsuarioService ofrece operaciones de negocio sobre usuarios.
 type UsuarioService struct {
 	Repo *repository.UsuarioRepo
 }
@@ -44,7 +50,7 @@ func NuevoUsuarioService(repo *repository.UsuarioRepo) *UsuarioService {
 	return &UsuarioService{Repo: repo}
 }
 
-// DatosRegistro agrupa los campos que llegan del formulario.
+// DatosRegistro agrupa los campos del formulario de registro.
 type DatosRegistro struct {
 	Nombre    string
 	Email     string
@@ -52,9 +58,9 @@ type DatosRegistro struct {
 	Password2 string
 }
 
-// Registrar valida los datos del formulario, genera el hash de la contraseña
-// y guarda el usuario en la BD. Devuelve un error de negocio si algo falla.
-func (s *UsuarioService) Registrar(d DatosRegistro) (*models.Usuario, error) {
+// Registrar valida los datos del formulario, hashea la contraseña con
+// bcrypt y persiste el usuario.
+func (s *UsuarioService) Registrar(ctx context.Context, d DatosRegistro) (*models.Usuario, error) {
 	nombre := strings.TrimSpace(d.Nombre)
 	email := strings.ToLower(strings.TrimSpace(d.Email))
 
@@ -81,7 +87,7 @@ func (s *UsuarioService) Registrar(d DatosRegistro) (*models.Usuario, error) {
 		Email:        email,
 		PasswordHash: hash,
 	}
-	if err := s.Repo.Crear(u); err != nil {
+	if err := s.Repo.Crear(ctx, u); err != nil {
 		if errors.Is(err, repository.ErrEmailYaRegistrado) {
 			return nil, ErrEmailYaExiste
 		}
@@ -90,43 +96,28 @@ func (s *UsuarioService) Registrar(d DatosRegistro) (*models.Usuario, error) {
 	return u, nil
 }
 
-// HashPassword genera un hash SHA-256 con salt aleatorio de 16 bytes.
-// Formato de salida: "salt_hex$hash_hex". Para un sistema en producción se
-// usaría bcrypt o argon2id; para esta PEC académica es suficiente.
+// HashPassword genera un hash bcrypt con el coste configurado.
 //
-// Exportado (mayúscula) para que el arranque pueda sembrar el admin por
-// defecto sin tocar repositorios directamente.
+// Exportado para que el bootstrap del admin pueda generar el hash sin
+// pasar por el flujo de registro.
 func HashPassword(pwd string) (string, error) {
-	salt := make([]byte, 16)
-	if _, err := rand.Read(salt); err != nil {
+	b, err := bcrypt.GenerateFromPassword([]byte(pwd), bcryptCost)
+	if err != nil {
 		return "", err
 	}
-	h := sha256.New()
-	h.Write(salt)
-	h.Write([]byte(pwd))
-	sum := h.Sum(nil)
-	return hex.EncodeToString(salt) + "$" + hex.EncodeToString(sum), nil
+	return string(b), nil
 }
 
-// VerificarPassword comprueba si la contraseña en claro coincide con el hash guardado.
+// VerificarPassword comprueba si la contraseña en claro coincide con el
+// hash bcrypt almacenado. Devuelve false ante cualquier discrepancia,
+// incluyendo hashes mal formados.
 func VerificarPassword(pwd, almacenado string) bool {
-	partes := strings.Split(almacenado, "$")
-	if len(partes) != 2 {
-		return false
-	}
-	salt, err := hex.DecodeString(partes[0])
-	if err != nil {
-		return false
-	}
-	h := sha256.New()
-	h.Write(salt)
-	h.Write([]byte(pwd))
-	return hex.EncodeToString(h.Sum(nil)) == partes[1]
+	return bcrypt.CompareHashAndPassword([]byte(almacenado), []byte(pwd)) == nil
 }
 
-// Existe comprueba si un email ya está registrado (utilidad).
-func (s *UsuarioService) Existe(email string) (bool, error) {
-	_, err := s.Repo.BuscarPorEmail(email)
+// Existe comprueba si un email ya está registrado.
+func (s *UsuarioService) Existe(ctx context.Context, email string) (bool, error) {
+	_, err := s.Repo.BuscarPorEmail(ctx, email)
 	if err == nil {
 		return true, nil
 	}
@@ -136,14 +127,13 @@ func (s *UsuarioService) Existe(email string) (bool, error) {
 	return false, err
 }
 
-// IniciarSesion valida email y contraseña; devuelve el usuario autenticado
-// o ErrCredenciales si algo no cuadra.
-func (s *UsuarioService) IniciarSesion(email, password string) (*models.Usuario, error) {
+// IniciarSesion valida email y contraseña.
+func (s *UsuarioService) IniciarSesion(ctx context.Context, email, password string) (*models.Usuario, error) {
 	email = strings.ToLower(strings.TrimSpace(email))
 	if email == "" || password == "" {
 		return nil, ErrCredenciales
 	}
-	u, err := s.Repo.BuscarPorEmail(email)
+	u, err := s.Repo.BuscarPorEmail(ctx, email)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return nil, ErrCredenciales
@@ -156,34 +146,33 @@ func (s *UsuarioService) IniciarSesion(email, password string) (*models.Usuario,
 	return u, nil
 }
 
-// Listar devuelve todos los usuarios. Expuesto para el panel admin.
-func (s *UsuarioService) Listar() ([]models.Usuario, error) {
-	return s.Repo.Listar()
+// Listar devuelve todos los usuarios (panel admin).
+func (s *UsuarioService) Listar(ctx context.Context) ([]models.Usuario, error) {
+	return s.Repo.Listar(ctx)
 }
 
-// Contar devuelve cuántos usuarios hay registrados.
-func (s *UsuarioService) Contar() (int, error) {
-	return s.Repo.Contar()
+// Contar devuelve el número total de usuarios.
+func (s *UsuarioService) Contar(ctx context.Context) (int, error) {
+	return s.Repo.Contar(ctx)
 }
 
-// ObtenerPorID expone la búsqueda por id al handler admin.
-func (s *UsuarioService) ObtenerPorID(id int64) (*models.Usuario, error) {
-	return s.Repo.ObtenerPorID(id)
+// ObtenerPorID devuelve la ficha completa.
+func (s *UsuarioService) ObtenerPorID(ctx context.Context, id int64) (*models.Usuario, error) {
+	return s.Repo.ObtenerPorID(ctx, id)
 }
 
-// Borrar elimina un usuario. Salvaguardas:
-//   - no se puede borrar uno mismo (actorID == id)
-//   - no se puede borrar el último administrador que quede.
-func (s *UsuarioService) Borrar(actorID, id int64) error {
+// Borrar elimina un usuario con salvaguardas (no auto-borrado, no
+// borrar al último administrador).
+func (s *UsuarioService) Borrar(ctx context.Context, actorID, id int64) error {
 	if actorID == id {
 		return ErrBorrarseASiMismo
 	}
-	obj, err := s.Repo.ObtenerPorID(id)
+	obj, err := s.Repo.ObtenerPorID(ctx, id)
 	if err != nil {
 		return err
 	}
 	if obj.EsAdmin {
-		nAdmins, err := s.Repo.ContarAdmins()
+		nAdmins, err := s.Repo.ContarAdmins(ctx)
 		if err != nil {
 			return err
 		}
@@ -191,13 +180,13 @@ func (s *UsuarioService) Borrar(actorID, id int64) error {
 			return ErrUltimoAdmin
 		}
 	}
-	return s.Repo.Borrar(id)
+	return s.Repo.Borrar(ctx, id)
 }
 
-// ResetPassword genera una contraseña aleatoria nueva de 12 caracteres,
-// actualiza el hash del usuario y la devuelve en claro para mostrarla UNA
-// sola vez al admin (el usuario afectado deberá cambiarla al volver a entrar).
-func (s *UsuarioService) ResetPassword(id int64) (string, error) {
+// ResetPassword genera una contraseña aleatoria nueva, la hashea con
+// bcrypt y la guarda. Devuelve la contraseña en claro UNA sola vez al
+// admin para que la transmita al usuario.
+func (s *UsuarioService) ResetPassword(ctx context.Context, id int64) (string, error) {
 	nueva, err := generarPasswordAleatoria(12)
 	if err != nil {
 		return "", err
@@ -206,17 +195,15 @@ func (s *UsuarioService) ResetPassword(id int64) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	if err := s.Repo.ActualizarPasswordHash(id, hash); err != nil {
+	if err := s.Repo.ActualizarPasswordHash(ctx, id, hash); err != nil {
 		return "", err
 	}
 	return nueva, nil
 }
 
-// CambiarPassword permite a un usuario cambiar su propia contraseña.
-// Verifica primero la contraseña actual, exige que la nueva cumpla los
-// mismos requisitos que en el registro y que coincida con la confirmación.
-func (s *UsuarioService) CambiarPassword(id int64, actual, nueva, nueva2 string) error {
-	u, err := s.Repo.ObtenerPorID(id)
+// CambiarPassword permite a un usuario cambiar su contraseña.
+func (s *UsuarioService) CambiarPassword(ctx context.Context, id int64, actual, nueva, nueva2 string) error {
+	u, err := s.Repo.ObtenerPorID(ctx, id)
 	if err != nil {
 		return err
 	}
@@ -236,18 +223,40 @@ func (s *UsuarioService) CambiarPassword(id int64, actual, nueva, nueva2 string)
 	if err != nil {
 		return fmt.Errorf("generando hash: %w", err)
 	}
-	return s.Repo.ActualizarPasswordHash(id, hash)
+	return s.Repo.ActualizarPasswordHash(ctx, id, hash)
 }
 
-// ToggleAdmin alterna el rol administrador. Si quitar admin dejaría el
-// sistema sin administradores, devuelve ErrUltimoAdmin.
-func (s *UsuarioService) ToggleAdmin(id int64) (bool, error) {
-	u, err := s.Repo.ObtenerPorID(id)
+// ActualizarDatos cambia nombre y/o email validando los formatos. No
+// permite tocar contraseña ni rol (esos tienen métodos dedicados).
+// Devuelve ErrEmailYaExiste si el nuevo email pertenece a otra cuenta.
+func (s *UsuarioService) ActualizarDatos(ctx context.Context, id int64, nombre, email string) error {
+	nombre = strings.TrimSpace(nombre)
+	email = strings.ToLower(strings.TrimSpace(email))
+
+	if n := utf8.RuneCountInString(nombre); n < 2 || n > 60 {
+		return ErrNombreInvalido
+	}
+	if !reEmail.MatchString(email) || len(email) > 120 {
+		return ErrEmailInvalido
+	}
+
+	if err := s.Repo.ActualizarDatos(ctx, id, nombre, email); err != nil {
+		if errors.Is(err, repository.ErrEmailYaRegistrado) {
+			return ErrEmailYaExiste
+		}
+		return err
+	}
+	return nil
+}
+
+// ToggleAdmin alterna el rol administrador.
+func (s *UsuarioService) ToggleAdmin(ctx context.Context, id int64) (bool, error) {
+	u, err := s.Repo.ObtenerPorID(ctx, id)
 	if err != nil {
 		return false, err
 	}
 	if u.EsAdmin {
-		nAdmins, err := s.Repo.ContarAdmins()
+		nAdmins, err := s.Repo.ContarAdmins(ctx)
 		if err != nil {
 			return false, err
 		}
@@ -256,7 +265,7 @@ func (s *UsuarioService) ToggleAdmin(id int64) (bool, error) {
 		}
 	}
 	nuevo := !u.EsAdmin
-	if err := s.Repo.ActualizarEsAdmin(id, nuevo); err != nil {
+	if err := s.Repo.ActualizarEsAdmin(ctx, id, nuevo); err != nil {
 		return u.EsAdmin, err
 	}
 	return nuevo, nil

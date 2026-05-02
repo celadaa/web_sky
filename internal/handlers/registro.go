@@ -36,8 +36,8 @@ func (a *App) Registro(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
 	case http.MethodGet:
 		a.mostrarFormulario(w, r, datosRegistro{
-			Titulo:      "Crear cuenta - Snowbreak",
-			Descripcion: "Regístrate en Snowbreak.",
+			Titulo:      "Crear cuenta - SnowBreak",
+			Descripcion: "Regístrate en SnowBreak.",
 			Activa:      "registro",
 			Usuario:     a.UsuarioActual(r),
 		})
@@ -67,12 +67,12 @@ func (a *App) procesarRegistro(w http.ResponseWriter, r *http.Request) {
 		Password2: r.FormValue("password2"),
 	}
 
-	u, err := a.UsuarioSvc.Registrar(datos)
+	u, err := a.UsuarioSvc.Registrar(r.Context(), datos)
 	if err != nil {
 		if esErrorDeValidacion(err) {
 			a.mostrarFormulario(w, r, datosRegistro{
-				Titulo:      "Crear cuenta - Snowbreak",
-				Descripcion: "Regístrate en Snowbreak.",
+				Titulo:      "Crear cuenta - SnowBreak",
+				Descripcion: "Regístrate en SnowBreak.",
 				Activa:      "registro",
 				Error:       err.Error(),
 				Form:        formRegistro{Nombre: datos.Nombre, Email: datos.Email},
@@ -86,8 +86,8 @@ func (a *App) procesarRegistro(w http.ResponseWriter, r *http.Request) {
 	}
 
 	render(w, r, a.Plantillas, "registro_ok", datosRegistroOK{
-		Titulo:      "Registro completado - Snowbreak",
-		Descripcion: "Tu cuenta se ha creado correctamente en Snowbreak.",
+		Titulo:      "Registro completado - SnowBreak",
+		Descripcion: "Tu cuenta se ha creado correctamente en SnowBreak.",
 		Activa:      "registro",
 		Nombre:      u.Nombre,
 		Email:       u.Email,

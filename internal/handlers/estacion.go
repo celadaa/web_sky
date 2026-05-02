@@ -28,29 +28,28 @@ type datosEstacion struct {
 }
 
 // Estaciones responde a GET /estaciones con el listado completo.
-// Si hay usuario autenticado, marca las que son favoritas suyas.
 func (a *App) Estaciones(w http.ResponseWriter, r *http.Request) {
 	u := a.UsuarioActual(r)
 	var uid int64
 	if u != nil {
 		uid = u.ID
 	}
-	lista, err := a.EstacionSvc.Listar(uid)
+	lista, err := a.EstacionSvc.Listar(r.Context(), uid)
 	if err != nil {
 		log.Printf("ERROR listar estaciones: %v", err)
 		http.Error(w, "error interno", http.StatusInternalServerError)
 		return
 	}
 	render(w, r, a.Plantillas, "estaciones", datosEstaciones{
-		Titulo:      "Estaciones - Snowbreak",
-		Descripcion: "Listado de estaciones de esquí disponibles en Snowbreak.",
+		Titulo:      "Estaciones - SnowBreak",
+		Descripcion: "Listado de estaciones de esquí disponibles en SnowBreak.",
 		Activa:      "estaciones",
 		Estaciones:  lista,
 		Usuario:     u,
 	})
 }
 
-// Estacion responde a GET /estacion/{id} con la ficha de una estación concreta.
+// Estacion responde a GET /estacion/{id} con la ficha de una estación.
 func (a *App) Estacion(w http.ResponseWriter, r *http.Request) {
 	idStr := strings.TrimPrefix(r.URL.Path, "/estacion/")
 	if idStr == "" || strings.Contains(idStr, "/") {
@@ -67,7 +66,7 @@ func (a *App) Estacion(w http.ResponseWriter, r *http.Request) {
 	if u != nil {
 		uid = u.ID
 	}
-	e, err := a.EstacionSvc.Obtener(id, uid)
+	e, err := a.EstacionSvc.Obtener(r.Context(), id, uid)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			a.NotFound(w, r)
@@ -78,7 +77,7 @@ func (a *App) Estacion(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	render(w, r, a.Plantillas, "estacion", datosEstacion{
-		Titulo:      e.Nombre + " - Snowbreak",
+		Titulo:      e.Nombre + " - SnowBreak",
 		Descripcion: "Estado y condiciones de la estación de esquí de " + e.Nombre + ".",
 		Activa:      "estaciones",
 		Estacion:    e,

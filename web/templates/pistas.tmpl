@@ -2,8 +2,7 @@
 <section class="hero hero--home">
   <h1 class="hero__title">Estado de pistas en directo</h1>
   <p class="hero__subtitle">
-    Datos actualizados desde <a href="https://www.infonieve.es" rel="noopener" target="_blank" class="hero__inline-link">infonieve.es</a>.
-    Comparte tu ubicación para ver primero las estaciones más cercanas.
+    Pistas abiertas, kilómetros esquiables y espesores de nieve actualizados desde <a href="https://www.infonieve.es" rel="noopener" target="_blank" class="hero__inline-link">infonieve.es</a>. Comparte tu ubicación para priorizar las estaciones más cercanas.
   </p>
   <ul class="hero__pills" id="pistas-meta" hidden>
     <li class="hero__pill" id="pistas-meta-ubicacion">Ubicación: —</li>
@@ -16,7 +15,7 @@
   <div class="filters__header">
     <div>
       <h2>Pistas cercanas a ti</h2>
-      <p id="pistas-resumen">Activa la geolocalización para ordenar por proximidad.</p>
+      <p id="pistas-resumen">Activa la geolocalización para ordenarlas por proximidad.</p>
     </div>
     <div class="filters__controls">
       <button type="button" class="filters__view-btn filters__view-btn--active" data-pistas-recargar aria-label="Volver a pedir mi ubicación">
@@ -49,11 +48,18 @@
     </form>
   </div>
 
-  <div id="pistas-estado" class="pistas-state" role="status" aria-live="polite">
-    <p>Pidiendo permiso de ubicación…</p>
+  <div id="pistas-estado" class="pistas-state pistas-state--cargando" role="status" aria-live="polite">
+    <p class="pistas-state__msg"><span class="pistas-state__spinner" aria-hidden="true"></span>Consultando el estado actualizado de las pistas…</p>
   </div>
 
-  <ul class="grid-cards" id="pistas-grid" hidden></ul>
+  <ul class="grid-cards" id="pistas-grid" aria-busy="true">
+    <li class="pista-card-item"><div class="skeleton skeleton--card" aria-hidden="true"></div></li>
+    <li class="pista-card-item"><div class="skeleton skeleton--card" aria-hidden="true"></div></li>
+    <li class="pista-card-item"><div class="skeleton skeleton--card" aria-hidden="true"></div></li>
+    <li class="pista-card-item"><div class="skeleton skeleton--card" aria-hidden="true"></div></li>
+    <li class="pista-card-item"><div class="skeleton skeleton--card" aria-hidden="true"></div></li>
+    <li class="pista-card-item"><div class="skeleton skeleton--card" aria-hidden="true"></div></li>
+  </ul>
 </section>
 
 <template id="tpl-pista-card">

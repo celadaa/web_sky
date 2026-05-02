@@ -1,44 +1,32 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 280 64" role="img" aria-label="Snowbreak">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 72" role="img" aria-label="SnowBreak">
   <defs>
-    <linearGradient id="sb-mountain" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0%" stop-color="#3b82f6"/>
-      <stop offset="60%" stop-color="#1e40af"/>
-      <stop offset="100%" stop-color="#10243b"/>
+    <linearGradient id="sb-mark" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#38bdf8"/>
+      <stop offset="55%" stop-color="#1d4ed8"/>
+      <stop offset="100%" stop-color="#0b1d3a"/>
     </linearGradient>
     <linearGradient id="sb-snow" x1="0" y1="0" x2="0" y2="1">
       <stop offset="0%" stop-color="#ffffff"/>
-      <stop offset="100%" stop-color="#bfdbfe"/>
+      <stop offset="100%" stop-color="#dbeafe"/>
     </linearGradient>
     <linearGradient id="sb-text" x1="0" y1="0" x2="1" y2="0">
-      <stop offset="0%" stop-color="#0ea5e9"/>
-      <stop offset="55%" stop-color="#1e40af"/>
-      <stop offset="100%" stop-color="#10243b"/>
+      <stop offset="0%" stop-color="#0f172a"/>
+      <stop offset="60%" stop-color="#1e3a8a"/>
+      <stop offset="100%" stop-color="#0ea5e9"/>
     </linearGradient>
   </defs>
-
-  <!-- Mountain mass -->
-  <path d="M4 50 L24 14 L34 30 L44 18 L60 50 Z" fill="url(#sb-mountain)"/>
-  <!-- Snow caps -->
-  <path d="M18 22 L24 14 L28 20 L26 24 Z" fill="url(#sb-snow)"/>
-  <path d="M40 22 L44 18 L50 28 L46 26 Z" fill="url(#sb-snow)"/>
-
-  <!-- Speed swoosh under the mountain (orange accent) -->
-  <path d="M6 56 Q30 60 60 54 L62 56 Q34 62 6 58 Z" fill="#f97316" opacity="0.9"/>
-
-  <!-- Skier silhouette -->
-  <g fill="#0b1728">
-    <circle cx="34" cy="34" r="2.4"/>
-    <path d="M30 36 L36 34 L40 38 L38 41 L34 39 L32 42 Z"/>
-    <path d="M28 46 L42 44" stroke="#0b1728" stroke-width="1.5" stroke-linecap="round" fill="none"/>
-    <path d="M37 33 L44 30" stroke="#0b1728" stroke-width="1.2" stroke-linecap="round" fill="none"/>
+  <rect x="2" y="6" width="60" height="60" rx="16" fill="url(#sb-mark)"/>
+  <path d="M10 54 L24 28 L34 42 L44 22 L56 54 Z" fill="#0b1d3a" opacity="0.55"/>
+  <path d="M14 54 L26 32 L34 44 L46 26 L54 54 Z" fill="url(#sb-snow)"/>
+  <path d="M22 38 L26 32 L30 38 L28 40 L26 38 Z" fill="#ffffff"/>
+  <path d="M42 32 L46 26 L52 36 L48 34 L46 36 Z" fill="#ffffff"/>
+  <path d="M8 60 Q32 64 56 58 L56 62 Q32 66 8 62 Z" fill="#fb923c"/>
+  <g stroke="#ffffff" stroke-width="1.4" stroke-linecap="round" opacity="0.85">
+    <line x1="50" y1="14" x2="50" y2="22"/>
+    <line x1="46" y1="18" x2="54" y2="18"/>
+    <line x1="47.5" y1="15.5" x2="52.5" y2="20.5"/>
+    <line x1="52.5" y1="15.5" x2="47.5" y2="20.5"/>
   </g>
-
-  <!-- Brand text -->
-  <text x="74" y="44"
-        font-family="'Segoe UI','Helvetica Neue',Arial,sans-serif"
-        font-size="30"
-        font-weight="900"
-        font-style="italic"
-        fill="url(#sb-text)"
-        letter-spacing="0.5">snowbreak</text>
+  <text x="76" y="40" font-family="'Segoe UI','Helvetica Neue',Inter,Arial,sans-serif" font-size="26" font-weight="800" fill="url(#sb-text)" letter-spacing="-0.4">SnowBreak</text>
+  <text x="76" y="58" font-family="'Segoe UI','Helvetica Neue',Inter,Arial,sans-serif" font-size="9.5" font-weight="600" fill="#64748b" letter-spacing="3.6">ESTACIONES &#183; NIEVE &#183; FORFAITS</text>
 </svg>

@@ -1,13 +1,39 @@
+// Package repository — acceso a la tabla `stations` de PostgreSQL.
+//
+// Mapeo de columnas SQL (inglés) ↔ campos del modelo (español):
+//
+//	id              ↔ ID
+//	name            ↔ Nombre
+//	location        ↔ Ubicacion
+//	distance_km     ↔ Distancia
+//	temperature_c   ↔ Temperatura
+//	snow_base_cm    ↔ NieveBase
+//	snow_new_cm     ↔ NieveNueva
+//	slopes_open     ↔ PistasAbiertas
+//	slopes_total    ↔ PistasTotales
+//	lifts_open      ↔ RemontesOp
+//	lifts_total     ↔ RemontesTot
+//	last_snowfall   ↔ UltimaNevada
+//	altitude        ↔ Altitud
+//	ski_km          ↔ KmEsquiables
+//	difficulty      ↔ Dificultad
+//	phone           ↔ Telefono
+//	image_url       ↔ Imagen
+//	description     ↔ Descripcion
+//	price_adult     ↔ PrecioAdulto
+//	price_child     ↔ PrecioNino
+//	price_senior    ↔ PrecioSenior
 package repository
 
 import (
+	"context"
 	"database/sql"
 	"fmt"
 
 	"skihub/internal/models"
 )
 
-// EstacionRepo lee estaciones de la BD.
+// EstacionRepo lee estaciones de PostgreSQL.
 type EstacionRepo struct {
 	BD *sql.DB
 }
@@ -17,31 +43,45 @@ func NuevoEstacionRepo(bd *sql.DB) *EstacionRepo {
 	return &EstacionRepo{BD: bd}
 }
 
-// ListarPorDistancia devuelve todas las estaciones ordenadas por distancia ascendente.
-func (r *EstacionRepo) ListarPorDistancia() ([]models.Estacion, error) {
-	rows, err := r.BD.Query(`
-		SELECT id, nombre, ubicacion, distancia, temperatura, nieve_base,
-		       nieve_nueva, pistas_abiertas, pistas_totales, remontes_op,
-		       remontes_tot, ultima_nevada, altitud, km_esquiables,
-		       dificultad, telefono, imagen, descripcion,
-		       precio_adulto, precio_nino, precio_senior
-		FROM estaciones
-		ORDER BY distancia ASC
+// columnasEstacion centraliza la lista de columnas para reutilizarla
+// en las queries y mantener el orden coherente con el Scan().
+const columnasEstacion = `
+	id, name, location, distance_km, temperature_c, snow_base_cm,
+	snow_new_cm, slopes_open, slopes_total, lifts_open, lifts_total,
+	last_snowfall, altitude, ski_km, difficulty, phone, image_url,
+	description, price_adult, price_child, price_senior
+`
+
+// scanEstacion vuelca la fila actual en una models.Estacion.
+func scanEstacion(scanner interface {
+	Scan(...any) error
+}, e *models.Estacion) error {
+	return scanner.Scan(
+		&e.ID, &e.Nombre, &e.Ubicacion, &e.Distancia,
+		&e.Temperatura, &e.NieveBase, &e.NieveNueva,
+		&e.PistasAbiertas, &e.PistasTotales, &e.RemontesOp, &e.RemontesTot,
+		&e.UltimaNevada, &e.Altitud, &e.KmEsquiables, &e.Dificultad,
+		&e.Telefono, &e.Imagen, &e.Descripcion,
+		&e.PrecioAdulto, &e.PrecioNino, &e.PrecioSenior,
+	)
+}
+
+// ListarPorDistancia devuelve todas las estaciones ordenadas por distancia.
+func (r *EstacionRepo) ListarPorDistancia(ctx context.Context) ([]models.Estacion, error) {
+	rows, err := r.BD.QueryContext(ctx, `
+		SELECT `+columnasEstacion+`
+		FROM stations
+		ORDER BY distance_km ASC, id ASC
 	`)
 	if err != nil {
-		return nil, fmt.Errorf("query estaciones: %w", err)
+		return nil, fmt.Errorf("query stations: %w", err)
 	}
 	defer rows.Close()
 
 	var lista []models.Estacion
 	for rows.Next() {
 		var e models.Estacion
-		if err := rows.Scan(&e.ID, &e.Nombre, &e.Ubicacion, &e.Distancia,
-			&e.Temperatura, &e.NieveBase, &e.NieveNueva,
-			&e.PistasAbiertas, &e.PistasTotales, &e.RemontesOp, &e.RemontesTot,
-			&e.UltimaNevada, &e.Altitud, &e.KmEsquiables, &e.Dificultad,
-			&e.Telefono, &e.Imagen, &e.Descripcion,
-			&e.PrecioAdulto, &e.PrecioNino, &e.PrecioSenior); err != nil {
+		if err := scanEstacion(rows, &e); err != nil {
 			return nil, err
 		}
 		lista = append(lista, e)
@@ -50,21 +90,13 @@ func (r *EstacionRepo) ListarPorDistancia() ([]models.Estacion, error) {
 }
 
 // ObtenerPorID devuelve la ficha completa de una estación.
-func (r *EstacionRepo) ObtenerPorID(id int64) (*models.Estacion, error) {
+func (r *EstacionRepo) ObtenerPorID(ctx context.Context, id int64) (*models.Estacion, error) {
 	e := &models.Estacion{}
-	err := r.BD.QueryRow(`
-		SELECT id, nombre, ubicacion, distancia, temperatura, nieve_base,
-		       nieve_nueva, pistas_abiertas, pistas_totales, remontes_op,
-		       remontes_tot, ultima_nevada, altitud, km_esquiables,
-		       dificultad, telefono, imagen, descripcion,
-		       precio_adulto, precio_nino, precio_senior
-		FROM estaciones WHERE id = ?`, id,
-	).Scan(&e.ID, &e.Nombre, &e.Ubicacion, &e.Distancia,
-		&e.Temperatura, &e.NieveBase, &e.NieveNueva,
-		&e.PistasAbiertas, &e.PistasTotales, &e.RemontesOp, &e.RemontesTot,
-		&e.UltimaNevada, &e.Altitud, &e.KmEsquiables, &e.Dificultad,
-		&e.Telefono, &e.Imagen, &e.Descripcion,
-		&e.PrecioAdulto, &e.PrecioNino, &e.PrecioSenior)
+	err := scanEstacion(
+		r.BD.QueryRowContext(ctx,
+			`SELECT `+columnasEstacion+` FROM stations WHERE id = $1`, id),
+		e,
+	)
 	if err != nil {
 		return nil, err
 	}

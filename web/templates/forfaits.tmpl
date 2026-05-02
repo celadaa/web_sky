@@ -1,8 +1,8 @@
 {{define "contenido"}}
 <section class="hero hero--home">
-  <h1 class="hero__title">Comprar Forfaits</h1>
+  <h1 class="hero__title">Tu forfait, listo en un par de clics</h1>
   <p class="hero__subtitle">
-    Elige una estación y disfruta de la nieve al mejor precio. Selecciona fechas, tipo de pase y añádelo a tu cesta en segundos.
+    Elige estación, fechas y tipo de pase. Añade tu forfait a la cesta y olvídate de las colas en taquilla.
   </p>
 </section>
 
@@ -12,7 +12,11 @@
     <li>
       <article class="forfait-station-card">
         <figure class="forfait-station-card__figure">
-          <img src="{{.Imagen}}" alt="Vista de {{.Nombre}}" loading="lazy" class="forfait-station-card__image">
+          <span class="station-cover" data-station="{{.Nombre}}" aria-hidden="true">
+            <svg class="station-cover__icon" width="56" height="56" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 50 L22 22 L32 38 L44 16 L58 50 Z"/><path d="M22 22 L26 28"/><path d="M44 16 L48 22"/></svg>
+            <span class="station-cover__label">{{.Nombre}}</span>
+          </span>
+          {{if .Imagen}}<img src="{{.Imagen}}" alt="Estación de esquí {{.Nombre}}" loading="lazy" class="forfait-station-card__image" onerror="this.remove();">{{end}}
           <span class="forfait-station-card__price-tag">Desde {{printf "%.0f" .PrecioNino}}€/día</span>
         </figure>
         <div class="forfait-station-card__body">

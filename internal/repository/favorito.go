@@ -1,25 +1,30 @@
+// Package repository — relación N:M usuarios ↔ estaciones (tabla `favorites`).
 package repository
 
 import (
+	"context"
 	"database/sql"
 	"fmt"
 
 	"skihub/internal/models"
 )
 
-// FavoritoRepo maneja la tabla `favoritos` (N:M usuarios-estaciones).
+// FavoritoRepo maneja la tabla `favorites`.
 type FavoritoRepo struct {
 	BD *sql.DB
 }
 
+// NuevoFavoritoRepo construye el repositorio.
 func NuevoFavoritoRepo(bd *sql.DB) *FavoritoRepo {
 	return &FavoritoRepo{BD: bd}
 }
 
-// Agregar inserta la relación. Si ya existe (PRIMARY KEY compuesta) no hace nada.
-func (r *FavoritoRepo) Agregar(usuarioID, estacionID int64) error {
-	_, err := r.BD.Exec(
-		`INSERT OR IGNORE INTO favoritos (usuario_id, estacion_id) VALUES (?, ?)`,
+// Agregar inserta la relación. Si ya existe (PK compuesta) no falla.
+func (r *FavoritoRepo) Agregar(ctx context.Context, usuarioID, estacionID int64) error {
+	_, err := r.BD.ExecContext(ctx,
+		`INSERT INTO favorites (user_id, station_id)
+		 VALUES ($1, $2)
+		 ON CONFLICT (user_id, station_id) DO NOTHING`,
 		usuarioID, estacionID,
 	)
 	if err != nil {
@@ -29,31 +34,34 @@ func (r *FavoritoRepo) Agregar(usuarioID, estacionID int64) error {
 }
 
 // Quitar elimina la relación entre usuario y estación.
-func (r *FavoritoRepo) Quitar(usuarioID, estacionID int64) error {
-	_, err := r.BD.Exec(
-		`DELETE FROM favoritos WHERE usuario_id = ? AND estacion_id = ?`,
+func (r *FavoritoRepo) Quitar(ctx context.Context, usuarioID, estacionID int64) error {
+	_, err := r.BD.ExecContext(ctx,
+		`DELETE FROM favorites WHERE user_id = $1 AND station_id = $2`,
 		usuarioID, estacionID,
 	)
 	return err
 }
 
-// Existe comprueba si una estación es favorita de un usuario.
-func (r *FavoritoRepo) Existe(usuarioID, estacionID int64) (bool, error) {
+// Existe comprueba si esa estación es favorita del usuario.
+func (r *FavoritoRepo) Existe(ctx context.Context, usuarioID, estacionID int64) (bool, error) {
 	var uno int
-	err := r.BD.QueryRow(
-		`SELECT 1 FROM favoritos WHERE usuario_id = ? AND estacion_id = ?`,
+	err := r.BD.QueryRowContext(ctx,
+		`SELECT 1 FROM favorites WHERE user_id = $1 AND station_id = $2`,
 		usuarioID, estacionID,
 	).Scan(&uno)
 	if err == sql.ErrNoRows {
 		return false, nil
 	}
-	return err == nil, err
+	if err != nil {
+		return false, err
+	}
+	return true, nil
 }
 
 // IDsDeUsuario devuelve los IDs de las estaciones favoritas del usuario.
-func (r *FavoritoRepo) IDsDeUsuario(usuarioID int64) (map[int64]bool, error) {
-	rows, err := r.BD.Query(
-		`SELECT estacion_id FROM favoritos WHERE usuario_id = ?`, usuarioID,
+func (r *FavoritoRepo) IDsDeUsuario(ctx context.Context, usuarioID int64) (map[int64]bool, error) {
+	rows, err := r.BD.QueryContext(ctx,
+		`SELECT station_id FROM favorites WHERE user_id = $1`, usuarioID,
 	)
 	if err != nil {
 		return nil, err
@@ -71,10 +79,9 @@ func (r *FavoritoRepo) IDsDeUsuario(usuarioID int64) (map[int64]bool, error) {
 }
 
 // ContarPorUsuario devuelve un mapa {usuarioID -> nº de favoritos}.
-// Se usa en el panel de administración.
-func (r *FavoritoRepo) ContarPorUsuario() (map[int64]int, error) {
-	rows, err := r.BD.Query(
-		`SELECT usuario_id, COUNT(*) FROM favoritos GROUP BY usuario_id`,
+func (r *FavoritoRepo) ContarPorUsuario(ctx context.Context) (map[int64]int, error) {
+	rows, err := r.BD.QueryContext(ctx,
+		`SELECT user_id, COUNT(*) FROM favorites GROUP BY user_id`,
 	)
 	if err != nil {
 		return nil, err
@@ -92,18 +99,19 @@ func (r *FavoritoRepo) ContarPorUsuario() (map[int64]int, error) {
 	return mapa, rows.Err()
 }
 
-// ListarDeUsuario devuelve las estaciones favoritas completas del usuario,
-// con un JOIN a la tabla estaciones, ordenadas por fecha de marcado DESC.
-func (r *FavoritoRepo) ListarDeUsuario(usuarioID int64) ([]models.Estacion, error) {
-	rows, err := r.BD.Query(`
-		SELECT e.id, e.nombre, e.ubicacion, e.distancia, e.temperatura,
-		       e.nieve_base, e.nieve_nueva, e.pistas_abiertas, e.pistas_totales,
-		       e.remontes_op, e.remontes_tot, e.ultima_nevada, e.altitud,
-		       e.km_esquiables, e.dificultad, e.telefono, e.imagen, e.descripcion
-		FROM favoritos f
-		JOIN estaciones e ON e.id = f.estacion_id
-		WHERE f.usuario_id = ?
-		ORDER BY f.creada_en DESC
+// ListarDeUsuario devuelve las estaciones favoritas del usuario con
+// JOIN a stations, ordenadas por fecha de marcado descendente.
+func (r *FavoritoRepo) ListarDeUsuario(ctx context.Context, usuarioID int64) ([]models.Estacion, error) {
+	rows, err := r.BD.QueryContext(ctx, `
+		SELECT s.id, s.name, s.location, s.distance_km, s.temperature_c,
+		       s.snow_base_cm, s.snow_new_cm, s.slopes_open, s.slopes_total,
+		       s.lifts_open, s.lifts_total, s.last_snowfall, s.altitude,
+		       s.ski_km, s.difficulty, s.phone, s.image_url, s.description,
+		       s.price_adult, s.price_child, s.price_senior
+		FROM favorites f
+		JOIN stations s ON s.id = f.station_id
+		WHERE f.user_id = $1
+		ORDER BY f.created_at DESC
 	`, usuarioID)
 	if err != nil {
 		return nil, err
@@ -113,11 +121,7 @@ func (r *FavoritoRepo) ListarDeUsuario(usuarioID int64) ([]models.Estacion, erro
 	var lista []models.Estacion
 	for rows.Next() {
 		var e models.Estacion
-		if err := rows.Scan(&e.ID, &e.Nombre, &e.Ubicacion, &e.Distancia,
-			&e.Temperatura, &e.NieveBase, &e.NieveNueva,
-			&e.PistasAbiertas, &e.PistasTotales, &e.RemontesOp, &e.RemontesTot,
-			&e.UltimaNevada, &e.Altitud, &e.KmEsquiables, &e.Dificultad,
-			&e.Telefono, &e.Imagen, &e.Descripcion); err != nil {
+		if err := scanEstacion(rows, &e); err != nil {
 			return nil, err
 		}
 		e.EsFavorita = true

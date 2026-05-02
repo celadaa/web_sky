@@ -7,12 +7,11 @@ import (
 	"skihub/internal/services"
 )
 
-// Nombre de la cookie que transporta el token de sesión.
+// CookieSesion es el nombre de la cookie HttpOnly que transporta el token.
 const CookieSesion = "skihub_session"
 
 // App agrupa las dependencias compartidas que usan todos los handlers:
-// servicios de negocio y cache de plantillas. Inyectarlas aquí evita
-// variables globales y facilita los tests.
+// servicios de negocio y cache de plantillas.
 type App struct {
 	Plantillas  Cache
 	UsuarioSvc  *services.UsuarioService
@@ -20,6 +19,7 @@ type App struct {
 	NoticiaSvc  *services.NoticiaService
 	SesionSvc   *services.SesionService
 	FavoritoSvc *services.FavoritoService
+	PedidoSvc   *services.PedidoService
 	// NieveSvc añade datos en directo de pistas vía infonieve.es.
 	// Es opcional: si es nil, los handlers /api/nieve/* devuelven 503.
 	NieveSvc *services.NieveService
@@ -35,7 +35,7 @@ func (a *App) UsuarioActual(r *http.Request) *models.Usuario {
 	if err != nil {
 		return nil
 	}
-	u, err := a.SesionSvc.UsuarioDeToken(c.Value)
+	u, err := a.SesionSvc.UsuarioDeToken(r.Context(), c.Value)
 	if err != nil || u == nil {
 		return nil
 	}
@@ -43,15 +43,13 @@ func (a *App) UsuarioActual(r *http.Request) *models.Usuario {
 }
 
 // EsAdmin devuelve true si el usuario tiene el rol administrador.
-// El rol se almacena en la columna es_admin de la tabla usuarios.
 func EsAdmin(u *models.Usuario) bool {
 	return u != nil && u.EsAdmin
 }
 
 // requerirAdmin comprueba la sesión y el rol. Devuelve el usuario si es
-// admin; en caso contrario escribe la respuesta adecuada (redirigir a
-// login o 404) y retorna nil. El llamador debe hacer return inmediatamente
-// si recibe nil.
+// admin; en caso contrario escribe la respuesta adecuada y retorna nil.
+// El llamador debe hacer return inmediatamente si recibe nil.
 func (a *App) requerirAdmin(w http.ResponseWriter, r *http.Request) *models.Usuario {
 	u := a.UsuarioActual(r)
 	if u == nil {
