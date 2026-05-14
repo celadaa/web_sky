@@ -7,7 +7,8 @@
 //  3. Aplica las migraciones SQL pendientes (db/migrations/*.sql).
 //  4. Asegura que existe al menos un usuario administrador (bcrypt).
 //  5. Construye servicios + handlers y monta las rutas HTTP.
-//  6. Escucha en el puerto configurado.
+//  6. Encadena middlewares de seguridad (cabeceras, CSP, body limit, CSRF, rate limit).
+//  7. Escucha en el puerto configurado.
 package main
 
 import (
@@ -66,14 +67,15 @@ func main() {
 	}
 
 	// Repositorios
-	usuarioRepo  := repository.NuevoUsuarioRepo(bd)
+	usuarioRepo := repository.NuevoUsuarioRepo(bd)
 	estacionRepo := repository.NuevoEstacionRepo(bd)
 	favoritoRepo := repository.NuevoFavoritoRepo(bd)
-	noticiaRepo  := repository.NuevoNoticiaRepo(bd)
-	sesionRepo   := repository.NuevoSesionRepo(bd)
-	pedidoRepo   := repository.NuevoPedidoRepo(bd)
+	noticiaRepo := repository.NuevoNoticiaRepo(bd)
+	sesionRepo := repository.NuevoSesionRepo(bd)
+	pedidoRepo := repository.NuevoPedidoRepo(bd)
 
-	// Servicios
+	// Servicios + estado de seguridad.
+	sec := handlers.NuevoSec(cfg)
 	app := &handlers.App{
 		UsuarioSvc:  services.NuevoUsuarioService(usuarioRepo),
 		EstacionSvc: services.NuevoEstacionService(estacionRepo, favoritoRepo),
@@ -83,6 +85,8 @@ func main() {
 		PedidoSvc:   services.NuevoPedidoService(pedidoRepo, estacionRepo),
 		// Servicio de pistas en directo (scraping cacheado de infonieve.es).
 		NieveSvc: services.NuevoNieveService(),
+		Cfg:      cfg,
+		Sec:      sec,
 	}
 
 	plantillas, err := handlers.CargarPlantillas(cfg.AppTemplates)
@@ -93,6 +97,12 @@ func main() {
 
 	mux := http.NewServeMux()
 
+	// Rate-limiters específicos de endpoints sensibles. El número son
+	// peticiones/minuto por IP; valores prudentes para uso real con
+	// suficiente margen para usuarios legítimos.
+	rlAuth := sec.LimitarPorIP(10)     // login / registro / cambiar password
+	rlEscritura := sec.LimitarPorIP(20) // toggle favoritos / checkout / parte refresh
+
 	// Páginas
 	mux.HandleFunc("/", app.Home)
 	mux.HandleFunc("/estaciones", app.Estaciones)
@@ -100,32 +110,33 @@ func main() {
 	mux.HandleFunc("/noticias", app.Noticias)
 	mux.HandleFunc("/forfaits", app.Forfaits)
 	mux.HandleFunc("/cesta", app.Cesta)
-	mux.HandleFunc("/registro", app.Registro)
+	mux.Handle("/registro", rlAuth(http.HandlerFunc(app.Registro)))
 	mux.HandleFunc("/legal/aviso-legal", app.AvisoLegal)
 	mux.HandleFunc("/legal/privacidad", app.PoliticaPrivacidad)
 	mux.HandleFunc("/legal/cookies", app.PoliticaCookies)
 
-	// Auth
-	mux.HandleFunc("/login", app.Login)
+	// Auth (rate-limited)
+	mux.Handle("/login", rlAuth(http.HandlerFunc(app.Login)))
 	mux.HandleFunc("/logout", app.Logout)
-	mux.HandleFunc("/cambiar-password", app.CambiarPassword)
+	mux.Handle("/cambiar-password", rlAuth(http.HandlerFunc(app.CambiarPassword)))
 
 	// Favoritos
 	mux.HandleFunc("/favoritos", app.FavoritosPagina)
-	mux.HandleFunc("/favorito/toggle", app.FavoritoToggle)
+	mux.Handle("/favorito/toggle", rlEscritura(http.HandlerFunc(app.FavoritoToggle)))
 
 	// Admin
 	mux.HandleFunc("/admin/usuarios", app.AdminUsuarios)
 	mux.HandleFunc("/admin/usuario/", app.AdminUsuarioDetalle)
-	mux.HandleFunc("/admin/usuarios/borrar", app.AdminBorrarUsuario)
-	mux.HandleFunc("/admin/usuarios/reset", app.AdminResetPassword)
-	mux.HandleFunc("/admin/usuarios/toggle-admin", app.AdminToggleAdmin)
+	mux.Handle("/admin/usuarios/borrar", rlEscritura(http.HandlerFunc(app.AdminBorrarUsuario)))
+	mux.Handle("/admin/usuarios/reset", rlEscritura(http.HandlerFunc(app.AdminResetPassword)))
+	mux.Handle("/admin/usuarios/toggle-admin", rlEscritura(http.HandlerFunc(app.AdminToggleAdmin)))
 
-	// API REST
+	// API REST (la lectura de usuarios queda restringida a admin en el handler)
 	mux.HandleFunc("/api/usuarios", app.ApiUsuarios)
 	mux.HandleFunc("/api/usuarios/", app.ApiUsuario)
 	mux.HandleFunc("/api/estaciones", app.ApiEstaciones)
-	mux.HandleFunc("/api/cesta/checkout", app.ApiCheckout)
+	mux.Handle("/api/estacion/", rlEscritura(http.HandlerFunc(app.ApiParteEstacion)))
+	mux.Handle("/api/cesta/checkout", rlEscritura(http.HandlerFunc(app.ApiCheckout)))
 
 	// Pistas en directo (scraping de infonieve.es, cacheado)
 	mux.HandleFunc("/pistas", app.Pistas)
@@ -136,14 +147,30 @@ func main() {
 	// Estáticos
 	mux.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir(cfg.AppStatic))))
 
+	// Encadenamos middlewares globales. Orden: log → cabeceras → body
+	// limit → CSRF emit (GET) → CSRF verify (POST) → rutas. La verificación
+	// CSRF excluye los métodos seguros automáticamente y los endpoints
+	// JSON con Origin del propio host (Origin same-origin).
+	pila := handlers.Encadenar(mux,
+		logMiddleware,
+		sec.CabecerasSeguridad(),
+		sec.LimitarBody(),
+		sec.EmitirCSRF(),
+		sec.VerificarCSRF(),
+	)
+
 	servidor := &http.Server{
 		Addr:              cfg.AppPort,
-		Handler:           logMiddleware(mux),
+		Handler:           pila,
 		ReadHeaderTimeout: 10 * time.Second,
+		ReadTimeout:       30 * time.Second,
+		WriteTimeout:      30 * time.Second,
 		IdleTimeout:       60 * time.Second,
+		MaxHeaderBytes:    1 << 14, // 16 KiB de cabeceras como máximo
 	}
 
-	log.Printf("Servidor escuchando en http://localhost%s", cfg.AppPort)
+	log.Printf("Servidor escuchando en http://localhost%s (env=%s, cookieSecure=%v)",
+		cfg.AppPort, cfg.AppEnv, cfg.CookieSecure)
 	if err := servidor.ListenAndServe(); err != nil {
 		log.Fatalf("servidor caído: %v", err)
 	}

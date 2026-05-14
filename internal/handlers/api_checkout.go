@@ -69,6 +69,7 @@ func (a *App) ApiCheckout(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		switch {
 		case errors.Is(err, services.ErrCestaVacia),
+			errors.Is(err, services.ErrCestaDemasiadoGrande),
 			errors.Is(err, services.ErrItemEstacion),
 			errors.Is(err, services.ErrItemTipoPase),
 			errors.Is(err, services.ErrItemCantidad),

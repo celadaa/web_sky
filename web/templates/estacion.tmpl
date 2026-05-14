@@ -20,6 +20,7 @@
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#16A34A" stroke-width="2"><polygon points="3 11 22 2 13 21 11 13 3 11"/></svg>
           A {{printf "%.0f" .Distancia}} km de tu ubicación
         </p>
+        <span class="status-badge status-badge--{{.EstadoClase}} status-badge--lg">{{.EstadoTexto}}</span>
       </div>
     </div>
     {{if $.Usuario}}
@@ -54,24 +55,59 @@
       <p>{{.Descripcion}}</p>
     </article>
 
-    <section class="conditions">
-      <h2>Condiciones actuales</h2>
+    <section class="parte" data-parte data-estacion-id="{{.ID}}">
+      <header class="parte__header">
+        <div>
+          <h2 class="parte__title">Parte de nieve</h2>
+          <p class="parte__sub">Datos del estado de pistas, remontes y condiciones meteorológicas.</p>
+        </div>
+        <div class="parte__update">
+          <span class="parte__update-tag" data-parte-tag>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            Parte actualizado a las {{.ParteHora}}
+          </span>
+          <span class="parte__update-fecha" data-parte-fecha>Última actualización: {{.ParteActualizadoTexto}}</span>
+          <button type="button" class="parte__refresh" data-parte-refresh aria-label="Actualizar parte">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 0 1 15-6.7L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-15 6.7L3 16"/><path d="M3 21v-5h5"/></svg>
+            Actualizar parte
+          </button>
+        </div>
+      </header>
+
+      <div class="parte__estado">
+        <div class="parte__estado-card parte__estado-card--{{.EstadoClase}}">
+          <span class="parte__estado-label">Estado general</span>
+          <span class="parte__estado-valor" data-parte-estado>{{.EstadoTexto}}</span>
+        </div>
+        <div class="parte__estado-mini">
+          <span class="parte__estado-mini-label">Pistas</span>
+          <span class="parte__estado-mini-valor" data-parte-pistas>{{.PistasAbiertas}}/{{.PistasTotales}}</span>
+          <span class="parte__estado-mini-label">Remontes</span>
+          <span class="parte__estado-mini-valor" data-parte-remontes>{{.RemontesOp}}/{{.RemontesTot}}</span>
+        </div>
+      </div>
+
       <dl class="conditions__grid">
         <div class="conditions__item">
           <dt class="conditions__label">Temperatura</dt>
-          <dd class="conditions__value">{{.Temperatura}} °C</dd>
+          <dd class="conditions__value" data-parte-temp>{{.Temperatura}} °C</dd>
         </div>
         <div class="conditions__item">
-          <dt class="conditions__label">Nieve base</dt>
-          <dd class="conditions__value">{{.NieveBase}} cm</dd>
+          <dt class="conditions__label">Nieve</dt>
+          <dd class="conditions__value" data-parte-nieve>{{.NieveMin}}–{{.NieveMax}} cm</dd>
         </div>
         <div class="conditions__item">
           <dt class="conditions__label">Nieve nueva (24 h)</dt>
-          <dd class="conditions__value text-success">+ {{.NieveNueva}} cm</dd>
+          <dd class="conditions__value text-success" data-parte-nueva>+ {{.NieveNueva}} cm</dd>
         </div>
-      </dl>
-
-      <dl class="conditions__row">
+        <div class="conditions__item">
+          <dt class="conditions__label">Viento</dt>
+          <dd class="conditions__value" data-parte-viento>{{.Viento}}</dd>
+        </div>
+        <div class="conditions__item">
+          <dt class="conditions__label">Última nevada</dt>
+          <dd class="conditions__value" data-parte-ultima>{{.UltimaNevada}}</dd>
+        </div>
         <div class="conditions__item">
           <dt class="conditions__label">Pistas abiertas</dt>
           <dd class="conditions__value">{{.PistasAbiertas}} / {{.PistasTotales}}</dd>
@@ -80,9 +116,25 @@
           <dt class="conditions__label">Remontes operativos</dt>
           <dd class="conditions__value">{{.RemontesOp}} / {{.RemontesTot}}</dd>
         </div>
+        <div class="conditions__item">
+          <dt class="conditions__label">Km esquiables</dt>
+          <dd class="conditions__value">{{printf "%.0f" .KmEsquiables}} km</dd>
+        </div>
       </dl>
 
-      <p class="conditions__separator">Última nevada: {{.UltimaNevada}}</p>
+      <div class="parte__loading" data-parte-loading hidden>
+        <span class="snow-spinner" aria-hidden="true"></span>
+        <span>Actualizando parte de nieve…</span>
+      </div>
+      <div class="parte__error" data-parte-error hidden role="alert">
+        <strong>No hemos podido cargar los datos en este momento.</strong>
+        <span>Inténtalo de nuevo en unos segundos.</span>
+      </div>
+
+      <p class="parte__disclaimer">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><circle cx="12" cy="8" r="0.5" fill="currentColor"/></svg>
+        Datos orientativos para demostración académica. Algunos valores pueden ser simulados con fines docentes.
+      </p>
     </section>
   </div>
 
@@ -91,7 +143,7 @@
       <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#16A34A" stroke-width="2"><path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/></svg>
       <h2 class="visually-hidden">Distancia desde tu ubicación</h2>
       <p class="info-widget__value">{{printf "%.0f" .Distancia}} km</p>
-      <p class="info-widget__note">Distancia en línea recta desde Madrid</p>
+      <p class="info-widget__note">Distancia en línea recta desde tu ubicación</p>
     </section>
 
     <section id="comprar"
@@ -175,5 +227,7 @@
     </section>
   </aside>
 </div>
+
+<script src="/static/parte-refresh.js"></script>
 {{end}}
 {{end}}

@@ -13,6 +13,7 @@
     {{end}}
 
     <form method="POST" action="/registro" class="form-stack">
+      <input type="hidden" name="csrf_token" value="{{.CSRF}}">
       <div class="form-field">
         <label for="nombre" class="form-label">Nombre</label>
         <input id="nombre" name="nombre" type="text" required minlength="2" maxlength="60" value="{{.Form.Nombre}}" class="form-input">

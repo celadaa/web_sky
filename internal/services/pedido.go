@@ -27,14 +27,22 @@ import (
 
 // Errores de negocio del checkout.
 var (
-	ErrCestaVacia          = errors.New("la cesta está vacía")
-	ErrItemEstacion        = errors.New("estación no encontrada")
-	ErrItemTipoPase        = errors.New("tipo de pase inválido (adult|child|senior)")
-	ErrItemCantidad        = errors.New("la cantidad debe ser mayor que cero")
-	ErrItemDias            = errors.New("la duración debe ser de al menos un día")
-	ErrItemFechas          = errors.New("la fecha de fin no puede ser anterior a la de inicio")
-	ErrItemFechaFormato    = errors.New("formato de fecha inválido (YYYY-MM-DD)")
-	ErrItemPrecioInvalido  = errors.New("el precio no coincide con el del catálogo")
+	ErrCestaVacia         = errors.New("la cesta está vacía")
+	ErrCestaDemasiadoGrande = errors.New("demasiadas líneas en la cesta")
+	ErrItemEstacion       = errors.New("estación no encontrada")
+	ErrItemTipoPase       = errors.New("tipo de pase inválido (adult|child|senior)")
+	ErrItemCantidad       = errors.New("la cantidad debe ser mayor que cero")
+	ErrItemDias           = errors.New("la duración debe ser de al menos un día")
+	ErrItemFechas         = errors.New("la fecha de fin no puede ser anterior a la de inicio")
+	ErrItemFechaFormato   = errors.New("formato de fecha inválido (YYYY-MM-DD)")
+	ErrItemPrecioInvalido = errors.New("el precio no coincide con el del catálogo")
+)
+
+// Límites defensivos del checkout para evitar abuso (Memory DoS).
+const (
+	maxLineasCesta    = 50  // líneas distintas por pedido
+	maxCantidadLinea  = 100 // forfaits de la misma línea
+	maxDiasLinea      = 90  // forfaits no más de 3 meses
 )
 
 // LineaCesta es lo que llega del cliente. Validamos cada campo aquí.
@@ -74,6 +82,9 @@ func (s *PedidoService) Crear(ctx context.Context, usuarioID int64, lineas []Lin
 	if len(lineas) == 0 {
 		return nil, ErrCestaVacia
 	}
+	if len(lineas) > maxLineasCesta {
+		return nil, ErrCestaDemasiadoGrande
+	}
 
 	items := make([]models.PedidoItem, 0, len(lineas))
 	var totalServidor float64
@@ -102,7 +113,7 @@ func (s *PedidoService) Crear(ctx context.Context, usuarioID int64, lineas []Lin
 func (s *PedidoService) validarLinea(ctx context.Context, raw LineaCesta) (models.PedidoItem, error) {
 	var zero models.PedidoItem
 
-	if raw.Cantidad <= 0 {
+	if raw.Cantidad <= 0 || raw.Cantidad > maxCantidadLinea {
 		return zero, ErrItemCantidad
 	}
 
@@ -124,7 +135,7 @@ func (s *PedidoService) validarLinea(ctx context.Context, raw LineaCesta) (model
 	}
 
 	dias := int(fin.Sub(inicio).Hours()/24) + 1
-	if dias <= 0 {
+	if dias <= 0 || dias > maxDiasLinea {
 		return zero, ErrItemDias
 	}
 

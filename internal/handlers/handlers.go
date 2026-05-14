@@ -3,6 +3,7 @@ package handlers
 import (
 	"net/http"
 
+	"skihub/internal/config"
 	"skihub/internal/models"
 	"skihub/internal/services"
 )
@@ -23,6 +24,19 @@ type App struct {
 	// NieveSvc añade datos en directo de pistas vía infonieve.es.
 	// Es opcional: si es nil, los handlers /api/nieve/* devuelven 503.
 	NieveSvc *services.NieveService
+	// Cfg expone la configuración (entorno, flags Secure, secrets).
+	Cfg *config.Config
+	// Sec expone los middlewares y utilidades de seguridad.
+	Sec *Sec
+}
+
+// CookieSecure devuelve true cuando la app debe emitir cookies Secure.
+// Centraliza el flag para que auth/favoritos/cesta no dupliquen lógica.
+func (a *App) CookieSecure() bool {
+	if a.Cfg == nil {
+		return false
+	}
+	return a.Cfg.CookieSecure
 }
 
 // UsuarioActual intenta recuperar el usuario autenticado a partir de la

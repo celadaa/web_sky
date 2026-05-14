@@ -96,14 +96,19 @@ func (a *App) requerirAdminAPI(w http.ResponseWriter, r *http.Request) *models.U
 }
 
 // ApiUsuarios maneja la colección /api/usuarios.
+//
+// SEGURIDAD: TODAS las operaciones (incluido GET) requieren rol admin.
+// Antes el GET era público y filtraba la lista completa de emails de
+// usuarios — un endpoint de exfiltración trivial. Ahora se rechaza con
+// 401/403 a cualquiera que no sea administrador autenticado.
 func (a *App) ApiUsuarios(w http.ResponseWriter, r *http.Request) {
+	if a.requerirAdminAPI(w, r) == nil {
+		return
+	}
 	switch r.Method {
 	case http.MethodGet:
 		a.apiListarUsuarios(w, r)
 	case http.MethodPost:
-		if a.requerirAdminAPI(w, r) == nil {
-			return
-		}
 		a.apiCrearUsuario(w, r)
 	default:
 		w.Header().Set("Allow", "GET, POST")
@@ -112,6 +117,11 @@ func (a *App) ApiUsuarios(w http.ResponseWriter, r *http.Request) {
 }
 
 // ApiUsuario maneja /api/usuarios/{id}.
+//
+// SEGURIDAD: GET ahora permite a un usuario consultar SU PROPIO perfil
+// y nada más. El resto (admin) puede leer/editar/borrar cualquiera.
+// PUT y DELETE solo administradores. Esto cierra una IDOR clásica que
+// permitía leer cualquier perfil ajeno con un id arbitrario.
 func (a *App) ApiUsuario(w http.ResponseWriter, r *http.Request) {
 	id, ok := extraerIDRuta(r.URL.Path, "/api/usuarios/")
 	if !ok {
@@ -121,6 +131,15 @@ func (a *App) ApiUsuario(w http.ResponseWriter, r *http.Request) {
 
 	switch r.Method {
 	case http.MethodGet:
+		actor := a.UsuarioActual(r)
+		if actor == nil {
+			escribirError(w, http.StatusUnauthorized, "no autenticado")
+			return
+		}
+		if !EsAdmin(actor) && actor.ID != id {
+			escribirError(w, http.StatusForbidden, "no puedes ver datos de otros usuarios")
+			return
+		}
 		a.apiObtenerUsuario(w, r, id)
 	case http.MethodPut:
 		if a.requerirAdminAPI(w, r) == nil {

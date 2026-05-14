@@ -41,6 +41,11 @@ func CargarPlantillas(dir string) (Cache, error) {
 // render ejecuta la plantilla en un bytes.Buffer antes de escribir la
 // respuesta, de modo que si la renderización falla podamos devolver un
 // 500 limpio sin enviar HTML parcial.
+//
+// Antes de renderizar inyecta el token CSRF actual en una cabecera de
+// la petición; las plantillas que necesiten emitirlo en formularios
+// pueden leerlo via {{.CSRF}} (cada datosX struct define su propio
+// campo).
 func render(w http.ResponseWriter, r *http.Request, c Cache, pagina string, datos any) {
 	ts, ok := c[pagina]
 	if !ok {

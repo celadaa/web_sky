@@ -16,11 +16,12 @@
         Ver estado de pistas
       </a>
     </div>
+    <div class="hero__ubic" data-ubicacion-selector></div>
     <ul class="hero__metrics" aria-label="Métricas destacadas">
       <li class="hero__metric">
         <span class="hero__metric-label">Más cercana</span>
         <span class="hero__metric-value">{{with .MasCercana}}{{.Nombre}}{{else}}—{{end}}</span>
-        <span class="hero__metric-hint">{{with .MasCercana}}A {{printf "%.0f" .Distancia}} km de Madrid{{else}}Sin datos{{end}}</span>
+        <span class="hero__metric-hint">{{with .MasCercana}}A {{printf "%.0f" .Distancia}} km{{else}}Sin datos{{end}}</span>
       </li>
       <li class="hero__metric">
         <span class="hero__metric-label">Distancia media</span>
@@ -86,26 +87,64 @@
     </div>
   </div>
 
-  <nav class="filters" aria-label="Filtros de estaciones">
-    <ul class="filters__list" id="filtros-estaciones">
-      <li><button type="button" class="filters__btn filters__btn--active" data-orden="cercanas" aria-pressed="true">Más cercanas</button></li>
-      <li><button type="button" class="filters__btn" data-orden="nieve" aria-pressed="false">Más nieve</button></li>
-      <li><button type="button" class="filters__btn" data-orden="pistas" aria-pressed="false">Más pistas</button></li>
-      <li><button type="button" class="filters__btn" data-orden="recien" aria-pressed="false">Recién nevado</button></li>
-    </ul>
-  </nav>
+  <div class="estaciones-toolbar estaciones-toolbar--home">
+    <div class="estaciones-toolbar__contador" data-resultados-contador>{{len .Estaciones}} estaciones encontradas</div>
+    <div class="estaciones-toolbar__orden">
+      <label for="selector-orden">Ordenar por:</label>
+      <select id="selector-orden" class="estaciones-toolbar__select">
+        <option value="cercana">Más cercana</option>
+        <option value="nieve">Más nieve</option>
+        <option value="precio">Más barata</option>
+        <option value="pistas">Más pistas abiertas</option>
+        <option value="rating">Mejor valorada</option>
+      </select>
+      <a href="/estaciones" class="estaciones-toolbar__btn">Filtros avanzados →</a>
+    </div>
+  </div>
 
-  <ul class="grid-cards" id="grid-estaciones">
+  <ul class="grid-cards" id="grid-estaciones" data-grid-estaciones>
     {{range .Estaciones}}
-    <li data-distancia="{{.Distancia}}" data-nieve="{{.NieveBase}}" data-pistas="{{.PistasAbiertas}}" data-nieve-nueva="{{.NieveNueva}}">
+    <li
+      data-estacion
+      data-id="{{.ID}}"
+      data-nombre="{{.Nombre}}"
+      data-ubicacion="{{.Ubicacion}}"
+      data-distancia="{{printf "%.1f" .Distancia}}"
+      data-precio="{{printf "%.2f" .PrecioNino}}"
+      data-nieve="{{.NieveBase}}"
+      data-nieve-min="{{.NieveMin}}"
+      data-nieve-max="{{.NieveMax}}"
+      data-nieve-nueva="{{.NieveNueva}}"
+      data-viento="{{.Viento}}"
+      data-parte-hora="{{.ParteHora}}"
+      data-parte-fecha="{{.ParteActualizadoTexto}}"
+      data-km-esquiables="{{.KmEsquiables}}"
+      data-pistas-abiertas="{{.PistasAbiertas}}"
+      data-pistas-totales="{{.PistasTotales}}"
+      data-dificultad="{{.Dificultad}}"
+      data-rating="{{if gt .NieveBase 0}}{{printf "%.1f" (.KmEsquiables)}}{{else}}0{{end}}"
+      data-favorita="{{if .EsFavorita}}1{{else}}0{{end}}"
+      data-url="/estacion/{{.ID}}">
       <article class="station-card">
         <figure class="station-card__figure">
-          <span class="station-card__badge">{{printf "%.1f" .Distancia}} km</span>
+          <span class="station-card__badge" data-distancia-badge>{{printf "%.0f" .Distancia}} km</span>
+          <button type="button"
+            class="station-card__compare"
+            data-toggle-comparar
+            aria-pressed="false"
+            aria-label="Añadir {{.Nombre}} al comparador">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h13"/><path d="m16 3 3 3-3 3"/><path d="M21 18H8"/><path d="m8 21-3-3 3-3"/></svg>
+            <span data-comparar-label>Comparar</span>
+          </button>
           {{if $.Usuario}}
           <form method="POST" action="/favorito/toggle" class="station-card__favorite-form">
             <input type="hidden" name="estacion_id" value="{{.ID}}">
             <input type="hidden" name="redirigir" value="/">
-            <button type="submit" class="station-card__favorite" aria-label="{{if .EsFavorita}}Quitar {{.Nombre}} de favoritas{{else}}Añadir {{.Nombre}} a favoritas{{end}}">
+            <button type="submit"
+              class="station-card__favorite {{if .EsFavorita}}is-active{{end}}"
+              data-toggle-favorita
+              data-logueado="1"
+              aria-label="{{if .EsFavorita}}Quitar {{.Nombre}} de favoritas{{else}}Guardar {{.Nombre}} en favoritas{{end}}">
               {{if .EsFavorita}}
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="#DC2626" stroke="#DC2626" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
               {{else}}
@@ -113,6 +152,14 @@
               {{end}}
             </button>
           </form>
+          {{else}}
+          <button type="button"
+            class="station-card__favorite"
+            data-toggle-favorita
+            data-logueado="0"
+            aria-label="Guardar {{.Nombre}} en favoritas">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#64748B" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+          </button>
           {{end}}
           <a href="/estacion/{{.ID}}" tabindex="-1" aria-hidden="true" class="station-card__media">
             <span class="station-cover" data-station="{{.Nombre}}" aria-hidden="true">
@@ -129,15 +176,7 @@
         <a href="/estacion/{{.ID}}" class="station-card__content">
           <div class="station-card__head">
             <h3 class="station-card__name">{{.Nombre}}</h3>
-            {{if gt .PistasAbiertas 0}}
-              {{if and (gt .PistasAbiertas 0) (lt .PistasAbiertas .PistasTotales)}}
-                <span class="status-badge status-badge--parcial">Apertura parcial</span>
-              {{else}}
-                <span class="status-badge status-badge--abierta">Abierta</span>
-              {{end}}
-            {{else}}
-              <span class="status-badge status-badge--cerrada">Cerrada</span>
-            {{end}}
+            <span class="status-badge status-badge--{{.EstadoClase}}">{{.EstadoTexto}}</span>
           </div>
           <p class="station-card__location">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
@@ -150,7 +189,7 @@
               </span>
               <div class="station-metric__body">
                 <dt class="station-metric__label">Distancia</dt>
-                <dd class="station-metric__value">{{printf "%.0f" .Distancia}} km</dd>
+                <dd class="station-metric__value" data-distancia-metric>{{printf "%.0f" .Distancia}} km</dd>
               </div>
             </div>
             <div class="station-metric">
@@ -181,6 +220,10 @@
               </div>
             </div>
           </dl>
+          <p class="station-card__parte">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            Parte actualizado a las {{.ParteHora}}
+          </p>
         </a>
         <div class="station-card__footer-bar">
           <div class="station-card__price">
@@ -228,8 +271,8 @@
   </div>
 </section>
 
-<script src="/static/filtros.js"></script>
+<div id="comparador-bar" class="comparador-bar" hidden></div>
+
 <script src="/static/mapa.js"></script>
-<script src="/static/geolocation.js"></script>
 <script src="/static/pistas-home.js"></script>
 {{end}}

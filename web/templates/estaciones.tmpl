@@ -8,94 +8,176 @@
       Explora el catálogo completo, compara condiciones e <a href="/login" class="hero__inline-link">inicia sesión</a> para guardar tus estaciones favoritas.
     {{end}}
   </p>
+  <div class="hero__ubic" data-ubicacion-selector></div>
 </section>
 
 <section class="container">
-  <ul class="grid-cards">
-    {{range .Estaciones}}
-    <li>
-      <article class="station-card">
-        <figure class="station-card__figure">
-          <span class="station-card__badge">{{printf "%.1f" .Distancia}} km</span>
-          <a href="/estacion/{{.ID}}" tabindex="-1" aria-hidden="true" class="station-card__media">
-            <span class="station-cover" data-station="{{.Nombre}}" aria-hidden="true">
-              <svg class="station-cover__icon" width="56" height="56" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                <path d="M6 50 L22 22 L32 38 L44 16 L58 50 Z"/>
-                <path d="M22 22 L26 28"/>
-                <path d="M44 16 L48 22"/>
-              </svg>
-              <span class="station-cover__label">{{.Nombre}}</span>
-            </span>
-            {{if .Imagen}}<img src="{{.Imagen}}" alt="Estación de esquí {{.Nombre}}" loading="lazy" class="station-card__image" onerror="this.parentNode.classList.add('station-card__media--broken'); this.remove();">{{end}}
-          </a>
-        </figure>
-        <a href="/estacion/{{.ID}}" class="station-card__content">
-          <div class="station-card__head">
-            <h3 class="station-card__name">{{.Nombre}}</h3>
-            {{if gt .PistasAbiertas 0}}
-              {{if and (gt .PistasAbiertas 0) (lt .PistasAbiertas .PistasTotales)}}
-                <span class="status-badge status-badge--parcial">Apertura parcial</span>
-              {{else}}
-                <span class="status-badge status-badge--abierta">Abierta</span>
-              {{end}}
-            {{else}}
-              <span class="status-badge status-badge--cerrada">Cerrada</span>
-            {{end}}
-          </div>
-          <p class="station-card__location">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
-            {{.Ubicacion}}
-          </p>
-          <dl class="station-metrics">
-            <div class="station-metric">
-              <span class="station-metric__icon" aria-hidden="true"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/></svg></span>
-              <div class="station-metric__body"><dt class="station-metric__label">Distancia</dt><dd class="station-metric__value">{{printf "%.0f" .Distancia}} km</dd></div>
-            </div>
-            <div class="station-metric">
-              <span class="station-metric__icon" aria-hidden="true"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 20h20"/><path d="M5 20V8l5-3 5 3v12"/><path d="M15 20V11l4-2 0 11"/></svg></span>
-              <div class="station-metric__body"><dt class="station-metric__label">Nieve</dt><dd class="station-metric__value">{{.NieveBase}} cm</dd></div>
-            </div>
-            <div class="station-metric">
-              <span class="station-metric__icon" aria-hidden="true"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span>
-              <div class="station-metric__body"><dt class="station-metric__label">Pistas</dt><dd class="station-metric__value">{{.PistasAbiertas}}/{{.PistasTotales}}</dd></div>
-            </div>
-            <div class="station-metric">
-              <span class="station-metric__icon" aria-hidden="true"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1v22"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></span>
-              <div class="station-metric__body"><dt class="station-metric__label">Temperatura</dt><dd class="station-metric__value">{{.Temperatura}} °C</dd></div>
-            </div>
-          </dl>
-        </a>
-        <div class="station-card__footer-bar">
-          <div class="station-card__price">
-            <span class="station-card__price-label">Forfait desde</span>
-            <span class="station-card__price-value">{{printf "%.0f" .PrecioNino}} €<small> /día</small></span>
-          </div>
-          <a href="/estacion/{{.ID}}" class="station-card__cta">Ver ficha
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
-          </a>
+  <div class="estaciones-toolbar">
+    <button type="button" class="estaciones-toolbar__filtros-btn" id="btn-abrir-filtros" aria-controls="panel-filtros" aria-expanded="false">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="4" y1="6" x2="20" y2="6"/><line x1="7" y1="12" x2="17" y2="12"/><line x1="10" y1="18" x2="14" y2="18"/></svg>
+      Filtrar estaciones
+    </button>
+    <div class="estaciones-toolbar__contador" data-resultados-contador>{{len .Estaciones}} estaciones encontradas</div>
+    <div class="estaciones-toolbar__orden">
+      <label for="selector-orden">Ordenar por:</label>
+      <select id="selector-orden" class="estaciones-toolbar__select">
+        <option value="cercana">Más cercana</option>
+        <option value="nieve">Más nieve</option>
+        <option value="precio">Más barata</option>
+        <option value="pistas">Más pistas abiertas</option>
+        <option value="rating">Mejor valorada</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="estaciones-layout">
+    <aside class="panel-filtros" id="panel-filtros" aria-label="Filtros de estaciones">
+      <header class="panel-filtros__header">
+        <h2 class="panel-filtros__title">Filtrar estaciones</h2>
+        <button type="button" class="panel-filtros__close" data-cerrar-filtros aria-label="Cerrar filtros">×</button>
+      </header>
+      <form class="panel-filtros__form" onsubmit="return false;">
+        <div class="panel-filtros__field">
+          <label for="filtro-distancia">Distancia máxima</label>
+          <input type="number" id="filtro-distancia" name="filtro-distancia" min="0" step="10" placeholder="km">
         </div>
-        {{if $.Usuario}}
-        <form method="POST" action="/favorito/toggle" class="station-card__footer">
-          <input type="hidden" name="estacion_id" value="{{.ID}}">
-          <input type="hidden" name="redirigir" value="/estaciones">
-          {{if .EsFavorita}}
-            <button type="submit" class="action-btn action-btn--danger" aria-label="Quitar {{.Nombre}} de favoritas">
-              En favoritas
-            </button>
-          {{else}}
-            <button type="submit" class="action-btn action-btn--neutral" aria-label="Añadir {{.Nombre}} a favoritas">
-              Añadir a favoritas
-            </button>
-          {{end}}
-        </form>
-        {{else}}
-        <p class="station-card__hint">
-          <a href="/login" class="text-link">Inicia sesión</a> para marcar favoritas
-        </p>
+        <div class="panel-filtros__field">
+          <label for="filtro-precio">Precio máximo</label>
+          <input type="number" id="filtro-precio" name="filtro-precio" min="0" step="5" placeholder="€">
+        </div>
+        <div class="panel-filtros__field">
+          <label for="filtro-nieve">Nieve mínima</label>
+          <input type="number" id="filtro-nieve" name="filtro-nieve" min="0" step="5" placeholder="cm">
+        </div>
+        <div class="panel-filtros__field">
+          <label for="filtro-pistas">Pistas abiertas mínimas</label>
+          <input type="number" id="filtro-pistas" name="filtro-pistas" min="0" step="1" placeholder="0">
+        </div>
+        <div class="panel-filtros__field">
+          <label for="filtro-pais">País</label>
+          <select id="filtro-pais" name="filtro-pais">
+            <option value="">Todos</option>
+            <option value="España">España</option>
+            <option value="Andorra">Andorra</option>
+            <option value="Francia">Francia</option>
+            <option value="Portugal">Portugal</option>
+          </select>
+        </div>
+        <div class="panel-filtros__field">
+          <label for="filtro-dificultad">Dificultad</label>
+          <select id="filtro-dificultad" name="filtro-dificultad">
+            <option value="">Cualquiera</option>
+            <option value="Fácil">Fácil</option>
+            <option value="Media">Media</option>
+            <option value="Difícil">Difícil</option>
+            <option value="Mixta">Mixta</option>
+          </select>
+        </div>
+        <div class="panel-filtros__check">
+          <input type="checkbox" id="filtro-abiertas" name="filtro-abiertas">
+          <label for="filtro-abiertas">Solo estaciones abiertas</label>
+        </div>
+        {{if .Usuario}}
+        <div class="panel-filtros__check">
+          <input type="checkbox" id="filtro-favoritas" name="filtro-favoritas">
+          <label for="filtro-favoritas">Solo mis favoritas</label>
+        </div>
         {{end}}
-      </article>
-    </li>
-    {{end}}
-  </ul>
+        <button type="button" class="panel-filtros__limpiar" data-limpiar-filtros>Limpiar filtros</button>
+      </form>
+    </aside>
+
+    <div class="estaciones-listado">
+      <ul class="grid-cards" data-grid-estaciones>
+        {{range .Estaciones}}
+        <li
+          data-estacion
+          data-id="{{.ID}}"
+          data-nombre="{{.Nombre}}"
+          data-ubicacion="{{.Ubicacion}}"
+          data-distancia="{{printf "%.1f" .Distancia}}"
+          data-precio="{{printf "%.2f" .PrecioNino}}"
+          data-nieve="{{.NieveBase}}"
+          data-nieve-min="{{.NieveMin}}"
+          data-nieve-max="{{.NieveMax}}"
+          data-nieve-nueva="{{.NieveNueva}}"
+          data-viento="{{.Viento}}"
+          data-parte-hora="{{.ParteHora}}"
+          data-parte-fecha="{{.ParteActualizadoTexto}}"
+          data-km-esquiables="{{.KmEsquiables}}"
+          data-pistas-abiertas="{{.PistasAbiertas}}"
+          data-pistas-totales="{{.PistasTotales}}"
+          data-dificultad="{{.Dificultad}}"
+          data-rating="{{if gt .NieveBase 0}}{{printf "%.1f" .KmEsquiables}}{{else}}0{{end}}"
+          data-favorita="{{if .EsFavorita}}1{{else}}0{{end}}"
+          data-url="/estacion/{{.ID}}">
+          <article class="station-card">
+            <figure class="station-card__figure">
+              <span class="station-card__badge" data-distancia-badge>{{printf "%.0f" .Distancia}} km</span>
+              <button type="button" class="station-card__compare" data-toggle-comparar aria-pressed="false" aria-label="Añadir {{.Nombre}} al comparador">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h13"/><path d="m16 3 3 3-3 3"/><path d="M21 18H8"/><path d="m8 21-3-3 3-3"/></svg>
+                <span data-comparar-label>Comparar</span>
+              </button>
+              {{if $.Usuario}}
+              <form method="POST" action="/favorito/toggle" class="station-card__favorite-form">
+                <input type="hidden" name="estacion_id" value="{{.ID}}">
+                <input type="hidden" name="redirigir" value="/estaciones">
+                <button type="submit" class="station-card__favorite {{if .EsFavorita}}is-active{{end}}" data-toggle-favorita data-logueado="1" aria-label="{{if .EsFavorita}}Quitar {{.Nombre}} de favoritas{{else}}Guardar {{.Nombre}} en favoritas{{end}}">
+                  {{if .EsFavorita}}<svg width="18" height="18" viewBox="0 0 24 24" fill="#DC2626" stroke="#DC2626" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>{{else}}<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#64748B" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>{{end}}
+                </button>
+              </form>
+              {{else}}
+              <button type="button" class="station-card__favorite" data-toggle-favorita data-logueado="0" aria-label="Guardar {{.Nombre}} en favoritas">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#64748B" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+              </button>
+              {{end}}
+              <a href="/estacion/{{.ID}}" tabindex="-1" aria-hidden="true" class="station-card__media">
+                <span class="station-cover" data-station="{{.Nombre}}" aria-hidden="true">
+                  <svg class="station-cover__icon" width="56" height="56" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 50 L22 22 L32 38 L44 16 L58 50 Z"/><path d="M22 22 L26 28"/><path d="M44 16 L48 22"/></svg>
+                  <span class="station-cover__label">{{.Nombre}}</span>
+                </span>
+                {{if .Imagen}}<img src="{{.Imagen}}" alt="Estación de esquí {{.Nombre}}" loading="lazy" class="station-card__image" onerror="this.parentNode.classList.add('station-card__media--broken'); this.remove();">{{end}}
+              </a>
+            </figure>
+            <a href="/estacion/{{.ID}}" class="station-card__content">
+              <div class="station-card__head">
+                <h3 class="station-card__name">{{.Nombre}}</h3>
+                <span class="status-badge status-badge--{{.EstadoClase}}">{{.EstadoTexto}}</span>
+              </div>
+              <p class="station-card__location">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                {{.Ubicacion}}
+              </p>
+              <dl class="station-metrics">
+                <div class="station-metric"><span class="station-metric__icon" aria-hidden="true"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/></svg></span><div class="station-metric__body"><dt class="station-metric__label">Distancia</dt><dd class="station-metric__value" data-distancia-metric>{{printf "%.0f" .Distancia}} km</dd></div></div>
+                <div class="station-metric"><span class="station-metric__icon" aria-hidden="true"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 20h20"/><path d="M5 20V8l5-3 5 3v12"/></svg></span><div class="station-metric__body"><dt class="station-metric__label">Nieve</dt><dd class="station-metric__value">{{.NieveBase}} cm</dd></div></div>
+                <div class="station-metric"><span class="station-metric__icon" aria-hidden="true"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span><div class="station-metric__body"><dt class="station-metric__label">Pistas</dt><dd class="station-metric__value">{{.PistasAbiertas}}/{{.PistasTotales}}</dd></div></div>
+                <div class="station-metric"><span class="station-metric__icon" aria-hidden="true"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1v22"/></svg></span><div class="station-metric__body"><dt class="station-metric__label">Temperatura</dt><dd class="station-metric__value">{{.Temperatura}} °C</dd></div></div>
+              </dl>
+              <p class="station-card__parte">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                Parte actualizado a las {{.ParteHora}}
+              </p>
+            </a>
+            <div class="station-card__footer-bar">
+              <div class="station-card__price"><span class="station-card__price-label">Forfait desde</span><span class="station-card__price-value">{{printf "%.0f" .PrecioNino}} €<small> /día</small></span></div>
+              <a href="/estacion/{{.ID}}" class="station-card__cta">Ver ficha
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+              </a>
+            </div>
+          </article>
+        </li>
+        {{end}}
+      </ul>
+
+      <div id="estaciones-vacio" class="panel panel--empty" hidden>
+        <p class="empty-state__icon">❄</p>
+        <h2>No encontramos estaciones con estos filtros</h2>
+        <p>Prueba a ampliar la distancia, reducir la nieve mínima o limpiar los filtros.</p>
+      </div>
+    </div>
+  </div>
 </section>
+
+<div id="comparador-bar" class="comparador-bar" hidden></div>
 {{end}}

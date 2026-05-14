@@ -16,6 +16,7 @@ type datosRegistro struct {
 	Error       string
 	Form        formRegistro
 	Usuario     *models.Usuario
+	CSRF        string
 }
 
 type formRegistro struct {
@@ -40,6 +41,7 @@ func (a *App) Registro(w http.ResponseWriter, r *http.Request) {
 			Descripcion: "Regístrate en SnowBreak.",
 			Activa:      "registro",
 			Usuario:     a.UsuarioActual(r),
+			CSRF:        TokenCSRFActual(r),
 		})
 	case http.MethodPost:
 		a.procesarRegistro(w, r)
@@ -77,6 +79,7 @@ func (a *App) procesarRegistro(w http.ResponseWriter, r *http.Request) {
 				Error:       err.Error(),
 				Form:        formRegistro{Nombre: datos.Nombre, Email: datos.Email},
 				Usuario:     a.UsuarioActual(r),
+				CSRF:        TokenCSRFActual(r),
 			})
 			return
 		}

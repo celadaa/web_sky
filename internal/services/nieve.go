@@ -92,7 +92,7 @@ func (s *NieveService) EstacionesCercanas(lat, lng float64, limite int) ([]Estac
 			Slug:         e.Slug,
 			Nombre:       e.Nombre,
 			URL:          e.URL,
-			Estado:       e.Estado,
+			Estado:       normalizarEstado(e.Estado, e.Pistas),
 			Lat:          c.Lat,
 			Lng:          c.Lng,
 			TieneCoords:  ok,
@@ -228,4 +228,32 @@ func DistanciaHaversineKm(lat1, lng1, lat2, lng2 float64) float64 {
 			math.Sin(dLng/2)*math.Sin(dLng/2)
 	c := 2 * math.Atan2(math.Sqrt(a), math.Sqrt(1-a))
 	return radioTierraKm * c
+}
+
+// normalizarEstado aplica el mismo umbral que models.Estacion: si el
+// scraper devuelve "parcial" pero ya hay >=80 % de pistas abiertas, lo
+// promovemos a "abierta". Sin esto la UI muestra todas las estaciones
+// del mundo como "parcial" en cuanto les falta una sola pista.
+func normalizarEstado(orig infonieve.Estado, pistas infonieve.Fraccion) infonieve.Estado {
+	if orig == infonieve.EstadoCerrada {
+		return orig
+	}
+	if pistas.Abiertos == nil || pistas.Total == nil {
+		return orig
+	}
+	abiertos := *pistas.Abiertos
+	total := *pistas.Total
+	if total <= 0 {
+		return orig
+	}
+	if abiertos <= 0 {
+		return infonieve.EstadoCerrada
+	}
+	if abiertos*5 >= total*4 {
+		return infonieve.EstadoAbierta
+	}
+	if orig == "" {
+		return infonieve.EstadoParcial
+	}
+	return orig
 }

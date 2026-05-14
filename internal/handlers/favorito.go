@@ -67,6 +67,9 @@ func (a *App) FavoritoToggle(w http.ResponseWriter, r *http.Request) {
 	log.Printf("Favorito toggle usuario=%d estacion=%d -> %v", u.ID, id, esFav)
 
 	destino := r.FormValue("redirigir")
+	if !EsRedirectInterno(destino) {
+		destino = "/favoritos"
+	}
 	if destino == "" {
 		destino = "/favoritos"
 	}

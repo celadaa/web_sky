@@ -24,6 +24,14 @@ import (
 
 // Config agrupa todos los parámetros de arranque del servidor.
 type Config struct {
+	// Entorno y endurecimiento
+	AppEnv          string // "development" | "production"
+	CookieSecure    bool   // marcar cookies como Secure (recomendado en producción)
+	TrustProxy      bool   // honrar X-Forwarded-For si hay proxy delante
+	BodyMaxBytes    int64  // límite global de cuerpo de petición
+	RateLimitPerMin int    // peticiones por minuto por IP en endpoints sensibles
+	CSRFSecret      string // semilla del token CSRF (32+ chars)
+
 	// PostgreSQL
 	DBHost            string
 	DBPort            int
@@ -46,6 +54,11 @@ type Config struct {
 	AdminPassword string
 }
 
+// EsProduccion devuelve true cuando APP_ENV=production.
+func (c Config) EsProduccion() bool {
+	return strings.EqualFold(c.AppEnv, "production") || strings.EqualFold(c.AppEnv, "prod")
+}
+
 // DSN devuelve la cadena de conexión libpq (key=value) que pgx acepta como
 // driver `database/sql` registrado como "pgx". Mantenemos el formato libpq
 // (y no la URL postgres://) porque es más legible en logs y menos propenso
@@ -62,7 +75,8 @@ func (c Config) DSN() string {
 //
 // Variables obligatorias: DB_HOST, DB_PORT, DB_USER, DB_PASSWORD, DB_NAME, DB_SSLMODE.
 // Variables opcionales con default: APP_PORT, APP_TEMPLATES, APP_STATIC,
-// ADMIN_*, DB_MAX_OPEN_CONNS, DB_MAX_IDLE_CONNS, DB_CONN_MAX_LIFETIME_MIN.
+// ADMIN_*, DB_MAX_OPEN_CONNS, DB_MAX_IDLE_CONNS, DB_CONN_MAX_LIFETIME_MIN,
+// APP_ENV, COOKIE_SECURE, TRUST_PROXY, BODY_MAX_BYTES, RATE_LIMIT_PER_MIN, CSRF_SECRET.
 func LoadFromEnv() (*Config, error) {
 	// Cargamos .env si existe. Usamos Overload (no Load) para que los
 	// valores del fichero PISEN cualquier variable que el usuario tenga
@@ -73,6 +87,8 @@ func LoadFromEnv() (*Config, error) {
 	_ = godotenv.Overload()
 
 	cfg := &Config{
+		AppEnv:       getenv("APP_ENV", "development"),
+		CSRFSecret:   getenv("CSRF_SECRET", ""),
 		DBHost:       getenv("DB_HOST", ""),
 		DBUser:       getenv("DB_USER", ""),
 		DBPassword:   getenv("DB_PASSWORD", ""),
@@ -106,6 +122,23 @@ func LoadFromEnv() (*Config, error) {
 		return nil, err
 	}
 	cfg.DBConnMaxLifetime = time.Duration(mins) * time.Minute
+
+	bodyMax, err := getenvInt("BODY_MAX_BYTES", 1<<20) // 1 MiB
+	if err != nil {
+		return nil, err
+	}
+	cfg.BodyMaxBytes = int64(bodyMax)
+
+	cfg.RateLimitPerMin, err = getenvInt("RATE_LIMIT_PER_MIN", 30)
+	if err != nil {
+		return nil, err
+	}
+
+	// COOKIE_SECURE: por defecto activo en producción, desactivado en dev
+	// (HTTPS suele faltar en localhost y Secure haría que la cookie no
+	// se envíe nunca).
+	cfg.CookieSecure = getenvBool("COOKIE_SECURE", cfg.EsProduccion())
+	cfg.TrustProxy = getenvBool("TRUST_PROXY", false)
 
 	if err := cfg.validar(); err != nil {
 		return nil, err
@@ -144,10 +177,16 @@ func (c *Config) validar() error {
 	default:
 		return errors.New("DB_SSLMODE inválido: usa disable | require | verify-ca | verify-full")
 	}
-	if c.AdminPassword == "" {
-		// No bloqueamos, pero avisamos: si no hay admin todavía y no se
-		// proporciona contraseña, no se podrá crear el admin por defecto.
-		// El servidor arrancará igualmente.
+	if c.EsProduccion() {
+		if c.DBSSLMode == "disable" {
+			return errors.New("DB_SSLMODE=disable no es válido en producción: usa require | verify-ca | verify-full")
+		}
+		if c.AdminPassword != "" && len(c.AdminPassword) < 12 {
+			return errors.New("ADMIN_PASSWORD demasiado corta para producción (mínimo 12 caracteres)")
+		}
+		if c.CSRFSecret == "" || len(c.CSRFSecret) < 32 {
+			return errors.New("CSRF_SECRET requerida en producción (32+ caracteres aleatorios)")
+		}
 	}
 	return nil
 }
@@ -172,4 +211,19 @@ func getenvInt(clave string, defecto int) (int, error) {
 		return 0, fmt.Errorf("%s debe ser un entero, recibido %q", clave, raw)
 	}
 	return n, nil
+}
+
+// getenvBool acepta 1/0, true/false, yes/no, on/off (case-insensitive).
+func getenvBool(clave string, defecto bool) bool {
+	raw := strings.ToLower(strings.TrimSpace(os.Getenv(clave)))
+	switch raw {
+	case "":
+		return defecto
+	case "1", "true", "yes", "on", "y":
+		return true
+	case "0", "false", "no", "off", "n":
+		return false
+	default:
+		return defecto
+	}
 }
