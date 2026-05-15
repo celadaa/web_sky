@@ -42,10 +42,13 @@ func CargarPlantillas(dir string) (Cache, error) {
 // respuesta, de modo que si la renderización falla podamos devolver un
 // 500 limpio sin enviar HTML parcial.
 //
-// Antes de renderizar inyecta el token CSRF actual en una cabecera de
-// la petición; las plantillas que necesiten emitirlo en formularios
-// pueden leerlo via {{.CSRF}} (cada datosX struct define su propio
-// campo).
+// El token CSRF se inyecta lado-cliente por `web/static/csrf.js`, que
+// lee la cookie `skihub_csrf` y la añade automáticamente como campo
+// hidden en cualquier formulario POST/PUT/PATCH/DELETE y como cabecera
+// `X-CSRF-Token` en cualquier fetch del mismo origen. Los handlers que
+// renderizan formularios sensibles (login, registro, cambiar password)
+// además incluyen `{{.CSRF}}` server-side como defensa en profundidad
+// por si el JS falla.
 func render(w http.ResponseWriter, r *http.Request, c Cache, pagina string, datos any) {
 	ts, ok := c[pagina]
 	if !ok {

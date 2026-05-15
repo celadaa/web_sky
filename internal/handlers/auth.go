@@ -202,6 +202,11 @@ func (a *App) Logout(w http.ResponseWriter, r *http.Request) {
 	if c, err := r.Cookie(CookieSesion); err == nil {
 		_ = a.SesionSvc.Cerrar(r.Context(), c.Value)
 	}
+
+	// Borramos la cookie de sesión emitiendo una con MaxAge=-1 y mismos
+	// atributos con los que se creó (Path/Domain/Secure/SameSite). Si
+	// alguno de los atributos no coincide, el navegador no la sustituye
+	// y la sesión "rebota" al recargar.
 	http.SetCookie(w, &http.Cookie{
 		Name:     CookieSesion,
 		Value:    "",
@@ -212,6 +217,26 @@ func (a *App) Logout(w http.ResponseWriter, r *http.Request) {
 		Secure:   a.CookieSecure(),
 		SameSite: http.SameSiteLaxMode,
 	})
+
+	// Rotamos también la cookie CSRF: tras el logout el siguiente usuario
+	// (puede ser otro en el mismo navegador) debe recibir un token nuevo.
+	http.SetCookie(w, &http.Cookie{
+		Name:     CookieCSRF,
+		Value:    "",
+		Path:     "/",
+		Expires:  time.Unix(0, 0),
+		MaxAge:   -1,
+		HttpOnly: false,
+		Secure:   a.CookieSecure(),
+		SameSite: http.SameSiteLaxMode,
+	})
+
+	// Anti back-button: sin no-store el navegador muestra la página
+	// "/favoritos" cacheada incluso después de borrar la cookie.
+	w.Header().Set("Cache-Control", "no-store, no-cache, must-revalidate, max-age=0")
+	w.Header().Set("Pragma", "no-cache")
+	w.Header().Set("Expires", "0")
+
 	http.Redirect(w, r, "/login?mensaje=Sesi%C3%B3n+cerrada+correctamente", http.StatusSeeOther)
 }
 

@@ -38,7 +38,12 @@ import (
 // CookieCSRF es la cookie no-HttpOnly que comparte el token con el
 // frontend. Al ser leída desde JS o renderizada en HTML, vamos en
 // double-submit cookie pattern.
-const CookieCSRF = "snowbreak_csrf"
+//
+// El nombre se mantiene en sintonía con `skihub_session` y con la
+// configuración Nginx (`proxy_cookie_flags skihub_csrf …`). Cambiar este
+// valor sin actualizar a la vez `web/static/csrf.js` (COOKIE_NAME) y el
+// snippet Nginx rompe la inyección automática del token en formularios.
+const CookieCSRF = "skihub_csrf"
 
 // CabeceraCSRF / CampoCSRF son los nombres aceptados para enviar el
 // token de vuelta en una petición que muta estado.
@@ -107,12 +112,16 @@ func (s *Sec) CabecerasSeguridad() func(http.Handler) http.Handler {
 			h.Set("Cross-Origin-Resource-Policy", "same-origin")
 
 			// CSP — ajustada a las dependencias actuales (Leaflet via cloudflare,
-			// imágenes desde Unsplash y tile servers, formularios solo al propio origen).
+			// imágenes desde Unsplash + Wikimedia + tile servers, formularios solo al propio origen).
+			//
+			// upload.wikimedia.org se incluye porque la migración 011 sustituyó
+			// las fotos de Unsplash por fotos reales de Wikipedia. Sin esto, el
+			// navegador bloquea TODAS las imágenes de las estaciones.
 			h.Set("Content-Security-Policy", strings.Join([]string{
 				"default-src 'self'",
 				"script-src 'self' https://cdnjs.cloudflare.com https://unpkg.com",
 				"style-src 'self' 'unsafe-inline' https://unpkg.com https://cdnjs.cloudflare.com",
-				"img-src 'self' data: https://*.unsplash.com https://*.basemaps.cartocdn.com https://*.tile.openstreetmap.org",
+				"img-src 'self' data: blob: https://*.unsplash.com https://images.unsplash.com https://upload.wikimedia.org https://*.wikimedia.org https://*.basemaps.cartocdn.com https://*.tile.openstreetmap.org",
 				"font-src 'self' data:",
 				"connect-src 'self' https://nominatim.openstreetmap.org https://*.basemaps.cartocdn.com https://*.tile.openstreetmap.org",
 				"object-src 'none'",

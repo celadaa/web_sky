@@ -71,51 +71,90 @@
 
   function abrirPanel(ui, actual) {
     cerrarPanel();
+
     var panel = document.createElement('div');
     panel.className = 'ubic-modal';
     panel.setAttribute('role', 'dialog');
     panel.setAttribute('aria-modal', 'true');
-    panel.setAttribute('aria-label', 'Cambiar ubicación');
+    panel.setAttribute('aria-labelledby', 'ubic-modal-titulo');
+    panel.setAttribute('aria-describedby', 'ubic-modal-sub');
     panel.innerHTML = (
       '<div class="ubic-modal__card">' +
         '<header class="ubic-modal__header">' +
-          '<h2>Cambiar ubicación</h2>' +
-          '<button type="button" class="ubic-modal__close" data-cerrar aria-label="Cerrar">×</button>' +
-        '</header>' +
-        '<button type="button" class="ubic-modal__action" data-gps>' +
-          '<span class="ubic-modal__action-ico" aria-hidden="true">📍</span>' +
-          '<span><strong>Usar mi ubicación</strong><small>Permite acceso a tu posición</small></span>' +
-        '</button>' +
-        '<form class="ubic-modal__form" data-form-ciudad autocomplete="off">' +
-          '<label class="ubic-modal__label">Introduce tu ciudad o código postal</label>' +
-          '<div class="ubic-modal__row">' +
-            '<input type="text" name="ciudad" placeholder="Ej. Zaragoza o 28013" required>' +
-            '<button type="submit" class="ubic-modal__submit">Buscar</button>' +
+          '<span class="ubic-modal__header-ico" aria-hidden="true">' +
+            '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>' +
+          '</span>' +
+          '<div class="ubic-modal__heading">' +
+            '<h2 id="ubic-modal-titulo">Cambiar ubicación</h2>' +
+            '<p id="ubic-modal-sub" class="ubic-modal__subtitle">Calculamos distancias a las estaciones desde aquí.</p>' +
           '</div>' +
-          '<small class="ubic-modal__hint">Aceptamos nombre de ciudad o código postal español.</small>' +
-        '</form>' +
-        '<div class="ubic-modal__quick" data-presets></div>' +
-        '<p class="ubic-modal__error" data-error hidden></p>' +
+          '<button type="button" class="ubic-modal__close" data-cerrar aria-label="Cerrar diálogo">×</button>' +
+        '</header>' +
+
+        '<section class="ubic-modal__section">' +
+          '<button type="button" class="ubic-modal__action" data-gps>' +
+            '<span class="ubic-modal__action-ico" aria-hidden="true">' +
+              '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="M4.93 4.93l1.41 1.41"/><path d="M17.66 17.66l1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="M6.34 17.66l-1.41 1.41"/><path d="M19.07 4.93l-1.41 1.41"/></svg>' +
+            '</span>' +
+            '<span><strong>Usar mi ubicación</strong><small>El navegador pedirá permiso</small></span>' +
+          '</button>' +
+        '</section>' +
+
+        '<hr class="ubic-modal__divider">' +
+
+        '<section class="ubic-modal__section">' +
+          '<h3 class="ubic-modal__section-title">Buscar por nombre</h3>' +
+          '<form class="ubic-modal__form" data-form-ciudad autocomplete="off" novalidate>' +
+            '<label class="ubic-modal__label" for="ubic-input-ciudad">Ciudad o código postal</label>' +
+            '<div class="ubic-modal__row">' +
+              '<input id="ubic-input-ciudad" type="text" name="ciudad" placeholder="Ej. Zaragoza o 28013" required autocomplete="off" inputmode="search">' +
+              '<button type="submit" class="ubic-modal__submit">' +
+                '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>' +
+                'Buscar' +
+              '</button>' +
+            '</div>' +
+            '<small class="ubic-modal__hint">Aceptamos nombre de ciudad o código postal español.</small>' +
+          '</form>' +
+        '</section>' +
+
+        '<hr class="ubic-modal__divider">' +
+
+        '<section class="ubic-modal__section">' +
+          '<h3 class="ubic-modal__section-title">Atajos</h3>' +
+          '<div class="ubic-modal__quick" data-presets></div>' +
+        '</section>' +
+
+        '<p class="ubic-modal__status" data-status hidden role="status" aria-live="polite"></p>' +
+        '<p class="ubic-modal__error" data-error hidden role="alert"></p>' +
       '</div>'
     );
+
     document.body.appendChild(panel);
     document.body.classList.add('snow-no-scroll');
 
+    // Pintamos los presets resaltando el actual.
     var presets = panel.querySelector('[data-presets]');
     var ciudades = (window.SnowbreakGeo && SnowbreakGeo.CIUDADES_PRESET) || [];
     presets.innerHTML = ciudades.map(function (c) {
-      return '<button type="button" class="ubic-modal__chip" data-preset=\'' + JSON.stringify(c).replace(/'/g, '&apos;') + '\'>' + escapar(c.etiqueta) + '</button>';
+      var activo = actual && actual.etiqueta === c.etiqueta ? ' ubic-modal__chip--active' : '';
+      var aria = activo ? ' aria-current="true"' : '';
+      return (
+        '<button type="button" class="ubic-modal__chip' + activo + '"' + aria +
+        ' data-preset=\'' + JSON.stringify(c).replace(/'/g, '&apos;') + '\'>' +
+        escapar(c.etiqueta) + '</button>'
+      );
     }).join('');
 
     function cerrar() { cerrarPanel(); }
 
+    // Cierre al clicar overlay.
     panel.addEventListener('click', function (ev) {
       if (ev.target === panel) { cerrar(); }
     });
     panel.querySelector('[data-cerrar]').addEventListener('click', cerrar);
 
     panel.querySelector('[data-gps]').addEventListener('click', function () {
-      mostrarError(panel, 'Buscando tu ubicación…');
+      mostrarStatus(panel, 'Buscando tu ubicación…');
       if (!window.SnowbreakGeo) {
         mostrarError(panel, 'No hemos podido acceder a tu ubicación. Puedes introducirla manualmente.');
         return;
@@ -134,7 +173,8 @@
       ev.preventDefault();
       var input = ev.target.querySelector('input[name="ciudad"]');
       var v = input.value.trim();
-      if (!v) { return; }
+      if (!v) { input.focus(); return; }
+      mostrarStatus(panel, 'Buscando “' + v + '”…');
       buscarCiudadOPostal(v)
         .then(function (ubic) {
           aplicar(ubic);
@@ -156,15 +196,37 @@
       } catch (e) {}
     });
 
-    document.addEventListener('keydown', escListener);
-    function escListener(ev) {
-      if (ev.key === 'Escape') { cerrar(); }
+    // Foco automático: el input es lo más útil para empezar.
+    var primerInput = panel.querySelector('#ubic-input-ciudad');
+    if (primerInput) {
+      // setTimeout para esperar a que la animación de entrada no lo cancele
+      // en algunos navegadores móviles.
+      setTimeout(function () { primerInput.focus(); }, 60);
     }
 
-    function cerrarPanelLocal() {
-      document.removeEventListener('keydown', escListener);
+    // Cierre con Escape + focus trap básico con Tab.
+    function teclas(ev) {
+      if (ev.key === 'Escape') {
+        cerrar();
+        return;
+      }
+      if (ev.key !== 'Tab') { return; }
+      var focuseables = panel.querySelectorAll(
+        'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+      );
+      if (!focuseables.length) { return; }
+      var primero = focuseables[0];
+      var ultimo = focuseables[focuseables.length - 1];
+      if (ev.shiftKey && document.activeElement === primero) {
+        ev.preventDefault();
+        ultimo.focus();
+      } else if (!ev.shiftKey && document.activeElement === ultimo) {
+        ev.preventDefault();
+        primero.focus();
+      }
     }
-    panel._cleanup = cerrarPanelLocal;
+    document.addEventListener('keydown', teclas);
+    panel._cleanup = function () { document.removeEventListener('keydown', teclas); };
   }
 
   function cerrarPanel() {
@@ -198,8 +260,19 @@
     document.dispatchEvent(new CustomEvent('snowbreak:ubicacion:cambio', { detail: ubic }));
   }
 
+  function mostrarStatus(panel, msg) {
+    var s = panel.querySelector('[data-status]');
+    var e = panel.querySelector('[data-error]');
+    if (e) { e.hidden = true; e.textContent = ''; }
+    if (!s) { return; }
+    s.textContent = msg;
+    s.hidden = false;
+  }
+
   function mostrarError(panel, msg) {
+    var s = panel.querySelector('[data-status]');
     var p = panel.querySelector('[data-error]');
+    if (s) { s.hidden = true; s.textContent = ''; }
     if (!p) { return; }
     p.textContent = msg;
     p.hidden = false;
