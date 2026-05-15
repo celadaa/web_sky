@@ -178,8 +178,9 @@ func (c *Config) validar() error {
 		return errors.New("DB_SSLMODE inválido: usa disable | require | verify-ca | verify-full")
 	}
 	if c.EsProduccion() {
-		if c.DBSSLMode == "disable" {
-			return errors.New("DB_SSLMODE=disable no es válido en producción: usa require | verify-ca | verify-full")
+
+		if c.DBSSLMode == "disable" && c.DBHost != "127.0.0.1" && c.DBHost != "localhost" && c.DBHost != "::1" {
+			return errors.New("DB_SSLMODE=disable no es válido en producción salvo para PostgreSQL local: usa require | verify-ca | verify-full")
 		}
 		if c.AdminPassword != "" && len(c.AdminPassword) < 12 {
 			return errors.New("ADMIN_PASSWORD demasiado corta para producción (mínimo 12 caracteres)")

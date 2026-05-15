@@ -8,17 +8,17 @@ server {
     ssl_certificate_key /etc/letsencrypt/live/snowbreak.es/privkey.pem; # managed by Certbot
     include /etc/letsencrypt/options-ssl-nginx.conf; # managed by Certbot
     ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem; # managed by Certbot
+#
 
-
-    add_header Content-Security-Policy "default-src 'self'; base-uri 'self'; frame-ancestors 'none'; object-src 'none'; form-action 'self'; img-src 'self' data: https:; script-src 'self'; style-src 'self'; connect-src 'self'; font-src 'self' data:; upgrade-insecure-requests" always;
-    add_header X-Frame-Options "DENY" always;
-    add_header X-Content-Type-Options "nosniff" always;
-    add_header Referrer-Policy "strict-origin-when-cross-origin" always;
-    add_header Permissions-Policy "geolocation=(), microphone=(), camera=(), payment=(), usb=()" always;
-    add_header Cross-Origin-Opener-Policy "same-origin" always;
-    add_header Cross-Origin-Resource-Policy "same-origin" always;
-    add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
-    add_header X-XSS-Protection "0" always;
+#    add_header Content-Security-Policy "default-src 'self'; base-uri 'self'; frame-ancestors 'none'; object-src 'none'; form-action 'self'; img-src 'self' data: https:; script-src 'self'; style-src 'self'; connect-src 'self'; font-src 'self' data:; upgrade-insecure-requests" always;
+#    add_header X-Frame-Options "DENY" always;
+#    add_header X-Content-Type-Options "nosniff" always;
+#    add_header Referrer-Policy "strict-origin-when-cross-origin" always;
+#    add_header Permissions-Policy "geolocation=(), microphone=(), camera=(), payment=(), usb=()" always;
+#    add_header Cross-Origin-Opener-Policy "same-origin" always;
+#    add_header Cross-Origin-Resource-Policy "same-origin" always;
+#    add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
+#    add_header X-XSS-Protection "0" always;
 
     proxy_cookie_flags skihub_session secure httponly samesite=lax;
     proxy_cookie_flags skihub_csrf secure samesite=lax;
