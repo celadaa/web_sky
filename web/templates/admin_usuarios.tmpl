@@ -57,18 +57,18 @@
 
             <form method="POST" action="/admin/usuarios/reset" class="inline-form">
               <input type="hidden" name="usuario_id" value="{{.ID}}">
-              <button type="submit" class="admin-action admin-action--warn" onclick="return confirm('¿Resetear contraseña de {{.Email}}?\n\nSe generará una nueva contraseña aleatoria.')">Reset</button>
+              <button type="submit" class="admin-action admin-action--warn" data-confirm="¿Resetear contraseña de {{.Email}}?\n\nSe generará una nueva contraseña aleatoria.">Reset</button>
             </form>
 
             <form method="POST" action="/admin/usuarios/toggle-admin" class="inline-form">
               <input type="hidden" name="usuario_id" value="{{.ID}}">
-              <button type="submit" class="admin-action admin-action--role" onclick="return confirm('¿Cambiar el rol de este usuario?')">{{if .EsAdmin}}Quitar admin{{else}}Hacer admin{{end}}</button>
+              <button type="submit" class="admin-action admin-action--role" data-confirm="¿Cambiar el rol de este usuario?">{{if .EsAdmin}}Quitar admin{{else}}Hacer admin{{end}}</button>
             </form>
 
             {{if not .EsActual}}
             <form method="POST" action="/admin/usuarios/borrar" class="inline-form">
               <input type="hidden" name="usuario_id" value="{{.ID}}">
-              <button type="submit" class="admin-action admin-action--danger" onclick="return confirm('¿Seguro que quieres borrar a {{.Email}}?\n\nSe perderán también sus favoritas y sesiones. Esta acción es irreversible.')">Borrar</button>
+              <button type="submit" class="admin-action admin-action--danger" data-confirm="¿Seguro que quieres borrar a {{.Email}}?\n\nSe perderán también sus favoritas y sesiones. Esta acción es irreversible.">Borrar</button>
             </form>
             {{end}}
           </td>

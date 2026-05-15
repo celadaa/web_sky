@@ -62,7 +62,7 @@
               <svg class="station-cover__icon" width="56" height="56" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 50 L22 22 L32 38 L44 16 L58 50 Z"/><path d="M22 22 L26 28"/><path d="M44 16 L48 22"/></svg>
               <span class="station-cover__label">{{.Nombre}}</span>
             </span>
-            {{if .Imagen}}<img src="{{.Imagen}}" alt="Estación de esquí {{.Nombre}}" loading="lazy" class="station-card__image" onerror="this.parentNode.classList.add('station-card__media--broken'); this.remove();">{{end}}
+            {{if .Imagen}}<img src="{{.Imagen}}" alt="Estación de esquí {{.Nombre}}" loading="lazy" class="station-card__image" data-broken-parent="station-card__media--broken" data-remove-on-error>{{end}}
           </a>
         </figure>
         <a href="/estacion/{{.ID}}" class="station-card__content">

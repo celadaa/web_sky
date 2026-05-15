@@ -170,7 +170,7 @@
               </svg>
               <span class="station-cover__label">{{.Nombre}}</span>
             </span>
-            {{if .Imagen}}<img src="{{.Imagen}}" alt="Estación de esquí {{.Nombre}}" loading="lazy" class="station-card__image" onerror="this.parentNode.classList.add('station-card__media--broken'); this.remove();">{{end}}
+            {{if .Imagen}}<img src="{{.Imagen}}" alt="Estación de esquí {{.Nombre}}" loading="lazy" class="station-card__image" data-broken-parent="station-card__media--broken" data-remove-on-error>{{end}}
           </a>
         </figure>
         <a href="/estacion/{{.ID}}" class="station-card__content">

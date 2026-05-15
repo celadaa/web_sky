@@ -16,7 +16,7 @@
             <svg class="station-cover__icon" width="56" height="56" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 50 L22 22 L32 38 L44 16 L58 50 Z"/><path d="M22 22 L26 28"/><path d="M44 16 L48 22"/></svg>
             <span class="station-cover__label">{{.Nombre}}</span>
           </span>
-          {{if .Imagen}}<img src="{{.Imagen}}" alt="Estación de esquí {{.Nombre}}" loading="lazy" class="forfait-station-card__image" onerror="this.remove();">{{end}}
+          {{if .Imagen}}<img src="{{.Imagen}}" alt="Estación de esquí {{.Nombre}}" loading="lazy" class="forfait-station-card__image" data-remove-on-error>{{end}}
           <span class="forfait-station-card__price-tag">Desde {{printf "%.0f" .PrecioNino}}€/día</span>
         </figure>
         <div class="forfait-station-card__body">

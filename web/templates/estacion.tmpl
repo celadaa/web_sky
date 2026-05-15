@@ -6,7 +6,7 @@
     Volver
   </a>
   <span class="hero__bg-fallback" aria-hidden="true"></span>
-  {{if .Imagen}}<img src="{{.Imagen}}" alt="Estación de esquí {{.Nombre}}" fetchpriority="high" class="hero__bg-img" onerror="this.remove();">{{end}}
+  {{if .Imagen}}<img src="{{.Imagen}}" alt="Estación de esquí {{.Nombre}}" fetchpriority="high" class="hero__bg-img" data-remove-on-error>{{end}}
 
   <div class="hero__content">
     <div>
