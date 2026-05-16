@@ -238,8 +238,16 @@ func (s *Sec) tomaToken(clave string, max int, intervalo time.Duration) bool {
 func (s *Sec) EmitirCSRF() func(http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			// Si la petición ya trae cookie, la respetamos. Si no, emitimos.
-			if c, err := r.Cookie(CookieCSRF); err != nil || c == nil || c.Value == "" {
+			c, err := r.Cookie(CookieCSRF)
+			noCookie := err != nil || c == nil || c.Value == ""
+			// En GET también refrescamos si la cookie existe pero su HMAC es
+			// inválido (p.ej. tras reiniciar el servidor con clave efímera nueva).
+			// Solo en GET: en POST no tocamos el header de request para no
+			// interferir con la validación que hace VerificarCSRF a continuación.
+			staleCookie := !noCookie &&
+				(r.Method == http.MethodGet || r.Method == http.MethodHead) &&
+				!s.tokenCSRFValido(c.Value, c.Value)
+			if noCookie || staleCookie {
 				token := s.nuevoTokenCSRF()
 				http.SetCookie(w, &http.Cookie{
 					Name:     CookieCSRF,
