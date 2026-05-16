@@ -1,16 +1,188 @@
 {{define "contenido"}}
-<section class="hero hero--home">
-  <h1 class="hero__title">Estado de pistas en directo</h1>
-  <p class="hero__subtitle">
-    Pistas abiertas, kilómetros esquiables y espesores de nieve actualizados desde <a href="https://www.infonieve.es" rel="noopener" target="_blank" class="hero__inline-link">infonieve.es</a>. Comparte tu ubicación para priorizar las estaciones más cercanas.
-  </p>
-  <ul class="hero__pills" id="pistas-meta" hidden>
-    <li class="hero__pill" id="pistas-meta-ubicacion">Ubicación: —</li>
-    <li class="hero__pill" id="pistas-meta-total">— estaciones</li>
-    <li class="hero__pill" id="pistas-meta-actualizado">Actualizado: —</li>
-  </ul>
+
+<!-- ══════════════════════════════════════════════════
+     CABECERA TÉCNICA
+     ══════════════════════════════════════════════════ -->
+<section class="pistas-tecnico-hero">
+  <div class="container pistas-tecnico-hero__inner">
+    <ul class="hero__pills" id="pistas-meta" hidden>
+      <li class="hero__pill" id="pistas-meta-ubicacion">Ubicación: —</li>
+      <li class="hero__pill" id="pistas-meta-total">— estaciones</li>
+      <li class="hero__pill" id="pistas-meta-actualizado">Actualizado: —</li>
+    </ul>
+    <h1 class="pistas-tecnico-hero__title">ESTADO DE PISTAS Y PARTE DE NIEVE TÉCNICO</h1>
+    <p class="pistas-tecnico-hero__sub">
+      Datos en directo desde <a href="https://www.infonieve.es" class="pistas-tecnico-hero__link" rel="noopener" target="_blank">infonieve.es</a>.
+      Comparte tu ubicación para priorizar las estaciones más cercanas.
+    </p>
+  </div>
 </section>
 
+<!-- ══════════════════════════════════════════════════
+     ILUSTRACIÓN PANORÁMICA
+     ══════════════════════════════════════════════════ -->
+<div class="pistas-panorama-wrap">
+  <div class="pistas-panorama">
+    <svg class="pistas-panorama__svg" viewBox="0 0 830 280" preserveAspectRatio="xMidYMid slice" aria-hidden="true" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="sky-grad" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#b8d4f0"/>
+          <stop offset="100%" stop-color="#e8f4ff"/>
+        </linearGradient>
+        <linearGradient id="snow-grad" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#f5faff"/>
+          <stop offset="100%" stop-color="#dbeafe"/>
+        </linearGradient>
+        <linearGradient id="slope-a" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stop-color="#93c5fd"/>
+          <stop offset="100%" stop-color="#60a5fa"/>
+        </linearGradient>
+        <linearGradient id="slope-r" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stop-color="#fca5a5"/>
+          <stop offset="100%" stop-color="#f87171"/>
+        </linearGradient>
+      </defs>
+      <!-- Cielo -->
+      <rect width="830" height="280" fill="url(#sky-grad)"/>
+      <!-- Montañas traseras -->
+      <polygon points="0,200 80,80 160,160 240,60 320,140 400,50 480,130 560,70 640,150 720,90 830,170 830,280 0,280" fill="#c7ddf5" opacity="0.7"/>
+      <!-- Montañas medias -->
+      <polygon points="0,240 60,130 120,190 200,100 290,170 380,90 460,160 550,110 630,180 720,120 830,200 830,280 0,280" fill="url(#snow-grad)"/>
+      <!-- Nieve cima -->
+      <polygon points="200,100 220,80 240,100 260,85 290,170 200,170" fill="#fff" opacity="0.6"/>
+      <polygon points="380,90 400,68 420,90 445,78 460,160 380,160" fill="#fff" opacity="0.6"/>
+      <polygon points="550,110 572,92 590,110 610,98 630,180 550,180" fill="#fff" opacity="0.6"/>
+      <!-- Pistas azules (fácil) -->
+      <path d="M250 150 Q280 170 300 230 Q310 260 320 280" stroke="url(#slope-a)" stroke-width="14" fill="none" stroke-linecap="round" opacity="0.85"/>
+      <path d="M420 130 Q450 160 460 200 Q470 240 475 280" stroke="url(#slope-a)" stroke-width="10" fill="none" stroke-linecap="round" opacity="0.75"/>
+      <!-- Pistas rojas (difícil) -->
+      <path d="M230 160 Q200 195 195 240 Q192 260 190 280" stroke="url(#slope-r)" stroke-width="12" fill="none" stroke-linecap="round" opacity="0.8"/>
+      <path d="M610 155 Q590 185 585 230 Q582 255 580 280" stroke="url(#slope-r)" stroke-width="10" fill="none" stroke-linecap="round" opacity="0.75"/>
+      <!-- Pistas negras (muy difícil) -->
+      <path d="M405 145 Q385 175 375 215 Q368 250 365 280" stroke="#374151" stroke-width="8" fill="none" stroke-linecap="round" opacity="0.7"/>
+      <!-- Remontes -->
+      <line x1="200" y1="280" x2="240" y2="160" stroke="#1e3a8a" stroke-width="2" stroke-dasharray="6,4" opacity="0.6"/>
+      <circle cx="240" cy="160" r="5" fill="#1e3a8a" opacity="0.7"/>
+      <line x1="370" y1="280" x2="400" y2="130" stroke="#1e3a8a" stroke-width="2" stroke-dasharray="6,4" opacity="0.6"/>
+      <circle cx="400" cy="130" r="5" fill="#1e3a8a" opacity="0.7"/>
+      <line x1="560" y1="280" x2="590" y2="155" stroke="#1e3a8a" stroke-width="2" stroke-dasharray="6,4" opacity="0.6"/>
+      <circle cx="590" cy="155" r="5" fill="#1e3a8a" opacity="0.7"/>
+      <!-- Árboles base -->
+      <g fill="#1e3a8a" opacity="0.18">
+        <polygon points="700,280 710,245 720,280"/>
+        <polygon points="715,280 727,240 739,280"/>
+        <polygon points="745,280 756,248 767,280"/>
+        <polygon points="90,280 100,248 110,280"/>
+        <polygon points="108,280 120,243 132,280"/>
+      </g>
+      <!-- Leyenda de pistas -->
+      <g font-family="'Segoe UI', Arial, sans-serif" font-size="11" fill="#0b1d3a">
+        <circle cx="30" cy="20" r="7" fill="#60a5fa"/>
+        <text x="42" y="25">Fácil</text>
+        <circle cx="85" cy="20" r="7" fill="#f87171"/>
+        <text x="97" y="25">Difícil</text>
+        <circle cx="148" cy="20" r="7" fill="#374151"/>
+        <text x="160" y="25">Experto</text>
+        <rect x="220" y="13" width="18" height="3" rx="1" fill="#1e3a8a"/>
+        <text x="243" y="25">Remonte</text>
+      </g>
+    </svg>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════
+     TABLA TÉCNICA POR SECTORES
+     ══════════════════════════════════════════════════ -->
+<section class="container pistas-tabla-section">
+  <h2 class="pistas-tabla-section__title">Parte de Nieve por Sectores</h2>
+  <div class="pistas-tabla-wrap">
+    <table class="pistas-tabla" id="pistas-tabla" aria-label="Estado de pistas por estación">
+      <thead>
+        <tr>
+          <th scope="col">Sector</th>
+          <th scope="col">Pistas Abiertas</th>
+          <th scope="col">Espesores (cm)</th>
+          <th scope="col">Riesgo de Aludes</th>
+        </tr>
+      </thead>
+      <tbody id="pistas-tabla-body">
+        <tr class="pistas-tabla__loading">
+          <td colspan="4">
+            <span class="pistas-state__spinner" aria-hidden="true"></span>
+            Cargando datos…
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════
+     GRÁFICOS DE PREVISIÓN 24H
+     ══════════════════════════════════════════════════ -->
+<section class="container pistas-charts-section">
+  <div class="pistas-charts-grid">
+
+    <div class="pistas-chart-panel">
+      <h3 class="pistas-chart-panel__title">Previsión de Temperatura (24h)</h3>
+      <div class="pistas-chart-panel__canvas" aria-label="Gráfico de temperatura simulado">
+        <svg class="pistas-chart-svg" viewBox="0 0 460 120" preserveAspectRatio="none" aria-hidden="true" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="temp-area" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#3b82f6" stop-opacity="0.25"/>
+              <stop offset="100%" stop-color="#3b82f6" stop-opacity="0.03"/>
+            </linearGradient>
+          </defs>
+          <!-- Cero line (temp 0°C) -->
+          <line x1="0" y1="72" x2="460" y2="72" stroke="#e2e8f0" stroke-width="1" stroke-dasharray="4,3"/>
+          <!-- Área bajo la curva -->
+          <path d="M0,85 L19,88 L38,90 L57,90 L76,90 L95,87 L114,83 L133,79 L152,72 L171,68 L190,61 L209,56 L228,52 L247,56 L266,61 L285,65 L304,68 L323,72 L342,76 L361,79 L380,83 L399,85 L418,87 L437,88 L456,89 L456,120 L0,120 Z" fill="url(#temp-area)"/>
+          <!-- Línea de temperatura -->
+          <polyline points="0,85 19,88 38,90 57,90 76,90 95,87 114,83 133,79 152,72 171,68 190,61 209,56 228,52 247,56 266,61 285,65 304,68 323,72 342,76 361,79 380,83 399,85 418,87 437,88 456,89" fill="none" stroke="#3b82f6" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+          <!-- Etiquetas eje Y (°C) -->
+          <text x="2" y="50" font-size="9" fill="#64748b" font-family="sans-serif">25</text>
+          <text x="2" y="74" font-size="9" fill="#64748b" font-family="sans-serif">0</text>
+          <text x="2" y="98" font-size="9" fill="#64748b" font-family="sans-serif">-15</text>
+        </svg>
+        <div class="pistas-chart-xaxis">
+          <span>0h</span><span>4h</span><span>8h</span><span>12h</span><span>16h</span><span>20h</span><span>24h</span>
+        </div>
+      </div>
+      <p class="pistas-chart-panel__nota">Datos simulados · Fuente meteorológica no disponible</p>
+    </div>
+
+    <div class="pistas-chart-panel">
+      <h3 class="pistas-chart-panel__title">Previsión de Viento (24h)</h3>
+      <div class="pistas-chart-panel__canvas" aria-label="Gráfico de viento simulado">
+        <svg class="pistas-chart-svg" viewBox="0 0 460 120" preserveAspectRatio="none" aria-hidden="true" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="wind-area" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#0ea5e9" stop-opacity="0.2"/>
+              <stop offset="100%" stop-color="#0ea5e9" stop-opacity="0.02"/>
+            </linearGradient>
+          </defs>
+          <!-- Área bajo la curva -->
+          <path d="M0,88 L19,90 L38,93 L57,92 L76,90 L95,85 L114,78 L133,70 L152,60 L171,55 L190,50 L209,52 L228,58 L247,64 L266,70 L285,75 L304,80 L323,78 L342,72 L361,76 L380,80 L399,82 L418,85 L437,87 L456,88 L456,120 L0,120 Z" fill="url(#wind-area)"/>
+          <!-- Línea de viento -->
+          <polyline points="0,88 19,90 38,93 57,92 76,90 95,85 114,78 133,70 152,60 171,55 190,50 209,52 228,58 247,64 266,70 285,75 304,80 323,78 342,72 361,76 380,80 399,82 418,85 437,87 456,88" fill="none" stroke="#0ea5e9" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+          <!-- Etiquetas eje Y (km/h) -->
+          <text x="2" y="54" font-size="9" fill="#64748b" font-family="sans-serif">15</text>
+          <text x="2" y="80" font-size="9" fill="#64748b" font-family="sans-serif">5</text>
+          <text x="2" y="106" font-size="9" fill="#64748b" font-family="sans-serif">0</text>
+        </svg>
+        <div class="pistas-chart-xaxis">
+          <span>0h</span><span>4h</span><span>8h</span><span>12h</span><span>16h</span><span>20h</span><span>24h</span>
+        </div>
+      </div>
+      <p class="pistas-chart-panel__nota">Datos simulados · Fuente meteorológica no disponible</p>
+    </div>
+
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════
+     FILTROS Y GRID DE TARJETAS (funcionalidad original)
+     ══════════════════════════════════════════════════ -->
 <section class="container">
   <div class="filters__header">
     <div>
@@ -104,4 +276,5 @@
 
 <script src="/static/geolocation.js"></script>
 <script src="/static/pistas.js"></script>
+<script src="/static/pistas-tecnico.js"></script>
 {{end}}

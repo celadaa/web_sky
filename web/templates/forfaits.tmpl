@@ -1,16 +1,110 @@
 {{define "contenido"}}
-<section class="hero hero--home">
-  <h1 class="hero__title">Tu forfait, listo en un par de clics</h1>
-  <p class="hero__subtitle">
-    Elige estación, fechas y tipo de pase. Añade tu forfait a la cesta y olvídate de las colas en taquilla.
-  </p>
+<section class="hero hero--forfait-premium">
+  <div class="hero__forfait-content">
+    <span class="hero__eyebrow hero__eyebrow--light">Configurador Premium</span>
+    <h1 class="hero__title hero__title--premium">Configuración de Forfait</h1>
+    <p class="hero__subtitle hero__subtitle--light">
+      Elige estación, fechas y tipo de pase. Añade tu forfait a la cesta y olvídate de las colas en taquilla.
+    </p>
+  </div>
+</section>
+
+<section class="container forfait-configurador-section">
+  <div class="forfait-configurador">
+
+    <div class="forfait-configurador__opciones panel">
+      <h2 class="forfait-configurador__titulo">Opciones de Cobertura</h2>
+
+      <div class="forfait-seguro">
+        <label class="forfait-seguro__toggle">
+          <input type="checkbox" id="forfait-seguro-check" checked>
+          <span class="forfait-seguro__label">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            Añadir Seguro de Rescate
+          </span>
+        </label>
+
+        <div class="forfait-seguro__opciones" id="forfait-seguro-opciones">
+          <label class="forfait-radio">
+            <input type="radio" name="seguro" value="basico">
+            <span class="forfait-radio__box">
+              <strong>Básico <em>(+15€/persona)</em></strong>
+              <small>Vehículo de rescate, primera visita médica.</small>
+            </span>
+          </label>
+          <label class="forfait-radio forfait-radio--selected">
+            <input type="radio" name="seguro" value="completo" checked>
+            <span class="forfait-radio__box">
+              <strong>Completo <em>(+30€/persona)</em></strong>
+              <small>Cobertura completa durante toda la jornada.</small>
+            </span>
+          </label>
+          <label class="forfait-radio">
+            <input type="radio" name="seguro" value="premium">
+            <span class="forfait-radio__box">
+              <strong>Premium <em>(+50€/persona)</em></strong>
+              <small>Un permiso de estrés, panorámicas primeras.</small>
+            </span>
+          </label>
+        </div>
+      </div>
+
+      <div class="forfait-tipo-esquiador">
+        <h3 class="forfait-tipo-esquiador__titulo">Tipo de Esquiador</h3>
+        <select class="forfait-tipo-esquiador__select" id="forfait-tipo-select" aria-label="Tipo de esquiador">
+          <option value="adulto">Adulto (18+)</option>
+          <option value="junior">Júnior (0–17)</option>
+          <option value="senior">Sénior (65+)</option>
+        </select>
+      </div>
+
+      <button type="button" class="btn-forfait-guardar" id="forfait-guardar">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+        Guardar Configuración
+      </button>
+    </div>
+
+    <div class="forfait-configurador__resumen panel" id="forfait-resumen">
+      <h2 class="forfait-configurador__titulo">Resumen de Compra</h2>
+      <div id="forfait-resumen-vacio" class="forfait-resumen__vacio">
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+        <p>Tu cesta está vacía.</p>
+        <p class="forfait-resumen__hint">Elige una estación abajo para añadir forfaits.</p>
+      </div>
+      <div id="forfait-resumen-datos" hidden>
+        <dl class="forfait-resumen__list">
+          <div class="forfait-resumen__row">
+            <dt>Forfaits</dt>
+            <dd id="forfait-resumen-total-precio">0,00 €</dd>
+          </div>
+          <div class="forfait-resumen__row">
+            <dt>Seguro</dt>
+            <dd id="forfait-resumen-seguro">Incluido</dd>
+          </div>
+          <div class="forfait-resumen__row forfait-resumen__row--total">
+            <dt>Total Estimado</dt>
+            <dd id="forfait-resumen-total">0,00 €</dd>
+          </div>
+        </dl>
+        <a href="/cesta" class="btn-forfait-reservar">
+          Ver Cesta y Reservar
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+        </a>
+        <p class="forfait-resumen__condiciones">Ver detalles y condiciones</p>
+      </div>
+    </div>
+  </div>
 </section>
 
 <section class="container">
+  <div class="forfait-grid-header">
+    <h2>Elige tu estación</h2>
+    <p>Selecciona la estación, añade el forfait a la cesta y personaliza tu escapada.</p>
+  </div>
   <ul class="grid-cards forfait-grid">
     {{range .Estaciones}}
     <li>
-      <article class="forfait-station-card">
+      <article class="forfait-station-card forfait-station-card--premium">
         <figure class="forfait-station-card__figure">
           <span class="station-cover" data-station="{{.Nombre}}" aria-hidden="true">
             <svg class="station-cover__icon" width="56" height="56" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 50 L22 22 L32 38 L44 16 L58 50 Z"/><path d="M22 22 L26 28"/><path d="M44 16 L48 22"/></svg>
@@ -26,18 +120,31 @@
             {{.Ubicacion}}
           </p>
           <ul class="forfait-station-card__price-list">
-            <li><span>Adulto</span><strong>{{printf "%.2f" .PrecioAdulto}} €</strong></li>
-            <li><span>Niño</span><strong>{{printf "%.2f" .PrecioNino}} €</strong></li>
-            <li><span>Senior</span><strong>{{printf "%.2f" .PrecioSenior}} €</strong></li>
+            <li>
+              <span>Adulto</span>
+              <strong>{{printf "%.2f" .PrecioAdulto}} €</strong>
+            </li>
+            <li>
+              <span>Niño</span>
+              <strong>{{printf "%.2f" .PrecioNino}} €</strong>
+            </li>
+            <li>
+              <span>Sénior</span>
+              <strong>{{printf "%.2f" .PrecioSenior}} €</strong>
+            </li>
           </ul>
-          <a href="/estacion/{{.ID}}#comprar" class="forfait-station-card__cta">
-            Seleccionar Fechas
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
-          </a>
+          <div class="forfait-station-card__actions">
+            <a href="/estacion/{{.ID}}#comprar" class="forfait-station-card__cta">
+              Seleccionar Fechas
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+            </a>
+            <a href="/estacion/{{.ID}}" class="forfait-station-card__link">Ver estación</a>
+          </div>
         </div>
       </article>
     </li>
     {{end}}
   </ul>
 </section>
+<script src="/static/forfait-configurador.js"></script>
 {{end}}

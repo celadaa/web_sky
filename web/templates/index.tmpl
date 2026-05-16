@@ -1,37 +1,62 @@
 {{define "contenido"}}
-<section class="hero hero--home">
-  <div class="hero__home-content">
-    <span class="hero__eyebrow">Tu compañero de nieve</span>
-    <h1 class="hero__title">Planifica tu próxima escapada a la nieve</h1>
-    <p class="hero__subtitle">
-      Consulta estaciones cercanas, nieve disponible, pistas abiertas y forfaits desde un solo lugar.
+<section class="hero hero--premium-v2">
+  <div class="hero__premium-v2-inner">
+    <span class="hero__eyebrow-pill">Estaciones de esquí · Nieve · Forfaits</span>
+    <h1 class="hero__title-v2">PLANIFICA TU DÍA PERFECTO EN LA NIEVE</h1>
+    <p class="hero__subtitle-v2">
+      Consulta estaciones, estado de pistas, nieve disponible y reserva tus forfaits desde un solo lugar.
     </p>
-    <div class="hero__cta-group" role="group" aria-label="Acciones principales">
-      <a href="/estaciones" class="cta-btn cta-btn--primary">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
-        Buscar estación
-      </a>
-      <a href="/pistas" class="cta-btn cta-btn--secondary">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12h2l3-9 4 18 3-9h6"/></svg>
-        Ver estado de pistas
-      </a>
-    </div>
+
+    <div id="hero-estaciones-data" hidden aria-hidden="true">{{range .Estaciones}}<span data-id="{{.ID}}" data-nombre="{{.Nombre}}" data-ubicacion="{{.Ubicacion}}"></span>{{end}}</div>
+
+    <form action="/estaciones" method="GET" class="hero__search-v2" role="search" aria-label="Buscar estaciones" id="hero-search-form" novalidate>
+      <div class="hero__sv2-field hero__sv2-field--ac" id="hero-ac-wrap">
+        <label class="hero__sv2-label" for="hero-destino">Destino o estación</label>
+        <input id="hero-destino" type="text" name="q" class="hero__sv2-input" placeholder="Busca Baqueira, Sierra Nevada, Formigal…" autocomplete="off" aria-label="Destino o estación" aria-autocomplete="list" aria-controls="hero-ac-list" aria-haspopup="listbox" role="combobox" aria-expanded="false">
+        <input type="hidden" id="hero-estacion-id" name="id_estacion" value="">
+        <ul id="hero-ac-list" class="home-ac" role="listbox" aria-label="Estaciones sugeridas" hidden></ul>
+      </div>
+      <div class="hero__sv2-sep"></div>
+      <div class="hero__sv2-field hero__sv2-field--dp" id="hero-dp-wrap">
+        <label class="hero__sv2-label" for="hero-fechas-display">Fechas</label>
+        <input id="hero-fechas-display" type="text" class="hero__sv2-input hero__sv2-input--dates" placeholder="Selecciona fechas" readonly aria-label="Rango de fechas" aria-haspopup="dialog" aria-expanded="false">
+        <input type="hidden" id="hero-fecha-inicio" name="fecha_inicio" value="">
+        <input type="hidden" id="hero-fecha-fin" name="fecha_fin" value="">
+      </div>
+      <div class="hero__sv2-sep"></div>
+      <div class="hero__sv2-field">
+        <label class="hero__sv2-label" for="hero-tipo">Tipo</label>
+        <select id="hero-tipo" name="tipo" class="hero__sv2-input hero__sv2-select" aria-label="Tipo de actividad">
+          <option value="">Todos los tipos</option>
+          <option value="alpino">Esquí alpino</option>
+          <option value="snowboard">Snowboard</option>
+          <option value="familiar">Familiar</option>
+          <option value="principiante">Principiante</option>
+          <option value="forfait">Forfait diario</option>
+        </select>
+      </div>
+      <button type="submit" class="hero__sv2-btn">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+        Buscar estaciones
+      </button>
+    </form>
+
     <div class="hero__ubic" data-ubicacion-selector></div>
-    <ul class="hero__metrics" aria-label="Métricas destacadas">
-      <li class="hero__metric">
-        <span class="hero__metric-label">Más cercana</span>
-        <span class="hero__metric-value">{{with .MasCercana}}{{.Nombre}}{{else}}—{{end}}</span>
-        <span class="hero__metric-hint">{{with .MasCercana}}A {{printf "%.0f" .Distancia}} km{{else}}Sin datos{{end}}</span>
+
+    <ul class="hero__metrics-v2" aria-label="Métricas destacadas">
+      <li>
+        <span class="hero__mv2-value">{{with .MasCercana}}{{.Nombre}}{{else}}—{{end}}</span>
+        <span class="hero__mv2-label">Más cercana · {{with .MasCercana}}{{printf "%.0f" .Distancia}} km{{else}}sin datos{{end}}</span>
       </li>
-      <li class="hero__metric">
-        <span class="hero__metric-label">Distancia media</span>
-        <span class="hero__metric-value">{{printf "%.0f" .DistanciaPromedio}} km</span>
-        <span class="hero__metric-hint">Sobre el catálogo completo</span>
+      <li class="hero__mv2-sep" aria-hidden="true"></li>
+      <li>
+        <span class="hero__mv2-value">{{printf "%.0f" .DistanciaPromedio}} km</span>
+        <span class="hero__mv2-label">Distancia media</span>
       </li>
-      <li class="hero__metric">
-        <span class="hero__metric-label">Estaciones</span>
-        <span class="hero__metric-value">{{len .Estaciones}}</span>
-        <span class="hero__metric-hint">Disponibles ahora mismo</span>
+      <li class="hero__mv2-sep" aria-hidden="true"></li>
+      <li>
+        <span class="hero__mv2-value">{{len .Estaciones}}</span>
+        <span class="hero__mv2-label">Estaciones disponibles</span>
       </li>
     </ul>
   </div>
@@ -275,4 +300,5 @@
 
 <script src="/static/mapa.js"></script>
 <script src="/static/pistas-home.js"></script>
+<script src="/static/home-search.js"></script>
 {{end}}

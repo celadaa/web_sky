@@ -1,0 +1,169 @@
+{{define "contenido"}}
+<div class="pago-page">
+
+  <header class="pago-page__header">
+    <div class="pago-page__brand">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+      <span>SnowBreak</span>
+    </div>
+    <p class="pago-page__subtitle">Pasarela de Pago Segura</p>
+  </header>
+
+  <div class="pago-page__layout">
+
+    <!-- ── Columna izquierda: datos + método de pago ── -->
+    <div class="pago-page__form-col">
+
+      <div class="pago-block">
+        <h2 class="pago-block__title">Datos del Esquiador</h2>
+        <div class="pago-grid-2">
+          <div class="pago-field">
+            <label class="pago-field__label" for="pg-nombre">Nombre</label>
+            <input id="pg-nombre" type="text" class="pago-field__input" placeholder="Nombre" autocomplete="given-name">
+          </div>
+          <div class="pago-field">
+            <label class="pago-field__label" for="pg-apellidos">Apellidos</label>
+            <input id="pg-apellidos" type="text" class="pago-field__input" placeholder="Apellidos" autocomplete="family-name">
+          </div>
+        </div>
+        <div class="pago-grid-2">
+          <div class="pago-field">
+            <label class="pago-field__label" for="pg-email">Correo Electrónico</label>
+            <input id="pg-email" type="email" class="pago-field__input" placeholder="correo@ejemplo.com" autocomplete="email">
+          </div>
+          <div class="pago-field">
+            <label class="pago-field__label" for="pg-tel">Teléfono</label>
+            <input id="pg-tel" type="tel" class="pago-field__input" placeholder="123 456 7899" autocomplete="tel">
+          </div>
+        </div>
+      </div>
+
+      <div class="pago-block">
+        <h2 class="pago-block__title">Método de Pago Seguro</h2>
+
+        <label class="pago-metodo pago-metodo--selected" id="pago-metodo-tarjeta">
+          <input type="radio" name="metodo_pago" value="tarjeta" checked aria-label="Tarjeta de crédito o débito">
+          <span class="pago-metodo__info">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+            Tarjeta de Crédito/Débito
+          </span>
+          <span class="pago-metodo__logos" aria-hidden="true">
+            <span class="pago-logo pago-logo--visa">VISA</span>
+            <span class="pago-logo pago-logo--mc">MC</span>
+            <span class="pago-logo pago-logo--amex">AMEX</span>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#4ade80" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+          </span>
+        </label>
+
+        <div class="pago-tarjeta-campos" id="pago-tarjeta-campos">
+          <div class="pago-field pago-field--card">
+            <label class="pago-field__label" for="pago-numero-tarjeta">Número de tarjeta</label>
+            <input id="pago-numero-tarjeta" type="text" class="pago-field__input" placeholder="•••• •••• •••• ••••" maxlength="19" inputmode="numeric" autocomplete="cc-number">
+          </div>
+          <div class="pago-grid-2">
+            <div class="pago-field">
+              <label class="pago-field__label" for="pago-caducidad">Caducidad</label>
+              <input id="pago-caducidad" type="text" class="pago-field__input" placeholder="MM/AA" maxlength="5" autocomplete="cc-exp">
+            </div>
+            <div class="pago-field">
+              <label class="pago-field__label" for="pago-cvv">CVV</label>
+              <input id="pago-cvv" type="text" class="pago-field__input" placeholder="•••" maxlength="4" inputmode="numeric" autocomplete="cc-csc">
+            </div>
+          </div>
+        </div>
+
+        <label class="pago-metodo pago-metodo--apple">
+          <input type="radio" name="metodo_pago" value="apple_pay" aria-label="Apple Pay">
+          <span class="pago-metodo__info pago-metodo__info--apple">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg>
+            Apple Pay
+          </span>
+        </label>
+
+        <div class="pago-metodos-alt">
+          <label class="pago-metodo pago-metodo--alt">
+            <input type="radio" name="metodo_pago" value="google_pay" aria-label="Google Pay">
+            <span class="pago-metodo__info">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M8 12h8M12 8v8"/></svg>
+              Google Pay
+            </span>
+          </label>
+          <label class="pago-metodo pago-metodo--alt">
+            <input type="radio" name="metodo_pago" value="paypal" aria-label="PayPal">
+            <span class="pago-metodo__info">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M7 11C7 11 6.5 15 10 16C14 17 17 14 17 11C17 8 15 6 12 6H8L7 11Z"/><path d="M5 18C5 18 4.5 22 8 23C12 24 15 21 15 18C15 15 13 13 10 13H6L5 18Z"/></svg>
+              PayPal
+            </span>
+          </label>
+        </div>
+
+        <div class="pago-terminos">
+          <label class="pago-check">
+            <input type="checkbox" id="pago-terminos-check">
+            <span>Acepto los <a href="/legal/aviso-legal" class="text-link" target="_blank" rel="noopener">Términos y Condiciones</a> y la <a href="/legal/privacidad" class="text-link" target="_blank" rel="noopener">Política de Privacidad</a></span>
+          </label>
+          <label class="pago-check">
+            <input type="checkbox" id="pago-comunicaciones-check">
+            <span>Acepto recibir comunicaciones de SnowBreak sobre ofertas y novedades</span>
+          </label>
+        </div>
+
+        <p class="pago-ssl">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+          Transacción SSL Segura. Tus datos están protegidos.
+        </p>
+
+        <div class="pago-demo-nota" role="note">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          <span><strong>Demo académica:</strong> No se procesarán pagos reales.</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Columna derecha: resumen ── -->
+    <aside class="pago-page__resumen-col">
+      <div class="pago-resumen-card">
+        <h2 class="pago-resumen-card__title">Resumen de tu Reserva</h2>
+
+        <dl class="pago-resumen-card__lista" id="pago-resumen-lista"></dl>
+
+        <div class="pago-resumen-card__vacio" id="pago-resumen-vacio">
+          <p>Tu cesta está vacía.</p>
+          <a href="/forfaits" class="text-link">Añadir forfaits →</a>
+        </div>
+
+        <div class="pago-resumen-card__totales" id="pago-resumen-totales" hidden>
+          <div class="pago-resumen-card__fila">
+            <span>Subtotal</span>
+            <span id="pago-subtotal">0,00 €</span>
+          </div>
+          <div class="pago-resumen-card__fila">
+            <span>IVA (10%)</span>
+            <span id="pago-iva">0,00 €</span>
+          </div>
+          <div class="pago-resumen-card__fila">
+            <span>Tasa Turística</span>
+            <span id="pago-tasa">5,00 €</span>
+          </div>
+        </div>
+
+        <div class="pago-resumen-card__total-block" id="pago-total-block" hidden>
+          <p class="pago-resumen-card__total-label">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+            Total a Pagar
+          </p>
+          <p class="pago-resumen-card__total-valor" id="pago-total">0,00 €</p>
+        </div>
+
+        <button type="button" class="pago-btn-pagar" id="pago-btn" disabled>
+          Pagar Ahora
+        </button>
+
+        <p class="pago-resumen-card__nota">Recibirás la confirmación por correo electrónico.</p>
+      </div>
+    </aside>
+
+  </div>
+</div>
+<script src="/static/pago.js"></script>
+{{end}}

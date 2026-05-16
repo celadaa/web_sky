@@ -31,11 +31,15 @@
           <dd id="cart-page-total">0,00 €</dd>
         </div>
       </dl>
-      <button type="button" class="forfait-card__cta cart-page__checkout" disabled>
-        Proceder al Pago (próximamente)
-      </button>
+      <a href="/pago" class="forfait-card__cta cart-page__checkout" id="cart-page-checkout-link">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        Proceder al Pago Seguro
+      </a>
       <button type="button" id="cart-page-clear" class="cart-page__clear">Vaciar cesta</button>
-      <p class="cart-page__note">El pago se habilitará cuando esté integrada la pasarela. De momento la cesta funciona localmente en tu navegador.</p>
+      <p class="cart-page__note">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+        Transacción segura SSL. Pasarela de demostración académica.
+      </p>
     </aside>
   </div>
 </section>

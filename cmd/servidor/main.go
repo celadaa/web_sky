@@ -110,6 +110,7 @@ func main() {
 	mux.HandleFunc("/noticias", app.Noticias)
 	mux.HandleFunc("/forfaits", app.Forfaits)
 	mux.HandleFunc("/cesta", app.Cesta)
+	mux.HandleFunc("/pago", app.Pago)
 	mux.Handle("/registro", rlAuth(http.HandlerFunc(app.Registro)))
 	mux.HandleFunc("/legal/aviso-legal", app.AvisoLegal)
 	mux.HandleFunc("/legal/privacidad", app.PoliticaPrivacidad)
