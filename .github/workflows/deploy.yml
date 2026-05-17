@@ -41,7 +41,7 @@ jobs:
     if: github.event_name == 'push'
     steps:
       - name: Wait on CI workflow
-        uses: lewagon/wait-on-check-action@v1.3.4
+        uses: lewagon/wait-on-check-action@v1.7.0
         with:
           ref: ${{ github.sha }}
           check-name: "Build, test & lint"
