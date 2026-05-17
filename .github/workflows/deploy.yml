@@ -113,9 +113,14 @@ jobs:
             echo "==> Nuevo commit: \$(git rev-parse HEAD)"
 
             echo "==> Compilando binario..."
+            # Inyectamos el SHA corto en la var `main.version` para que /healthz
+            # devuelva el commit real desplegado en vez de "dev". Útil para
+            # confirmar qué versión está sirviendo producción de un vistazo.
+            COMMIT_SHA=\$(git rev-parse --short HEAD)
+            echo "==> Versión a inyectar: \$COMMIT_SHA"
             # Compilamos a un nombre temporal y hacemos swap atómico justo antes
             # del restart para evitar "text file busy" si el servicio está corriendo.
-            go build -o ./skihub.new ./cmd/servidor
+            go build -ldflags "-X main.version=\$COMMIT_SHA" -o ./skihub.new ./cmd/servidor
 
             echo "==> Reemplazando binario (atómico) y reiniciando skihub.service"
             mv -f ./skihub.new ./skihub
