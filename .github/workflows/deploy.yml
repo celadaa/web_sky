@@ -57,7 +57,10 @@ jobs:
     timeout-minutes: 15
     environment:
       name: production
-      url: ${{ secrets.HEALTH_URL }}
+      # url: hardcoded — GitHub Actions no permite usar `secrets.X` aquí.
+      # Si tu dominio cambia, edítalo a mano. La URL aparece en el sidebar
+      # del deployment dentro de la pestaña Environments.
+      url: https://snowbreak.es
 
     steps:
       - name: Checkout (solo metadata, para conocer el SHA)
@@ -120,10 +123,13 @@ jobs:
           EOF
 
       - name: Health check público
-        if: ${{ secrets.HEALTH_URL != '' }}
         env:
           HEALTH_URL: ${{ secrets.HEALTH_URL }}
         run: |
+          if [ -z "$HEALTH_URL" ]; then
+            echo "::warning::HEALTH_URL no configurado en Secrets, omito health check"
+            exit 0
+          fi
           echo "Esperando 5s a que el servicio termine de levantar..."
           sleep 5
           for i in 1 2 3 4 5; do
