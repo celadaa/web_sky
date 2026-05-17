@@ -85,9 +85,15 @@ jobs:
           VPS_USER: ${{ secrets.VPS_USER }}
           VPS_PORT: ${{ secrets.VPS_PORT }}
           VPS_APP_PATH: ${{ secrets.VPS_APP_PATH }}
-          VPS_SERVICE: ${{ secrets.VPS_SERVICE }}
           DEPLOY_SHA: ${{ github.sha }}
           DEPLOY_REF: ${{ github.event.inputs.ref || 'main' }}
+        # El nombre del servicio (skihub.service) ya NO viene de un secret.
+        # Lo hardcodeamos porque:
+        # 1. No es información confidencial (cualquiera con SSH al VPS lo ve).
+        # 2. Los secrets pasaban por máscaras que rompían el match exacto del
+        #    sudoers (whitespace/encoding/caracteres invisibles dependiendo de
+        #    cómo se pegó en la UI de GitHub).
+        # Si tu servicio se llama distinto, cambia la cadena literal abajo.
         run: |
           ssh -p "${VPS_PORT:-22}" "$VPS_USER@$VPS_HOST" bash -se <<EOF
             set -euo pipefail
@@ -111,16 +117,16 @@ jobs:
             # del restart para evitar "text file busy" si el servicio está corriendo.
             go build -o ./skihub.new ./cmd/servidor
 
-            echo "==> Reemplazando binario (atómico) y reiniciando $VPS_SERVICE"
+            echo "==> Reemplazando binario (atómico) y reiniciando skihub.service"
             mv -f ./skihub.new ./skihub
-            # Usamos /usr/bin/systemctl con ruta absoluta para que el sudoers
-            # encuentre la coincidencia exacta. Sin la ruta, sudo a veces
-            # resuelve a /bin/systemctl o se queda sin PATH (depende de la
-            # config de sudo y de si hay TTY).
-            sudo /usr/bin/systemctl restart "$VPS_SERVICE"
-            sudo /usr/bin/systemctl is-active --quiet "$VPS_SERVICE" || {
+
+            # Nombre del servicio hardcodeado para garantizar match exacto en
+            # sudoers. Flag -n: si por lo que sea sudo necesita password, falla
+            # rápido en vez de quedarse colgado intentando abrir un TTY.
+            sudo -n /usr/bin/systemctl restart skihub.service
+            sudo -n /usr/bin/systemctl is-active --quiet skihub.service || {
               echo "::error::El servicio no está activo tras el restart"
-              sudo /usr/bin/systemctl status "$VPS_SERVICE" --no-pager | tail -30
+              sudo -n /usr/bin/systemctl status skihub.service --no-pager | tail -30
               exit 1
             }
             echo "==> Servicio activo."
