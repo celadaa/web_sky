@@ -5,8 +5,11 @@
 *.so
 *.dylib
 *-go-tmp-umask
-servidor
-skihub
+# Ojo: usamos `/` al principio para que sólo coincida con el binario compilado
+# en la raíz, no con la CARPETA `cmd/servidor/` (que contiene el código fuente).
+/servidor
+/skihub
+/skihub.new
 /bin/
 /build/
 
