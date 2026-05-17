@@ -1,0 +1,54 @@
+# .gitattributes — fuerza terminadores de línea consistentes (LF) sin importar el SO del developer.
+#
+# ¿Por qué? Git en Windows con `core.autocrlf=true` convierte LF↔CRLF al hacer
+# checkout/commit. Cuando los archivos llegan al CI Linux con CRLF, gofmt y
+# otras herramientas rompen porque interpretan `\r` como carácter normal en
+# medio de la línea ("missing ',' before newline in argument list").
+#
+# Solución: declarar explícitamente los tipos de archivo que SIEMPRE deben ser
+# texto con LF, y dejar binarios sin tocar.
+# Docs: https://git-scm.com/docs/gitattributes
+
+# Todo texto por defecto: detectar automáticamente y normalizar a LF.
+* text=auto eol=lf
+
+# Código fuente — LF forzado siempre.
+*.go         text eol=lf
+*.mod        text eol=lf
+*.sum        text eol=lf
+*.sql        text eol=lf
+*.sh         text eol=lf
+*.py         text eol=lf
+
+# Frontend.
+*.html       text eol=lf
+*.css        text eol=lf
+*.js         text eol=lf
+*.tmpl       text eol=lf
+
+# Configuración y docs.
+*.yml        text eol=lf
+*.yaml       text eol=lf
+*.toml       text eol=lf
+*.json       text eol=lf
+*.md         text eol=lf
+*.txt        text eol=lf
+Dockerfile   text eol=lf
+Makefile     text eol=lf
+
+# Archivos exclusivamente Windows (poco probables aquí pero por si acaso).
+*.bat        text eol=crlf
+*.cmd        text eol=crlf
+*.ps1        text eol=crlf
+
+# Binarios — NUNCA tocar.
+*.png        binary
+*.jpg        binary
+*.jpeg       binary
+*.gif        binary
+*.ico        binary
+*.pdf        binary
+*.zip        binary
+*.tar.gz     binary
+*.db         binary
+*.dump       binary

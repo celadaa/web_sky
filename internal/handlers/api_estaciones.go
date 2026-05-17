@@ -29,23 +29,23 @@ var coordsEstaciones = map[string]struct {
 	Lng float64
 }{
 	// Pirineo Catalán
-	"baqueira beret":  {42.7000, 0.9333},
-	"la molina":       {42.3361, 1.9494},
-	"masella":         {42.3744, 1.9261},
-	"vall de nuria":   {42.3978, 2.1547},
-	"vallter 2000":    {42.4231, 2.2722},
-	"espot esqui":     {42.5917, 1.0911},
-	"port aine":       {42.5572, 1.2156},
-	"boi taull":       {42.5000, 0.8167},
-	"tavascan":        {42.6519, 1.2914},
-	"port del comte":  {42.2114, 1.5611},
+	"baqueira beret": {42.7000, 0.9333},
+	"la molina":      {42.3361, 1.9494},
+	"masella":        {42.3744, 1.9261},
+	"vall de nuria":  {42.3978, 2.1547},
+	"vallter 2000":   {42.4231, 2.2722},
+	"espot esqui":    {42.5917, 1.0911},
+	"port aine":      {42.5572, 1.2156},
+	"boi taull":      {42.5000, 0.8167},
+	"tavascan":       {42.6519, 1.2914},
+	"port del comte": {42.2114, 1.5611},
 
 	// Pirineo Aragonés
-	"candanchu":  {42.7833, -0.5167},
-	"astun":      {42.7889, -0.5028},
-	"formigal":   {42.7811, -0.4108},
-	"panticosa":  {42.7547, -0.2872},
-	"cerler":     {42.5400, 0.4225},
+	"candanchu": {42.7833, -0.5167},
+	"astun":     {42.7889, -0.5028},
+	"formigal":  {42.7811, -0.4108},
+	"panticosa": {42.7547, -0.2872},
+	"cerler":    {42.5400, 0.4225},
 
 	// Andorra
 	"grandvalira":    {42.5392, 1.7308},
@@ -62,10 +62,10 @@ var coordsEstaciones = map[string]struct {
 	"la pinilla":            {41.3033, -3.4500},
 
 	// Cordillera Cantábrica
-	"alto campoo":        {43.0444, -4.4083},
-	"san isidro":         {43.0419, -5.4178},
-	"valgrande-pajares":  {43.0517, -5.7806},
-	"leitariegos":        {43.0150, -6.4106},
+	"alto campoo":       {43.0444, -4.4083},
+	"san isidro":        {43.0419, -5.4178},
+	"valgrande-pajares": {43.0517, -5.7806},
+	"leitariegos":       {43.0150, -6.4106},
 }
 
 // macizoDeEstaciones — clasificación de cada estación según el macizo
@@ -129,10 +129,10 @@ type estacionMapaJSON struct {
 	PistasTotales  int     `json:"pistas_totales"`
 	RemontesOp     int     `json:"remontes_op"`
 	RemontesTot    int     `json:"remontes_tot"`
-	Estado         string  `json:"estado"`        // excelente|buena|regular|cerrado
-	EstadoTexto    string  `json:"estado_texto"`  // texto legible
-	Macizo         string  `json:"macizo"`        // etiqueta legible (Pirineo Catalán, Sierra Nevada, …)
-	MacizoClave    string  `json:"macizo_clave"`  // código corto para CSS/filtros
+	Estado         string  `json:"estado"`       // excelente|buena|regular|cerrado
+	EstadoTexto    string  `json:"estado_texto"` // texto legible
+	Macizo         string  `json:"macizo"`       // etiqueta legible (Pirineo Catalán, Sierra Nevada, …)
+	MacizoClave    string  `json:"macizo_clave"` // código corto para CSS/filtros
 	Imagen         string  `json:"imagen"`
 }
 

@@ -21,22 +21,22 @@ import (
 
 // parteJSON es el DTO que consume parte-refresh.js
 type parteJSON struct {
-	ID                int64  `json:"id"`
-	Estado            string `json:"estado"`
-	Temperatura       int    `json:"temperatura"`
-	NieveMin          int    `json:"nieve_min"`
-	NieveMax          int    `json:"nieve_max"`
-	NieveBase         int    `json:"nieve_base"`
-	NieveNueva        int    `json:"nieve_nueva"`
-	Viento            string `json:"viento"`
-	UltimaNevada      string `json:"ultima_nevada"`
-	PistasAbiertas    int    `json:"pistas_abiertas"`
-	PistasTotales     int    `json:"pistas_totales"`
-	RemontesOp        int    `json:"remontes_op"`
-	RemontesTot       int    `json:"remontes_tot"`
-	ParteHora         string `json:"parte_hora"`
-	ParteActualizado  string `json:"parte_actualizado"`
-	ParteHaceMinutos  int    `json:"parte_hace_minutos"`
+	ID               int64  `json:"id"`
+	Estado           string `json:"estado"`
+	Temperatura      int    `json:"temperatura"`
+	NieveMin         int    `json:"nieve_min"`
+	NieveMax         int    `json:"nieve_max"`
+	NieveBase        int    `json:"nieve_base"`
+	NieveNueva       int    `json:"nieve_nueva"`
+	Viento           string `json:"viento"`
+	UltimaNevada     string `json:"ultima_nevada"`
+	PistasAbiertas   int    `json:"pistas_abiertas"`
+	PistasTotales    int    `json:"pistas_totales"`
+	RemontesOp       int    `json:"remontes_op"`
+	RemontesTot      int    `json:"remontes_tot"`
+	ParteHora        string `json:"parte_hora"`
+	ParteActualizado string `json:"parte_actualizado"`
+	ParteHaceMinutos int    `json:"parte_hace_minutos"`
 }
 
 // ApiParteEstacion responde a GET /api/estacion/{id}/parte

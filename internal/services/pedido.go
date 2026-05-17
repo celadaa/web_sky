@@ -27,31 +27,31 @@ import (
 
 // Errores de negocio del checkout.
 var (
-	ErrCestaVacia         = errors.New("la cesta está vacía")
+	ErrCestaVacia           = errors.New("la cesta está vacía")
 	ErrCestaDemasiadoGrande = errors.New("demasiadas líneas en la cesta")
-	ErrItemEstacion       = errors.New("estación no encontrada")
-	ErrItemTipoPase       = errors.New("tipo de pase inválido (adult|child|senior)")
-	ErrItemCantidad       = errors.New("la cantidad debe ser mayor que cero")
-	ErrItemDias           = errors.New("la duración debe ser de al menos un día")
-	ErrItemFechas         = errors.New("la fecha de fin no puede ser anterior a la de inicio")
-	ErrItemFechaFormato   = errors.New("formato de fecha inválido (YYYY-MM-DD)")
-	ErrItemPrecioInvalido = errors.New("el precio no coincide con el del catálogo")
+	ErrItemEstacion         = errors.New("estación no encontrada")
+	ErrItemTipoPase         = errors.New("tipo de pase inválido (adult|child|senior)")
+	ErrItemCantidad         = errors.New("la cantidad debe ser mayor que cero")
+	ErrItemDias             = errors.New("la duración debe ser de al menos un día")
+	ErrItemFechas           = errors.New("la fecha de fin no puede ser anterior a la de inicio")
+	ErrItemFechaFormato     = errors.New("formato de fecha inválido (YYYY-MM-DD)")
+	ErrItemPrecioInvalido   = errors.New("el precio no coincide con el del catálogo")
 )
 
 // Límites defensivos del checkout para evitar abuso (Memory DoS).
 const (
-	maxLineasCesta    = 50  // líneas distintas por pedido
-	maxCantidadLinea  = 100 // forfaits de la misma línea
-	maxDiasLinea      = 90  // forfaits no más de 3 meses
+	maxLineasCesta   = 50  // líneas distintas por pedido
+	maxCantidadLinea = 100 // forfaits de la misma línea
+	maxDiasLinea     = 90  // forfaits no más de 3 meses
 )
 
 // LineaCesta es lo que llega del cliente. Validamos cada campo aquí.
 type LineaCesta struct {
 	EstacionID     int64   `json:"id_estacion"`
 	NombreEstacion string  `json:"nombre_estacion"`
-	TipoPase       string  `json:"tipo_pase"`       // adulto | nino | senior
-	FechaInicio    string  `json:"fecha_inicio"`    // YYYY-MM-DD
-	FechaFin       string  `json:"fecha_fin"`       // YYYY-MM-DD
+	TipoPase       string  `json:"tipo_pase"`    // adulto | nino | senior
+	FechaInicio    string  `json:"fecha_inicio"` // YYYY-MM-DD
+	FechaFin       string  `json:"fecha_fin"`    // YYYY-MM-DD
 	Cantidad       int     `json:"cantidad"`
 	Dias           int     `json:"dias"`            // se ignora y se recalcula
 	PrecioUnitario float64 `json:"precio_unitario"` // se valida contra catálogo

@@ -47,17 +47,17 @@ type EstacionDirecto struct {
 
 // NieveService orquesta scraper + cache.
 type NieveService struct {
-	cli         *infonieve.Client
-	mu          sync.RWMutex
-	cache       map[string]cacheEntry
-	listaTTL    time.Duration
-	detalleTTL  time.Duration
-	maxResults  int
+	cli        *infonieve.Client
+	mu         sync.RWMutex
+	cache      map[string]cacheEntry
+	listaTTL   time.Duration
+	detalleTTL time.Duration
+	maxResults int
 }
 
 type cacheEntry struct {
-	dato    any
-	expira  time.Time
+	dato   any
+	expira time.Time
 }
 
 // NuevoNieveService construye el servicio con TTLs sensatos.

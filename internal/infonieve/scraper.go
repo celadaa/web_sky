@@ -64,19 +64,19 @@ type Webcam struct {
 
 // EstacionDetalle es la ficha completa con pistas, remontes y webcams.
 type EstacionDetalle struct {
-	Slug             string           `json:"slug"`
-	Nombre           string           `json:"nombre"`
-	Estado           Estado           `json:"estado"`
-	Actualizado      time.Time        `json:"actualizado"`
-	NieveEspesorCm   *float64         `json:"nieve_cm"`
-	NieveCalidad     string           `json:"calidad_nieve,omitempty"`
-	PistasResumen    Fraccion         `json:"pistas_resumen"`
-	Kilometros       Fraccion         `json:"kilometros"`
-	RemontesResumen  Fraccion         `json:"remontes_resumen"`
-	Temperatura      string           `json:"temperatura,omitempty"`
-	Pistas           []PistaDetalle   `json:"pistas"`
-	Remontes         []RemonteDetalle `json:"remontes"`
-	Webcams          []Webcam         `json:"webcams"`
+	Slug            string           `json:"slug"`
+	Nombre          string           `json:"nombre"`
+	Estado          Estado           `json:"estado"`
+	Actualizado     time.Time        `json:"actualizado"`
+	NieveEspesorCm  *float64         `json:"nieve_cm"`
+	NieveCalidad    string           `json:"calidad_nieve,omitempty"`
+	PistasResumen   Fraccion         `json:"pistas_resumen"`
+	Kilometros      Fraccion         `json:"kilometros"`
+	RemontesResumen Fraccion         `json:"remontes_resumen"`
+	Temperatura     string           `json:"temperatura,omitempty"`
+	Pistas          []PistaDetalle   `json:"pistas"`
+	Remontes        []RemonteDetalle `json:"remontes"`
+	Webcams         []Webcam         `json:"webcams"`
 }
 
 // ─── Helpers de parseo ────────────────────────────────────────────────────────

@@ -109,7 +109,7 @@ func main() {
 	// Rate-limiters específicos de endpoints sensibles. El número son
 	// peticiones/minuto por IP; valores prudentes para uso real con
 	// suficiente margen para usuarios legítimos.
-	rlAuth := sec.LimitarPorIP(10)     // login / registro / cambiar password
+	rlAuth := sec.LimitarPorIP(10)      // login / registro / cambiar password
 	rlEscritura := sec.LimitarPorIP(20) // toggle favoritos / checkout / parte refresh
 
 	// Health check — usado por GitHub Actions tras cada deploy y por monitorización externa.
