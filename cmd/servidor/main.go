@@ -24,6 +24,13 @@ import (
 	"skihub/internal/services"
 )
 
+// version se sobreescribe en build time con ldflags. Si no se setea queda "dev".
+//
+//	go build -ldflags "-X main.version=$(git rev-parse --short HEAD)" ./cmd/servidor
+//
+// Se expone en /healthz para saber qué commit está sirviendo.
+var version = "dev"
+
 func main() {
 	log.SetPrefix("[SKIHUB] ")
 	log.SetFlags(log.Ldate | log.Ltime | log.Lshortfile)
@@ -87,6 +94,8 @@ func main() {
 		NieveSvc: services.NuevoNieveService(),
 		Cfg:      cfg,
 		Sec:      sec,
+		BD:       bd,
+		Version:  version,
 	}
 
 	plantillas, err := handlers.CargarPlantillas(cfg.AppTemplates)
@@ -102,6 +111,10 @@ func main() {
 	// suficiente margen para usuarios legítimos.
 	rlAuth := sec.LimitarPorIP(10)     // login / registro / cambiar password
 	rlEscritura := sec.LimitarPorIP(20) // toggle favoritos / checkout / parte refresh
+
+	// Health check — usado por GitHub Actions tras cada deploy y por monitorización externa.
+	// Sin CSRF (GET seguro) y sin rate limit (esencial para uptime monitoring).
+	mux.HandleFunc("/healthz", app.Healthz)
 
 	// Páginas
 	mux.HandleFunc("/", app.Home)

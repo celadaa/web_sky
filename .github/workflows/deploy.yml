@@ -104,10 +104,12 @@ jobs:
             echo "==> Nuevo commit: \$(git rev-parse HEAD)"
 
             echo "==> Compilando binario..."
-            # Compila en la misma carpeta. Ajusta el nombre del binario si lo cambias.
-            go build -o ./bin/skihub ./cmd/servidor
+            # Compilamos a un nombre temporal y hacemos swap atómico justo antes
+            # del restart para evitar "text file busy" si el servicio está corriendo.
+            go build -o ./skihub.new ./cmd/servidor
 
-            echo "==> Reiniciando servicio systemd: $VPS_SERVICE"
+            echo "==> Reemplazando binario (atómico) y reiniciando $VPS_SERVICE"
+            mv -f ./skihub.new ./skihub
             sudo systemctl restart "$VPS_SERVICE"
             sudo systemctl is-active --quiet "$VPS_SERVICE" || {
               echo "::error::El servicio no está activo tras el restart"

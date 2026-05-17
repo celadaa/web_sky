@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"database/sql"
 	"net/http"
 
 	"skihub/internal/config"
@@ -28,6 +29,10 @@ type App struct {
 	Cfg *config.Config
 	// Sec expone los middlewares y utilidades de seguridad.
 	Sec *Sec
+	// BD se usa en /healthz para pingear la base de datos. Opcional.
+	BD *sql.DB
+	// Version es el commit SHA inyectado en build time (ldflags). Cae a "dev" si no se setea.
+	Version string
 }
 
 // CookieSecure devuelve true cuando la app debe emitir cookies Secure.
