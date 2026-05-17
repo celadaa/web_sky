@@ -30,5 +30,7 @@ jobs:
         uses: gitleaks/gitleaks-action@v2
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          # Si quieres usar reglas custom, crea .gitleaks.toml en la raíz.
-          GITLEAKS_CONFIG: .gitleaks.toml
+          # gitleaks usa sus reglas por defecto, que ya cubren API keys,
+          # tokens, claves privadas, etc. Si en el futuro quieres reglas
+          # custom, crea .gitleaks.toml en la raíz y descomenta la línea:
+          # GITLEAKS_CONFIG: .gitleaks.toml
