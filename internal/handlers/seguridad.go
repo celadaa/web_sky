@@ -426,11 +426,37 @@ func subtleEq(a, b string) bool {
 
 // ─── Origen y proxy ──────────────────────────────────────────────────────────
 
-// IPCliente devuelve la IP del cliente. Si TRUST_PROXY=true, mira
-// X-Forwarded-For (primer hop). En caso contrario usa RemoteAddr para
-// evitar que un cliente cualquiera se haga pasar por otra IP.
+// esProxyDeConfianza devuelve true cuando la conexion TCP entrante viene
+// de la propia maquina (loopback). Esto es lo unico que esperamos en
+// produccion: Nginx en el mismo host habla por 127.0.0.1 con el backend.
+// Si la conexion viene de cualquier otra IP, NO confiamos en sus
+// cabeceras X-Forwarded-For / X-Real-IP porque un atacante que llegara
+// directo al puerto del backend podria falsificarlas.
+func esProxyDeConfianza(remoteAddr string) bool {
+	host, _, err := net.SplitHostPort(remoteAddr)
+	if err != nil {
+		host = remoteAddr
+	}
+	ip := net.ParseIP(host)
+	if ip == nil {
+		return false
+	}
+	return ip.IsLoopback()
+}
+
+// IPCliente devuelve la IP real del cliente.
+//
+// Solo se honra X-Forwarded-For / X-Real-IP cuando se cumplen DOS
+// condiciones a la vez:
+//  1. TRUST_PROXY=true en la configuracion.
+//  2. La conexion TCP entrante viene de loopback (es decir, viene del
+//     Nginx local, no de internet directo al :8080).
+//
+// Esta doble comprobacion impide que un atacante que alcanzara el
+// puerto del backend (por un fallo de firewall, por ejemplo) se haga
+// pasar por otra IP enviando una cabecera X-Forwarded-For falsa.
 func IPCliente(r *http.Request, trustProxy bool) string {
-	if trustProxy {
+	if trustProxy && esProxyDeConfianza(r.RemoteAddr) {
 		if xff := r.Header.Get("X-Forwarded-For"); xff != "" {
 			partes := strings.Split(xff, ",")
 			ip := strings.TrimSpace(partes[0])
