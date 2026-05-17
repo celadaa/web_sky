@@ -1,0 +1,79 @@
+# Configuración golangci-lint para SkiHub.
+# Equilibra señal real con poco ruido. Ajusta los linters a tu gusto.
+# Docs: https://golangci-lint.run/usage/configuration/
+
+run:
+  timeout: 5m
+  tests: true
+  modules-download-mode: readonly
+
+output:
+  formats:
+    - format: colored-line-number
+  sort-results: true
+
+linters:
+  disable-all: true
+  enable:
+    # Calidad y bugs reales
+    - errcheck       # errores no comprobados
+    - govet          # análisis estándar de go
+    - ineffassign    # asignaciones inútiles
+    - staticcheck    # bugs y simplificaciones
+    - unused         # variables/funciones no usadas
+    - gosimple       # simplificaciones
+    - typecheck      # checks de tipos
+
+    # Estilo
+    - gofmt
+    - goimports
+    - misspell
+
+    # Seguridad y robustez
+    - gosec          # seguridad (CWE, SQL injection, etc.)
+    - bodyclose      # http.Response.Body sin Close()
+    - rowserrcheck   # sql.Rows.Err() sin comprobar
+    - sqlclosecheck  # rows/stmt sin Close()
+    - contextcheck   # context.Context no propagado
+
+    # Buenas prácticas
+    - revive
+    - unconvert
+    - unparam
+    - prealloc
+    - nakedret
+
+linters-settings:
+  gosec:
+    excludes:
+      # G304: archivo abierto con ruta variable — habitual en templates
+      - G304
+  revive:
+    rules:
+      - name: var-naming
+      - name: package-comments
+      - name: exported
+        disabled: true # opcional: tener docs en todo lo exportado puede ser excesivo
+  misspell:
+    locale: US
+    ignore-words:
+      - "esqui"
+      - "nieve"
+      - "forfait"
+
+issues:
+  exclude-rules:
+    # Tests: menos exigencia con errores y nombres
+    - path: _test\.go
+      linters:
+        - errcheck
+        - gosec
+        - unparam
+
+    # Generated code: ignorar
+    - path: \.gen\.go
+      linters:
+        - all
+
+  max-issues-per-linter: 50
+  max-same-issues: 10

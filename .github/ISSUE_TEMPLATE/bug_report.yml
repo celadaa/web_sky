@@ -1,0 +1,77 @@
+name: 🐞 Bug report
+description: Reportar un error o comportamiento inesperado
+title: "[bug] "
+labels: ["bug", "triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Gracias por reportar el bug. Cuanta más información, más rápido se arregla.
+
+  - type: textarea
+    id: descripcion
+    attributes:
+      label: ¿Qué está pasando?
+      description: Describe el problema de forma clara y concisa.
+      placeholder: Al hacer clic en "Comprar forfait" la página se queda en blanco...
+    validations:
+      required: true
+
+  - type: textarea
+    id: pasos
+    attributes:
+      label: Pasos para reproducirlo
+      placeholder: |
+        1. Ir a /estaciones/baqueira
+        2. Pulsar el botón "Comprar"
+        3. Ver el error
+    validations:
+      required: true
+
+  - type: textarea
+    id: esperado
+    attributes:
+      label: Comportamiento esperado
+      placeholder: Debería abrirse el flujo de pago.
+    validations:
+      required: true
+
+  - type: input
+    id: navegador
+    attributes:
+      label: Navegador y versión
+      placeholder: "Chrome 138 / Firefox 142 / Safari 18"
+
+  - type: input
+    id: dispositivo
+    attributes:
+      label: Dispositivo
+      placeholder: "Desktop Windows 11 / iPhone 15 / etc."
+
+  - type: dropdown
+    id: entorno
+    attributes:
+      label: Entorno
+      options:
+        - Producción (web pública)
+        - Desarrollo local
+        - Otro
+    validations:
+      required: true
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs o capturas
+      description: Pega aquí logs relevantes del backend o capturas de pantalla.
+      render: shell
+
+  - type: checkboxes
+    id: chequeos
+    attributes:
+      label: Antes de enviar
+      options:
+        - label: He buscado issues similares
+          required: true
+        - label: Estoy usando la última versión de `main`
+          required: false

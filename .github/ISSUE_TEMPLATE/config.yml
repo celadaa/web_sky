@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: 🔐 Reportar una vulnerabilidad de seguridad
+    url: https://github.com/celadaa/web_sky/security/advisories/new
+    about: Usa el reporte privado de GitHub. NO abras un issue público para vulnerabilidades.
+  - name: 💬 Preguntas generales
+    url: https://github.com/celadaa/web_sky/discussions
+    about: Para dudas, ideas o conversaciones abiertas, usa Discussions.

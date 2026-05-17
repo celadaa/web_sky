@@ -1,0 +1,119 @@
+name: CI
+
+# Integración continua: compila, formatea, lintea y testea el backend Go
+# en cada push/PR a `main`. Si algo se rompe, recibirás una notificación
+# y el check rojo aparecerá en el PR.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch: # permite lanzarlo manualmente desde la pestaña Actions
+
+permissions:
+  contents: read
+
+concurrency:
+  # Cancela ejecuciones anteriores del mismo branch para ahorrar minutos.
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-test:
+    name: Build, test & lint
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    services:
+      # Postgres efímero para que los tests de integración puedan correr.
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: skihub
+          POSTGRES_PASSWORD: skihub_ci_password
+          POSTGRES_DB: skihub_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd="pg_isready -U skihub -d skihub_test"
+          --health-interval=5s
+          --health-timeout=5s
+          --health-retries=10
+
+    env:
+      DB_HOST: 127.0.0.1
+      DB_PORT: "5432"
+      DB_USER: skihub
+      DB_PASSWORD: skihub_ci_password
+      DB_NAME: skihub_test
+      DB_SSLMODE: disable
+      CGO_ENABLED: "0"
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+          cache: true
+
+      - name: Verify go.mod is tidy
+        run: |
+          go mod tidy
+          if ! git diff --quiet -- go.mod go.sum; then
+            echo "::error::go.mod / go.sum no están sincronizados. Ejecuta 'go mod tidy' localmente."
+            git --no-pager diff -- go.mod go.sum
+            exit 1
+          fi
+
+      - name: Check formatting (gofmt)
+        run: |
+          unformatted=$(gofmt -l .)
+          if [ -n "$unformatted" ]; then
+            echo "::error::Estos ficheros no están formateados con gofmt:"
+            echo "$unformatted"
+            exit 1
+          fi
+
+      - name: go vet
+        run: go vet ./...
+
+      - name: Build
+        run: go build -v ./...
+
+      - name: Test (with race detector and coverage)
+        env:
+          CGO_ENABLED: "1" # race detector requiere cgo
+        run: |
+          go test -race -coverprofile=coverage.out -covermode=atomic ./...
+
+      - name: Upload coverage artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage
+          path: coverage.out
+          if-no-files-found: ignore
+
+  lint:
+    name: golangci-lint
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+          cache: true
+
+      - name: golangci-lint
+        uses: golangci/golangci-lint-action@v6
+        with:
+          version: latest
+          args: --timeout=5m

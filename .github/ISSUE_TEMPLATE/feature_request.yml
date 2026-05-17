@@ -1,0 +1,45 @@
+name: ✨ Feature request
+description: Propón una funcionalidad nueva o mejora
+title: "[feat] "
+labels: ["enhancement", "triage"]
+body:
+  - type: textarea
+    id: problema
+    attributes:
+      label: ¿Qué problema resuelve?
+      placeholder: "Como usuario que compara estaciones, me gustaría poder filtrar por..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: solucion
+    attributes:
+      label: Solución propuesta
+      placeholder: Describe la funcionalidad que tienes en mente.
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternativas
+    attributes:
+      label: Alternativas consideradas
+      placeholder: ¿Has pensado en otras formas de resolverlo?
+
+  - type: dropdown
+    id: area
+    attributes:
+      label: Área afectada
+      multiple: true
+      options:
+        - Backend Go
+        - Plantillas / Frontend
+        - Base de datos
+        - Despliegue / Infra
+        - Documentación
+        - Otro
+
+  - type: textarea
+    id: contexto
+    attributes:
+      label: Contexto adicional
+      placeholder: Mockups, enlaces, ejemplos de otras webs, etc.

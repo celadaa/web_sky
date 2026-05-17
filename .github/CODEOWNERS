@@ -1,0 +1,23 @@
+# CODEOWNERS — quién revisa qué automáticamente cuando se abre un PR.
+# Docs: https://docs.github.com/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners
+
+# Owner por defecto (todo lo que no encaje con las reglas de abajo)
+*                          @celadaa
+
+# Infraestructura y CI/CD
+/.github/                  @celadaa
+/deploy/                   @celadaa
+/docker-compose.yml        @celadaa
+
+# Backend Go
+/cmd/                      @celadaa
+/internal/                 @celadaa
+/db/migrations/            @celadaa
+
+# Frontend
+/web/                      @celadaa
+
+# Documentación
+/docs/                     @celadaa
+/README.md                 @celadaa
+/SECURITY.md               @celadaa

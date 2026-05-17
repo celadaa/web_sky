@@ -1,0 +1,52 @@
+# Dependabot: actualiza dependencias automáticamente cada semana.
+# Crea PRs etiquetados que pasan por tu CI antes de fusionarlos.
+# Docs: https://docs.github.com/code-security/dependabot
+
+version: 2
+updates:
+  # Dependencias Go (módulo principal en la raíz)
+  - package-ecosystem: gomod
+    directory: "/"
+    schedule:
+      interval: weekly
+      day: monday
+      time: "06:00"
+      timezone: Europe/Madrid
+    open-pull-requests-limit: 5
+    labels:
+      - "dependencias"
+      - "go"
+    commit-message:
+      prefix: "deps(go)"
+    groups:
+      # Agrupa las actualizaciones menores/patch en un único PR para reducir ruido.
+      go-minor-and-patch:
+        applies-to: version-updates
+        update-types:
+          - minor
+          - patch
+
+  # GitHub Actions usadas en .github/workflows
+  - package-ecosystem: github-actions
+    directory: "/"
+    schedule:
+      interval: weekly
+      day: monday
+      time: "06:00"
+      timezone: Europe/Madrid
+    labels:
+      - "dependencias"
+      - "github-actions"
+    commit-message:
+      prefix: "deps(actions)"
+
+  # Imágenes Docker usadas en docker-compose.yml (si añades Dockerfile, también las cogerá)
+  - package-ecosystem: docker
+    directory: "/"
+    schedule:
+      interval: weekly
+    labels:
+      - "dependencias"
+      - "docker"
+    commit-message:
+      prefix: "deps(docker)"

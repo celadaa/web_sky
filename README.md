@@ -1,6 +1,20 @@
 # SkiHub (Snowbreak)
 
+[![CI](https://github.com/celadaa/web_sky/actions/workflows/ci.yml/badge.svg)](https://github.com/celadaa/web_sky/actions/workflows/ci.yml)
+[![CodeQL](https://github.com/celadaa/web_sky/actions/workflows/codeql.yml/badge.svg)](https://github.com/celadaa/web_sky/actions/workflows/codeql.yml)
+[![Deploy](https://github.com/celadaa/web_sky/actions/workflows/deploy.yml/badge.svg)](https://github.com/celadaa/web_sky/actions/workflows/deploy.yml)
+[![Go Report Card](https://goreportcard.com/badge/github.com/celadaa/web_sky)](https://goreportcard.com/report/github.com/celadaa/web_sky)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![Go version](https://img.shields.io/github/go-mod/go-version/celadaa/web_sky)](go.mod)
+
 Portal web para comparar estaciones de esquí, comprar forfaits y consultar el estado de las pistas en tiempo real. Backend escrito en Go, persistencia en PostgreSQL, frontend con plantillas `html/template` + JavaScript vanilla.
+
+> 📚 **Documentación extendida** en la [Wiki](https://github.com/celadaa/web_sky/wiki):
+> [Arquitectura](https://github.com/celadaa/web_sky/wiki/Arquitectura) ·
+> [Despliegue](https://github.com/celadaa/web_sky/wiki/Despliegue-en-VPS) ·
+> [Runbook](https://github.com/celadaa/web_sky/wiki/Runbook-Operacional) ·
+> [Seguridad](https://github.com/celadaa/web_sky/wiki/Seguridad) ·
+> [Roadmap](https://github.com/celadaa/web_sky/wiki/Roadmap)
 
 ---
 

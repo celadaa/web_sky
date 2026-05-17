@@ -1,0 +1,146 @@
+name: Deploy to VPS
+
+# Despliegue automático al VPS cuando se hace push a `main` y el CI pasa.
+#
+# Requiere estos Secrets en el repositorio (Settings → Secrets and variables → Actions):
+#   VPS_HOST       → IP o dominio del servidor (ej: ski.midominio.com)
+#   VPS_USER       → usuario SSH (ej: deploy)
+#   VPS_SSH_KEY    → clave privada SSH del usuario de despliegue (formato OpenSSH completo)
+#   VPS_PORT       → (opcional) puerto SSH, por defecto 22
+#   VPS_APP_PATH   → ruta absoluta del proyecto en el VPS (ej: /var/www/skihub)
+#   VPS_SERVICE    → nombre del servicio systemd (ej: skihub.service)
+#   HEALTH_URL     → URL pública para health check (ej: https://midominio.com/healthz)
+#
+# Cómo crear la clave SSH de despliegue (en tu máquina o en el VPS):
+#   ssh-keygen -t ed25519 -f deploy_key -C "github-actions-deploy" -N ""
+#   ssh-copy-id -i deploy_key.pub usuario@tuvps
+#   # Luego pega el contenido de `deploy_key` (la privada) en el secret VPS_SSH_KEY.
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      ref:
+        description: "Rama o tag a desplegar (por defecto: main)"
+        required: false
+        default: main
+
+permissions:
+  contents: read
+
+concurrency:
+  # Evita dos despliegues en paralelo: si llega uno nuevo, espera a que el anterior acabe.
+  group: deploy-production
+  cancel-in-progress: false
+
+jobs:
+  wait-for-ci:
+    name: Esperar a que CI esté en verde
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push'
+    steps:
+      - name: Wait on CI workflow
+        uses: lewagon/wait-on-check-action@v1.3.4
+        with:
+          ref: ${{ github.sha }}
+          check-name: "Build, test & lint"
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          wait-interval: 15
+
+  deploy:
+    name: SSH deploy
+    needs: [wait-for-ci]
+    # En workflow_dispatch no hace falta esperar al CI (lo lanzas tú a mano).
+    if: always() && (needs.wait-for-ci.result == 'success' || github.event_name == 'workflow_dispatch')
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    environment:
+      name: production
+      url: ${{ secrets.HEALTH_URL }}
+
+    steps:
+      - name: Checkout (solo metadata, para conocer el SHA)
+        uses: actions/checkout@v4
+
+      - name: Configurar SSH
+        uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.VPS_SSH_KEY }}
+
+      - name: Añadir host a known_hosts
+        run: |
+          mkdir -p ~/.ssh
+          ssh-keyscan -p "${VPS_PORT:-22}" -H "$VPS_HOST" >> ~/.ssh/known_hosts
+        env:
+          VPS_HOST: ${{ secrets.VPS_HOST }}
+          VPS_PORT: ${{ secrets.VPS_PORT }}
+
+      - name: Desplegar (git pull + build + restart)
+        env:
+          VPS_HOST: ${{ secrets.VPS_HOST }}
+          VPS_USER: ${{ secrets.VPS_USER }}
+          VPS_PORT: ${{ secrets.VPS_PORT }}
+          VPS_APP_PATH: ${{ secrets.VPS_APP_PATH }}
+          VPS_SERVICE: ${{ secrets.VPS_SERVICE }}
+          DEPLOY_SHA: ${{ github.sha }}
+          DEPLOY_REF: ${{ github.event.inputs.ref || 'main' }}
+        run: |
+          ssh -p "${VPS_PORT:-22}" "$VPS_USER@$VPS_HOST" bash -se <<EOF
+            set -euo pipefail
+
+            cd "$VPS_APP_PATH"
+            echo "==> Carpeta: \$(pwd)"
+            echo "==> Commit actual: \$(git rev-parse HEAD)"
+
+            # Guardamos el SHA actual por si necesitamos rollback
+            PREV_SHA=\$(git rev-parse HEAD)
+            echo "\$PREV_SHA" > .last_deployed_sha
+
+            echo "==> Trayendo cambios..."
+            git fetch --all --tags --prune
+            git checkout "$DEPLOY_REF"
+            git reset --hard "origin/$DEPLOY_REF"
+            echo "==> Nuevo commit: \$(git rev-parse HEAD)"
+
+            echo "==> Compilando binario..."
+            # Compila en la misma carpeta. Ajusta el nombre del binario si lo cambias.
+            go build -o ./bin/skihub ./cmd/servidor
+
+            echo "==> Reiniciando servicio systemd: $VPS_SERVICE"
+            sudo systemctl restart "$VPS_SERVICE"
+            sudo systemctl is-active --quiet "$VPS_SERVICE" || {
+              echo "::error::El servicio no está activo tras el restart"
+              sudo systemctl status "$VPS_SERVICE" --no-pager | tail -30
+              exit 1
+            }
+            echo "==> Servicio activo."
+          EOF
+
+      - name: Health check público
+        if: ${{ secrets.HEALTH_URL != '' }}
+        env:
+          HEALTH_URL: ${{ secrets.HEALTH_URL }}
+        run: |
+          echo "Esperando 5s a que el servicio termine de levantar..."
+          sleep 5
+          for i in 1 2 3 4 5; do
+            code=$(curl -s -o /dev/null -w "%{http_code}" --max-time 10 "$HEALTH_URL" || echo "000")
+            echo "Intento $i → HTTP $code"
+            if [ "$code" = "200" ]; then
+              echo "✅ Health check OK"
+              exit 0
+            fi
+            sleep 5
+          done
+          echo "::error::Health check falló tras 5 intentos"
+          exit 1
+
+      - name: Resumen
+        if: always()
+        run: |
+          echo "## Despliegue $([ '${{ job.status }}' = 'success' ] && echo '✅' || echo '❌')" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "- **Commit**: \`${{ github.sha }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "- **Ref**: \`${{ github.event.inputs.ref || github.ref_name }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "- **Disparado por**: @${{ github.actor }}" >> $GITHUB_STEP_SUMMARY
