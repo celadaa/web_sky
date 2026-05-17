@@ -113,10 +113,14 @@ jobs:
 
             echo "==> Reemplazando binario (atómico) y reiniciando $VPS_SERVICE"
             mv -f ./skihub.new ./skihub
-            sudo systemctl restart "$VPS_SERVICE"
-            sudo systemctl is-active --quiet "$VPS_SERVICE" || {
+            # Usamos /usr/bin/systemctl con ruta absoluta para que el sudoers
+            # encuentre la coincidencia exacta. Sin la ruta, sudo a veces
+            # resuelve a /bin/systemctl o se queda sin PATH (depende de la
+            # config de sudo y de si hay TTY).
+            sudo /usr/bin/systemctl restart "$VPS_SERVICE"
+            sudo /usr/bin/systemctl is-active --quiet "$VPS_SERVICE" || {
               echo "::error::El servicio no está activo tras el restart"
-              sudo systemctl status "$VPS_SERVICE" --no-pager | tail -30
+              sudo /usr/bin/systemctl status "$VPS_SERVICE" --no-pager | tail -30
               exit 1
             }
             echo "==> Servicio activo."
