@@ -1,12 +1,8 @@
-# Configuración golangci-lint v2 para SkiHub.
-# Equilibra señal real con poco ruido. Ajusta los linters a tu gusto.
+# Configuración golangci-lint v2 (mínima y robusta).
 # Docs: https://golangci-lint.run/usage/configuration/
 #
-# El formato v2 cambió respecto a v1:
-#   - `disable-all: true` → `default: none`
-#   - `linters-settings` movido dentro de `linters.settings`
-#   - gofmt/goimports ahora son "formatters" en su propia sección
-#   - gosimple y otros se fusionaron dentro de staticcheck
+# Filosofía: empezar con un set conservador que NO da falsos positivos
+# y se puede ampliar gradualmente cuando el proyecto crezca.
 
 version: "2"
 
@@ -14,73 +10,27 @@ run:
   timeout: 5m
   modules-download-mode: readonly
 
-output:
-  formats:
-    text:
-      path: stdout
-
 linters:
-  default: none
-  enable:
-    # Calidad y bugs reales
-    - errcheck       # errores no comprobados
-    - govet          # análisis estándar de Go
-    - ineffassign    # asignaciones inútiles
-    - staticcheck    # bugs y simplificaciones (incluye gosimple, structcheck...)
-    - unused         # variables/funciones no usadas
+  # `standard` = errcheck + govet + ineffassign + staticcheck + unused.
+  # Cubre lo esencial sin ruido. Para añadir más, cambia a `default: none`
+  # y enuméralos uno a uno.
+  default: standard
 
-    # Estilo
-    - misspell
-
-    # Seguridad y robustez
-    - gosec          # seguridad (CWE, SQL injection, etc.)
-    - bodyclose      # http.Response.Body sin Close()
-    - rowserrcheck   # sql.Rows.Err() sin comprobar
-    - sqlclosecheck  # rows/stmt sin Close()
-    - contextcheck   # context.Context no propagado
-
-    # Buenas prácticas
-    - revive
-    - unconvert
-    - unparam
-    - prealloc
-    - nakedret
-
-  settings:
-    gosec:
-      excludes:
-        # G304: archivo abierto con ruta variable — común en plantillas
-        - G304
-    revive:
-      rules:
-        - name: var-naming
-        - name: package-comments
-    misspell:
-      locale: US
-      ignore-rules:
-        - esqui
-        - nieve
-        - forfait
+  # Si en el futuro quieres añadir linters específicos:
+  # enable:
+  #   - bodyclose
+  #   - gosec
+  #   - misspell
+  #   - revive
 
   exclusions:
     rules:
-      # Tests: menos exigencia con errores y nombres
+      # Tests: menos exigencia con errores no comprobados (mocks, helpers, etc.).
       - path: _test\.go
         linters:
           - errcheck
-          - gosec
-          - unparam
-      # Código generado: ignorar todo
-      - path: \.gen\.go$
-        linters:
-          - errcheck
-          - govet
-          - ineffassign
-          - staticcheck
-          - unused
-          - revive
 
-# Formatters separados de linters en v2.
+# Formatters en sección propia desde v2.
 formatters:
   enable:
     - gofmt

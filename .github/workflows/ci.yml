@@ -113,7 +113,10 @@ jobs:
           cache: true
 
       - name: golangci-lint
-        uses: golangci/golangci-lint-action@v6
+        # v8+ del action es la primera que soporta golangci-lint v2 nativamente.
+        # Pinear `version: v2.1.6` evita que Dependabot rompa el lint en futuras
+        # bumps mientras no validemos la config con la nueva versión.
+        uses: golangci/golangci-lint-action@v8
         with:
-          version: latest
+          version: v2.1.6
           args: --timeout=5m
