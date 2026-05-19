@@ -22,10 +22,6 @@ type App struct {
 	SesionSvc   *services.SesionService
 	FavoritoSvc *services.FavoritoService
 	PedidoSvc   *services.PedidoService
-	// AlojamientoSvc gestiona el catalogo de alojamientos cercanos y
-	// las reservas de noches. Opcional: si es nil, la seccion
-	// "Alojamientos cercanos" no se renderiza en las fichas de estacion.
-	AlojamientoSvc *services.AlojamientoService
 	// NieveSvc añade datos en directo de pistas vía infonieve.es.
 	// Es opcional: si es nil, los handlers /api/nieve/* devuelven 503.
 	NieveSvc *services.NieveService

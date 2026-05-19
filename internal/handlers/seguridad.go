@@ -120,9 +120,9 @@ func (s *Sec) CabecerasSeguridad() func(http.Handler) http.Handler {
 			h.Set("Content-Security-Policy", strings.Join([]string{
 				"default-src 'self'",
 				"script-src 'self' https://cdnjs.cloudflare.com https://unpkg.com",
-				"style-src 'self' 'unsafe-inline' https://unpkg.com https://cdnjs.cloudflare.com https://fonts.googleapis.com",
+				"style-src 'self' 'unsafe-inline' https://unpkg.com https://cdnjs.cloudflare.com",
 				"img-src 'self' data: blob: https://*.unsplash.com https://images.unsplash.com https://upload.wikimedia.org https://*.wikimedia.org https://*.basemaps.cartocdn.com https://*.tile.openstreetmap.org",
-				"font-src 'self' data: https://fonts.gstatic.com",
+				"font-src 'self' data:",
 				"connect-src 'self' https://nominatim.openstreetmap.org https://*.basemaps.cartocdn.com https://*.tile.openstreetmap.org",
 				"object-src 'none'",
 				"base-uri 'self'",

@@ -1,29 +1,15 @@
 {{define "contenido"}}
-<div class="page-home">
-
-<section class="hero hero--premium-v2 page-home__hero" data-hero aria-label="SnowBreak — Alquila, esquía, devuelve">
-  <header class="page-home__topbar" aria-hidden="true">
-    <span class="page-home__mark">SB / 26</span>
-    <span class="page-home__meta">SNOWBREAK · ESTACIONES · NIEVE · FORFAITS · ES</span>
-    <span class="page-home__clock" data-clock>—</span>
-  </header>
-
-  <div class="hero__premium-v2-inner page-home__hero-inner">
-    <span class="hero__eyebrow-pill page-home__eyebrow">Estaciones de esquí · Nieve · Forfaits</span>
-
-    <h1 class="hero__title-v2 page-home__title" aria-label="Alquila, esquía, devuelve">
-      <span class="page-home__line" data-split>ALQUILA</span>
-      <span class="page-home__line page-home__line--alt" data-split>ESQUÍA</span>
-      <span class="page-home__line" data-split>DEVUELVE</span>
-    </h1>
-
-    <p class="hero__subtitle-v2 page-home__lede">
-      Estaciones, parte de nieve y forfaits. Planifica el día perfecto sin letra pequeña.
+<section class="hero hero--premium-v2">
+  <div class="hero__premium-v2-inner">
+    <span class="hero__eyebrow-pill">Estaciones de esquí · Nieve · Forfaits</span>
+    <h1 class="hero__title-v2">PLANIFICA TU DÍA PERFECTO EN LA NIEVE</h1>
+    <p class="hero__subtitle-v2">
+      Consulta estaciones, estado de pistas, nieve disponible y reserva tus forfaits desde un solo lugar.
     </p>
 
     <div id="hero-estaciones-data" hidden aria-hidden="true">{{range .Estaciones}}<span data-id="{{.ID}}" data-nombre="{{.Nombre}}" data-ubicacion="{{.Ubicacion}}"></span>{{end}}</div>
 
-    <form action="/estaciones" method="GET" class="hero__search-v2 page-home__search" role="search" aria-label="Buscar estaciones" id="hero-search-form" novalidate>
+    <form action="/estaciones" method="GET" class="hero__search-v2" role="search" aria-label="Buscar estaciones" id="hero-search-form" novalidate>
       <div class="hero__sv2-field hero__sv2-field--ac" id="hero-ac-wrap">
         <label class="hero__sv2-label" for="hero-destino">Destino o estación</label>
         <input id="hero-destino" type="text" name="q" class="hero__sv2-input" placeholder="Busca Baqueira, Sierra Nevada, Formigal…" autocomplete="off" aria-label="Destino o estación" aria-autocomplete="list" aria-controls="hero-ac-list" aria-haspopup="listbox" role="combobox" aria-expanded="false">
@@ -57,7 +43,7 @@
 
     <div class="hero__ubic" data-ubicacion-selector></div>
 
-    <ul class="hero__metrics-v2 page-home__metrics" aria-label="Métricas destacadas">
+    <ul class="hero__metrics-v2" aria-label="Métricas destacadas">
       <li>
         <span class="hero__mv2-value">{{with .MasCercana}}{{.Nombre}}{{else}}—{{end}}</span>
         <span class="hero__mv2-label">Más cercana · {{with .MasCercana}}{{printf "%.0f" .Distancia}} km{{else}}sin datos{{end}}</span>
@@ -73,24 +59,10 @@
         <span class="hero__mv2-label">Estaciones disponibles</span>
       </li>
     </ul>
-
-    <div class="page-home__scroll-cue" aria-hidden="true">
-      <span>SCROLL</span>
-      <span class="page-home__scroll-line"></span>
-    </div>
   </div>
 </section>
 
-<div class="page-home__marquee" aria-hidden="true">
-  <div class="page-home__marquee-track">
-    <span>SNOWBREAK</span><span>·</span><span>RENT · SKI · RETURN</span><span>·</span>
-    <span>EDICIÓN 26</span><span>·</span><span>27 ESTACIONES</span><span>·</span>
-    <span>SNOWBREAK</span><span>·</span><span>RENT · SKI · RETURN</span><span>·</span>
-    <span>EDICIÓN 26</span><span>·</span><span>27 ESTACIONES</span><span>·</span>
-  </div>
-</div>
-
-<section class="page-home__stats" data-reveal>
+<section>
   <ul class="stats-grid">
     <li>
       <article class="stats__item stats__item--near">
@@ -113,7 +85,7 @@
   </ul>
 </section>
 
-<section class="container pistas-home page-home__pistas" id="home-pistas-directo" data-reveal>
+<section class="container pistas-home" id="home-pistas-directo">
   <div class="pistas-home__header">
     <div>
       <h2>Estado de pistas en directo</h2>
@@ -128,8 +100,8 @@
   </ul>
 </section>
 
-<section class="container page-home__listado" data-reveal>
-  <div class="filters__header page-home__filters-header">
+<section class="container">
+  <div class="filters__header">
     <div>
       <h2>Estaciones cercanas a ti</h2>
       <p>Ordena por distancia, espesor de nieve o pistas abiertas.</p>
@@ -293,7 +265,7 @@
     {{end}}
   </ul>
 
-  <div id="mapa-container" class="map-card page-home__map oculto" aria-live="polite" data-lenis-prevent>
+  <div id="mapa-container" class="map-card oculto" aria-live="polite">
     <header class="map-card__header">
       <div>
         <h3 class="map-card__title">Mapa de estaciones</h3>
@@ -325,8 +297,6 @@
 </section>
 
 <div id="comparador-bar" class="comparador-bar" hidden></div>
-
-</div><!-- /.page-home -->
 
 <script src="/static/mapa.js"></script>
 <script src="/static/pistas-home.js"></script>

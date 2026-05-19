@@ -134,9 +134,6 @@ type estacionMapaJSON struct {
 	Macizo         string  `json:"macizo"`       // etiqueta legible (Pirineo Catalán, Sierra Nevada, …)
 	MacizoClave    string  `json:"macizo_clave"` // código corto para CSS/filtros
 	Imagen         string  `json:"imagen"`
-	PrecioAdulto   float64 `json:"precio_adulto"`
-	PrecioNino     float64 `json:"precio_nino"`
-	PrecioSenior   float64 `json:"precio_senior"`
 }
 
 // calcularEstado deriva el estado operativo de la estación a partir
@@ -212,9 +209,6 @@ func (a *App) ApiEstaciones(w http.ResponseWriter, r *http.Request) {
 			Macizo:         macizo.Nombre,
 			MacizoClave:    macizo.Clave,
 			Imagen:         e.Imagen,
-			PrecioAdulto:   e.PrecioAdulto,
-			PrecioNino:     e.PrecioNino,
-			PrecioSenior:   e.PrecioSenior,
 		})
 	}
 	escribirJSON(w, http.StatusOK, out)
