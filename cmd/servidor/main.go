@@ -78,6 +78,7 @@ func main() {
 	estacionRepo := repository.NuevoEstacionRepo(bd)
 	favoritoRepo := repository.NuevoFavoritoRepo(bd)
 	noticiaRepo := repository.NuevoNoticiaRepo(bd)
+	alojamientoRepo := repository.NuevoAlojamientoRepo(bd)
 	sesionRepo := repository.NuevoSesionRepo(bd)
 	pedidoRepo := repository.NuevoPedidoRepo(bd)
 
@@ -90,6 +91,7 @@ func main() {
 		SesionSvc:   services.NuevoSesionService(sesionRepo, usuarioRepo),
 		FavoritoSvc: services.NuevoFavoritoService(favoritoRepo),
 		PedidoSvc:   services.NuevoPedidoService(pedidoRepo, estacionRepo),
+		AlojamientoSvc: services.NuevoAlojamientoService(alojamientoRepo),
 		// Servicio de pistas en directo (scraping cacheado de infonieve.es).
 		NieveSvc: services.NuevoNieveService(),
 		Cfg:      cfg,
@@ -118,6 +120,7 @@ func main() {
 
 	// Páginas
 	mux.HandleFunc("/", app.Home)
+	mux.HandleFunc("/premium", app.Premium)
 	mux.HandleFunc("/estaciones", app.Estaciones)
 	mux.HandleFunc("/estacion/", app.Estacion)
 	mux.HandleFunc("/noticias", app.Noticias)
@@ -149,6 +152,10 @@ func main() {
 	mux.HandleFunc("/api/usuarios", app.ApiUsuarios)
 	mux.HandleFunc("/api/usuarios/", app.ApiUsuario)
 	mux.HandleFunc("/api/estaciones", app.ApiEstaciones)
+	mux.HandleFunc("/alojamiento/", app.Alojamiento)
+	mux.HandleFunc("/planificar-estancia", app.PlanificarEstancia)
+	mux.HandleFunc("/api/alojamientos/estacion/", app.ApiAlojamientosEstacion)
+	mux.Handle("/api/alojamientos/reservar", rlEscritura(http.HandlerFunc(app.ApiReservarAlojamiento)))
 	mux.Handle("/api/estacion/", rlEscritura(http.HandlerFunc(app.ApiParteEstacion)))
 	mux.Handle("/api/cesta/checkout", rlEscritura(http.HandlerFunc(app.ApiCheckout)))
 

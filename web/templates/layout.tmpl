@@ -39,11 +39,22 @@
   <meta name="twitter:image" content="https://snowbreak.es/static/og-image.png">
   <meta name="twitter:image:alt" content="SnowBreak — Estaciones de esquí y forfaits">
 
+  <!-- Capa legacy primero, sistema premium después (gana en cascada) -->
   <link rel="stylesheet" href="/static/css/main.css" fetchpriority="high">
+
+  <!-- Sistema visual premium (orden: tokens → base → components → pages) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap">
+  <link rel="stylesheet" href="/static/css/tokens.css">
+  <link rel="stylesheet" href="/static/css/base.css">
+  <link rel="stylesheet" href="/static/css/components.css">
+  <link rel="stylesheet" href="/static/css/pages.css">
+
     <script src="/static/csrf.js"></script>
     <script src="/static/csp-events.js"></script>
 </head>
-<body>
+<body class="theme-premium">
   <a href="#contenido-principal" class="skip-link">Saltar al contenido</a>
   {{template "navbar" .}}
   <main id="contenido-principal">
@@ -56,6 +67,13 @@
   <script src="/static/stations-coords.js"></script>
   <script src="/static/ubicacion-selector.js"></script>
   <script src="/static/estaciones-tools.js"></script>
+
+  <!-- Capa de microinteracciones global (mínima y segura).
+       NO carga GSAP/SplitType/Lenis: esas librerías solo se
+       incluyen en páginas que las necesiten (p.ej. /premium).
+       animations-global.js usa únicamente IntersectionObserver
+       y nunca oculta contenido del DOM. -->
+  <script defer src="/static/js/animations-global.js"></script>
 </body>
 </html>
 {{end}}
@@ -84,6 +102,7 @@
         <li><a href="/estaciones" class="navbar__link {{if eq .Activa "estaciones"}}navbar__link--active{{end}}">Estaciones</a></li>
         <li><a href="/pistas" class="navbar__link {{if eq .Activa "pistas"}}navbar__link--active{{end}}">Estado pistas</a></li>
         <li><a href="/noticias" class="navbar__link {{if eq .Activa "noticias"}}navbar__link--active{{end}}">Noticias</a></li>
+        <li><a href="/planificar-estancia" class="navbar__link {{if eq .Activa "planificar"}}navbar__link--active{{end}}">Planifica tu estancia</a></li>
         <li><a href="/forfaits" class="navbar__link {{if eq .Activa "forfaits"}}navbar__link--active{{end}}">Comprar Forfaits</a></li>
         {{if .Usuario}}
           <li><a href="/favoritos" class="navbar__link {{if eq .Activa "favoritos"}}navbar__link--active{{end}}">Favoritas</a></li>

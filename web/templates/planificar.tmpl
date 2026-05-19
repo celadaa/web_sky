@@ -1,0 +1,190 @@
+{{define "contenido"}}
+<section class="hero hero--planificar">
+  <div class="hero__premium-v2-inner">
+    <span class="hero__eyebrow-pill">Asistente · 4 pasos</span>
+    <h1 class="hero__title-v2">PLANIFICA TU ESCAPADA A LA NIEVE</h1>
+    <p class="hero__subtitle-v2">
+      Elige destino, fechas y alojamiento. Te ayudamos a crear tu estancia completa, paso a paso.
+    </p>
+  </div>
+</section>
+
+<section class="wizard" id="wizard">
+  <div class="wizard__container">
+
+    <!-- Barra de progreso -->
+    <ol class="wizard__steps" aria-label="Pasos del asistente">
+      <li class="wizard__step is-active" data-step-pill="1">
+        <span class="wizard__step-num">1</span>
+        <span class="wizard__step-label">Destino</span>
+      </li>
+      <li class="wizard__step" data-step-pill="2">
+        <span class="wizard__step-num">2</span>
+        <span class="wizard__step-label">Fechas</span>
+      </li>
+      <li class="wizard__step" data-step-pill="3">
+        <span class="wizard__step-num">3</span>
+        <span class="wizard__step-label">Alojamiento</span>
+      </li>
+      <li class="wizard__step" data-step-pill="4">
+        <span class="wizard__step-num">4</span>
+        <span class="wizard__step-label">Forfait</span>
+      </li>
+    </ol>
+
+    <div class="wizard__layout">
+      <main class="wizard__main">
+
+        <!-- PASO 1: destino -->
+        <section class="wizard__panel is-active" data-step="1" aria-labelledby="step-1-title">
+          <header class="wizard__panel-head">
+            <h2 id="step-1-title" class="wizard__panel-title">¿A dónde quieres ir?</h2>
+            <p class="wizard__panel-sub">Busca o elige tu estación de esquí favorita.</p>
+          </header>
+          <div class="wizard__search">
+            <input type="text" id="wizard-search" class="wizard__search-input" placeholder="Buscar estación (Baqueira, Sierra Nevada…)" autocomplete="off">
+          </div>
+          <div class="wizard__loading" data-loading hidden>Cargando estaciones…</div>
+          <ul class="wizard__stations" id="wizard-stations" role="listbox" aria-label="Estaciones disponibles">
+            <!-- las rellena planificar.js -->
+          </ul>
+        </section>
+
+        <!-- PASO 2: fechas -->
+        <section class="wizard__panel" data-step="2" aria-labelledby="step-2-title" hidden>
+          <header class="wizard__panel-head">
+            <h2 id="step-2-title" class="wizard__panel-title">¿Cuándo viajas?</h2>
+            <p class="wizard__panel-sub">Selecciona las fechas y cuántos sois.</p>
+          </header>
+          <form class="wizard__form" id="wizard-dates-form" novalidate>
+            <div class="wizard__field">
+              <label for="wizard-checkin">Entrada</label>
+              <input type="date" id="wizard-checkin" name="fecha_entrada" required>
+            </div>
+            <div class="wizard__field">
+              <label for="wizard-checkout">Salida</label>
+              <input type="date" id="wizard-checkout" name="fecha_salida" required>
+            </div>
+            <div class="wizard__field">
+              <label for="wizard-guests">Huéspedes</label>
+              <input type="number" id="wizard-guests" name="huespedes" min="1" max="10" value="2" required>
+            </div>
+            <p class="wizard__field-error" data-dates-error role="alert" aria-live="polite"></p>
+          </form>
+        </section>
+
+        <!-- PASO 3: alojamiento -->
+        <section class="wizard__panel" data-step="3" aria-labelledby="step-3-title" hidden>
+          <header class="wizard__panel-head">
+            <h2 id="step-3-title" class="wizard__panel-title">Elige dónde dormir</h2>
+            <p class="wizard__panel-sub">Alojamientos cercanos a la estación seleccionada.</p>
+          </header>
+          <div class="wizard__loading" data-loading hidden>Cargando alojamientos…</div>
+          <ul class="wizard__lodgings" id="wizard-lodgings" role="listbox" aria-label="Alojamientos disponibles">
+            <!-- las rellena planificar.js -->
+          </ul>
+        </section>
+
+        <!-- PASO 4: forfait (recomendación) -->
+        <section class="wizard__panel" data-step="4" aria-labelledby="step-4-title" hidden>
+          <header class="wizard__panel-head">
+            <h2 id="step-4-title" class="wizard__panel-title">¿Añadimos un forfait?</h2>
+            <p class="wizard__panel-sub">Tu reserva de alojamiento ya está confirmada. Puedes añadir un forfait al carrito para completar tu escapada.</p>
+          </header>
+
+          <div class="wizard__forfait" id="wizard-forfait">
+            <p class="wizard__forfait-station" data-forfait-station>—</p>
+            <div class="wizard__forfait-types">
+              <label class="wizard__radio">
+                <input type="radio" name="forfait-tipo" value="adulto" checked>
+                <span class="wizard__radio-label">Adulto</span>
+                <span class="wizard__radio-price" data-price-adulto>—</span>
+              </label>
+              <label class="wizard__radio">
+                <input type="radio" name="forfait-tipo" value="nino">
+                <span class="wizard__radio-label">Niño</span>
+                <span class="wizard__radio-price" data-price-nino>—</span>
+              </label>
+              <label class="wizard__radio">
+                <input type="radio" name="forfait-tipo" value="senior">
+                <span class="wizard__radio-label">Senior</span>
+                <span class="wizard__radio-price" data-price-senior>—</span>
+              </label>
+            </div>
+            <div class="wizard__field">
+              <label for="wizard-forfait-qty">Cantidad</label>
+              <input type="number" id="wizard-forfait-qty" min="1" max="10" value="1">
+            </div>
+            <p class="wizard__forfait-note">
+              Las fechas del forfait se ajustarán a las de tu alojamiento (<span data-forfait-nights>—</span>).
+            </p>
+          </div>
+        </section>
+
+        <!-- PASO FINAL: confirmación visual -->
+        <section class="wizard__panel" data-step="5" aria-labelledby="step-5-title" hidden>
+          <div class="wizard__success">
+            <div class="wizard__success-icon" aria-hidden="true">
+              <svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+            </div>
+            <h2 id="step-5-title" class="wizard__success-title">¡Estancia lista!</h2>
+            <p class="wizard__success-sub" data-success-msg>Tu reserva está confirmada.</p>
+            <div class="wizard__success-actions">
+              <a href="/cesta" class="wizard__btn wizard__btn--primary" data-go-cart hidden>Ir a la cesta</a>
+              <a href="/" class="wizard__btn wizard__btn--ghost">Volver al inicio</a>
+            </div>
+          </div>
+        </section>
+
+        <!-- Botones de navegación -->
+        <footer class="wizard__nav">
+          <button type="button" class="wizard__btn wizard__btn--ghost" id="wizard-prev" hidden>Atrás</button>
+          <button type="button" class="wizard__btn wizard__btn--primary" id="wizard-next" disabled>Continuar</button>
+        </footer>
+
+      </main>
+
+      <!-- Resumen lateral -->
+      <aside class="wizard__summary" aria-label="Resumen de tu estancia">
+        <h3 class="wizard__summary-title">Tu estancia</h3>
+        <ul class="wizard__summary-list">
+          <li class="wizard__summary-item">
+            <span class="wizard__summary-label">Destino</span>
+            <span class="wizard__summary-value" data-summary-station>—</span>
+          </li>
+          <li class="wizard__summary-item">
+            <span class="wizard__summary-label">Fechas</span>
+            <span class="wizard__summary-value" data-summary-dates>—</span>
+          </li>
+          <li class="wizard__summary-item">
+            <span class="wizard__summary-label">Huéspedes</span>
+            <span class="wizard__summary-value" data-summary-guests>—</span>
+          </li>
+          <li class="wizard__summary-item">
+            <span class="wizard__summary-label">Alojamiento</span>
+            <span class="wizard__summary-value" data-summary-lodging>—</span>
+          </li>
+          <li class="wizard__summary-item wizard__summary-item--total">
+            <span class="wizard__summary-label">Total alojamiento</span>
+            <span class="wizard__summary-value" data-summary-total>—</span>
+          </li>
+        </ul>
+
+        {{if not .Usuario}}
+        <div class="wizard__summary-locked">
+          <p>Necesitas iniciar sesión para confirmar la reserva.</p>
+          <a href="/login" class="wizard__btn wizard__btn--primary wizard__btn--block">Iniciar sesión</a>
+        </div>
+        {{end}}
+      </aside>
+    </div>
+
+  </div>
+</section>
+
+<script>
+  // Indicar al JS si el usuario está logueado, sin exponer datos sensibles.
+  window.__SNOWBREAK_USER_LOGGED__ = {{if .Usuario}}true{{else}}false{{end}};
+</script>
+<script src="/static/planificar.js"></script>
+{{end}}

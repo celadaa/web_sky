@@ -1,0 +1,198 @@
+{{define "contenido"}}
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap">
+<link rel="stylesheet" href="/static/css/snowbreak-market.css">
+
+<!-- /premium: el wrapper sb-premium-root es suficiente para que el CSS
+     scopeado funcione. Antes había un <script> inline aquí para añadir
+     html.sb-premium pero violaba la CSP. Las reglas que ocultaban
+     navbar/footer en /premium estaban en snowbreak-market.css y ya no
+     se aplican (no hace falta — el navbar/footer son globales). -->
+<div class="sb-premium-root" data-premium-root>
+
+  <!-- ============================================================
+       FASE 1 — HERO BRUTALISTA
+       ============================================================ -->
+  <section class="sb-hero" data-hero aria-label="SnowBreak — Alquiler de material de esquí">
+    <header class="sb-hero__topbar">
+      <span class="sb-hero__mark">SB / 26</span>
+      <span class="sb-hero__meta">SNOWBREAK MARKET · ED. INVIERNO · BARCELONA · ES</span>
+      <span class="sb-hero__clock" data-clock>—</span>
+    </header>
+
+    <h1 class="sb-hero__title" data-hero-title>
+      <span class="sb-hero__line" data-split>ALQUILA</span>
+      <span class="sb-hero__line sb-hero__line--alt" data-split>ESQUÍA</span>
+      <span class="sb-hero__line" data-split>DEVUELVE</span>
+    </h1>
+
+    <footer class="sb-hero__footer">
+      <p class="sb-hero__lede" data-hero-lede>
+        Una colección curada de packs de alquiler para la temporada. Material premium,
+        proceso radicalmente simple, ticket impreso al final.
+      </p>
+      <div class="sb-hero__actions">
+        <a href="#market" class="sb-btn sb-btn--solid" data-magnetic>
+          <span>Explorar Market</span>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14"/><path d="m19 12-7 7-7-7"/></svg>
+        </a>
+        <a href="/estaciones" class="sb-btn sb-btn--ghost" data-magnetic>
+          <span>Ver estaciones</span>
+        </a>
+      </div>
+    </footer>
+
+    <div class="sb-hero__scroll" aria-hidden="true">
+      <span>SCROLL</span>
+      <span class="sb-hero__scroll-line"></span>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       MARQUEE separador editorial
+       ============================================================ -->
+  <div class="sb-marquee" aria-hidden="true">
+    <div class="sb-marquee__track">
+      <span>SNOWBREAK MARKET</span><span>·</span>
+      <span>MATERIAL PREMIUM</span><span>·</span>
+      <span>RENT · SKI · RETURN</span><span>·</span>
+      <span>EDICIÓN 2026</span><span>·</span>
+      <span>SNOWBREAK MARKET</span><span>·</span>
+      <span>MATERIAL PREMIUM</span><span>·</span>
+      <span>RENT · SKI · RETURN</span><span>·</span>
+      <span>EDICIÓN 2026</span><span>·</span>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       FASE 4 — SNOWBREAK MARKET (productos)
+       ============================================================ -->
+  <section class="sb-market" id="market" data-market aria-labelledby="market-title">
+    <header class="sb-market__head">
+      <div class="sb-market__head-left">
+        <span class="sb-eyebrow">SECCIÓN 02 · CATÁLOGO</span>
+        <h2 id="market-title" class="sb-section-title">SNOWBREAK<br>MARKET</h2>
+      </div>
+      <div class="sb-market__head-right">
+        <p>
+          Cada producto se presenta como un artículo de supermercado premium: etiqueta,
+          código de barras, tabla técnica tipo información nutricional y precio claro.
+          Sin letra pequeña.
+        </p>
+        <dl class="sb-market__meta">
+          <div><dt>Unidades</dt><dd data-market-count>7</dd></div>
+          <div><dt>Stock</dt><dd>DISPONIBLE</dd></div>
+          <div><dt>Lote</dt><dd>SB·26·001</dd></div>
+        </dl>
+      </div>
+    </header>
+
+    <!-- Grid de productos: renderizado en cliente desde snowbreak-market.js -->
+    <ul class="sb-market__grid" id="sb-market-grid" data-market-grid aria-live="polite"></ul>
+
+    <!-- Plantilla del producto (clonada por snowbreak-market.js).
+         No es HTML5 <template> porque hay navegadores corporativos viejos
+         a los que tampoco les sienta bien; lo usamos igualmente. -->
+    <template id="sb-product-template">
+      <li class="sb-product" data-product>
+        <article class="sb-product__pkg" data-magnetic-card>
+          <header class="sb-product__top">
+            <span class="sb-product__lot" data-product-lot></span>
+            <span class="sb-product__cert">CERTIFIED PREMIUM</span>
+          </header>
+
+          <!-- Placeholder visual (2D ahora, sustituible por canvas Three.js) -->
+          <div class="sb-product__viz" data-product-viz data-model="">
+            <div class="sb-product__viz-grid" aria-hidden="true"></div>
+            <div class="sb-product__viz-icon" data-product-icon aria-hidden="true"></div>
+            <span class="sb-product__viz-stamp">SB · 3D READY</span>
+          </div>
+
+          <h3 class="sb-product__name" data-product-name></h3>
+          <p class="sb-product__desc" data-product-desc></p>
+
+          <table class="sb-nutri" aria-label="Información técnica">
+            <caption>SKI FACTS</caption>
+            <tbody data-product-nutri></tbody>
+          </table>
+
+          <div class="sb-product__bottom">
+            <div class="sb-barcode" aria-hidden="true">
+              <span class="sb-barcode__bars" data-barcode></span>
+              <span class="sb-barcode__num" data-barcode-num></span>
+            </div>
+            <div class="sb-product__price">
+              <span class="sb-product__price-label">PRECIO / día</span>
+              <strong class="sb-product__price-value" data-product-price></strong>
+            </div>
+          </div>
+
+          <button type="button" class="sb-product__cta" data-add-to-cart>
+            <span data-cta-label>AÑADIR AL CARRITO</span>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+          </button>
+        </article>
+      </li>
+    </template>
+  </section>
+
+  <!-- ============================================================
+       FASE 5 — TICKET CART (curtain reveal al final)
+       ============================================================ -->
+  <section class="sb-ticket-stage" data-ticket-stage aria-labelledby="ticket-title">
+    <div class="sb-ticket" id="sb-ticket" data-ticket>
+      <header class="sb-ticket__head">
+        <h2 id="ticket-title" class="sb-ticket__title">SNOWBREAK<br>RECEIPT</h2>
+        <p class="sb-ticket__sub">
+          ── Resumen de tu cesta ──<br>
+          C/ Premium 26 · Pirineos · ES<br>
+          Caja 01 · Operador: AUTOMÁTICO
+        </p>
+        <p class="sb-ticket__date" data-ticket-date></p>
+      </header>
+
+      <ul class="sb-ticket__items" data-ticket-items></ul>
+
+      <p class="sb-ticket__empty" data-ticket-empty>
+        ── CESTA VACÍA ──<br>
+        Añade artículos desde el Market.
+      </p>
+
+      <dl class="sb-ticket__totals" data-ticket-totals hidden>
+        <div><dt>Subtotal</dt><dd data-ticket-subtotal>0,00 €</dd></div>
+        <div><dt>IVA (21%)</dt><dd data-ticket-iva>0,00 €</dd></div>
+        <div class="sb-ticket__total-row"><dt>TOTAL</dt><dd data-ticket-total>0,00 €</dd></div>
+      </dl>
+
+      <div class="sb-ticket__barcode" aria-hidden="true">
+        <span class="sb-barcode__bars" data-ticket-barcode></span>
+        <span class="sb-barcode__num" data-ticket-barcode-num></span>
+      </div>
+
+      <footer class="sb-ticket__footer">
+        <p>·· GRACIAS POR ELEGIR SNOWBREAK ··<br>Conserve este ticket como justificante.</p>
+        <a href="/cesta" class="sb-btn sb-btn--solid sb-btn--full" data-magnetic>
+          <span>CONTINUAR RESERVA</span>
+        </a>
+      </footer>
+    </div>
+  </section>
+
+</div>
+
+<!-- ============================================================
+     Librerías externas (servidas por CDN — CSP permitida)
+     ============================================================ -->
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<script defer src="https://unpkg.com/split-type@0.3.4/umd/index.min.js"></script>
+<script defer src="https://unpkg.com/lenis@1.1.13/dist/lenis.min.js"></script>
+
+<!-- Scripts propios — orden importa: cart → market → animations
+     Nota: el cart premium (clave snowbreak_market_v1) está separado
+     del cart real (skihub_cart_v1, /static/cart.js). -->
+<script defer src="/static/js/premium-cart.js"></script>
+<script defer src="/static/js/snowbreak-market.js"></script>
+<script defer src="/static/js/animations.js"></script>
+{{end}}
