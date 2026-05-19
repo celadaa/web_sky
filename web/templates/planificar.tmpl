@@ -1,0 +1,243 @@
+{{define "contenido"}}
+<div class="page-planificar" data-page-planificar>
+
+<section class="hero hero--planificar page-planificar__hero" data-hero aria-label="Planifica tu viaje a la nieve">
+  <header class="page-planificar__topbar" aria-hidden="true">
+    <span class="page-planificar__mark">SB / TRIP</span>
+    <span class="page-planificar__meta">CONFIGURADOR · 4 PASOS · TICKET EN TIEMPO REAL</span>
+    <span class="page-planificar__clock" data-clock>—</span>
+  </header>
+
+  <div class="page-planificar__hero-inner">
+    <span class="hero__eyebrow-pill page-planificar__eyebrow">Asistente · 4 pasos</span>
+    <h1 class="hero__title-v2 page-planificar__title">
+      <span class="page-planificar__line">PLANIFICA</span>
+      <span class="page-planificar__line page-planificar__line--alt">TU VIAJE</span>
+      <span class="page-planificar__line">A LA NIEVE</span>
+    </h1>
+    <p class="hero__subtitle-v2 page-planificar__lede">
+      Elige destino, fechas, alojamiento y forfait. Cada paso se imprime en tu ticket
+      premium a la derecha. Sin sorpresas.
+    </p>
+  </div>
+</section>
+
+<section class="page-planificar__stage">
+  <div class="page-planificar__cols">
+
+    <main class="page-planificar__main wizard" id="wizard">
+
+      <ol class="wizard__steps page-planificar__steps" aria-label="Pasos del asistente">
+        <li class="wizard__step is-active" data-step-pill="1"><span class="wizard__step-num">01</span><span class="wizard__step-label">Destino</span></li>
+        <li class="wizard__step" data-step-pill="2"><span class="wizard__step-num">02</span><span class="wizard__step-label">Fechas</span></li>
+        <li class="wizard__step" data-step-pill="3"><span class="wizard__step-num">03</span><span class="wizard__step-label">Alojamiento + Material</span></li>
+        <li class="wizard__step" data-step-pill="4"><span class="wizard__step-num">04</span><span class="wizard__step-label">Forfait + Extras</span></li>
+      </ol>
+
+      <section class="wizard__panel is-active page-planificar__panel" data-step="1" aria-labelledby="step-1-title">
+        <header class="wizard__panel-head">
+          <span class="page-planificar__panel-num">01</span>
+          <h2 id="step-1-title" class="wizard__panel-title">¿A dónde quieres ir?</h2>
+          <p class="wizard__panel-sub">Busca o elige tu estación.</p>
+        </header>
+        <div class="wizard__search">
+          <label class="page-planificar__field-label" for="wizard-search">Estación</label>
+          <input type="text" id="wizard-search" class="wizard__search-input" placeholder="Buscar (Baqueira, Sierra Nevada…)" autocomplete="off">
+        </div>
+        <ul class="wizard__stations page-planificar__stations" id="wizard-stations" role="listbox" aria-label="Estaciones disponibles">
+          {{range .Estaciones}}
+          <li class="wizard__station" role="option"
+              data-station-id="{{.ID}}"
+              data-station-name="{{.Nombre}}"
+              data-station-ubic="{{.Ubicacion}}"
+              data-station-price="{{printf "%.2f" .PrecioNino}}"
+              data-station-nieve="{{.NieveBase}}"
+              data-station-pistas="{{.PistasAbiertas}}/{{.PistasTotales}}"
+              tabindex="0">
+            <div class="wizard__station-body">
+              <strong class="wizard__station-name">{{.Nombre}}</strong>
+              <span class="wizard__station-ubic">{{.Ubicacion}}</span>
+              <span class="wizard__station-meta">{{.NieveBase}} cm · {{.PistasAbiertas}}/{{.PistasTotales}} pistas</span>
+            </div>
+            <div class="wizard__station-price">
+              <span class="wizard__station-price-label">desde</span>
+              <strong class="wizard__station-price-value">{{printf "%.0f" .PrecioNino}}€</strong>
+            </div>
+          </li>
+          {{end}}
+        </ul>
+        <p class="page-planificar__empty" data-empty hidden>Sin estaciones que coincidan.</p>
+      </section>
+
+      <section class="wizard__panel page-planificar__panel" data-step="2" aria-labelledby="step-2-title" hidden>
+        <header class="wizard__panel-head">
+          <span class="page-planificar__panel-num">02</span>
+          <h2 id="step-2-title" class="wizard__panel-title">¿Cuándo viajas?</h2>
+          <p class="wizard__panel-sub">Fechas y nº de personas.</p>
+        </header>
+        <form class="wizard__form page-planificar__form" id="wizard-dates-form" novalidate>
+          <div class="wizard__field">
+            <label class="page-planificar__field-label" for="wizard-checkin">Entrada</label>
+            <input type="date" id="wizard-checkin" name="fecha_entrada" required>
+          </div>
+          <div class="wizard__field">
+            <label class="page-planificar__field-label" for="wizard-checkout">Salida</label>
+            <input type="date" id="wizard-checkout" name="fecha_salida" required>
+          </div>
+          <div class="wizard__field">
+            <label class="page-planificar__field-label" for="wizard-guests">Huéspedes</label>
+            <input type="number" id="wizard-guests" name="huespedes" min="1" max="10" value="2" required>
+          </div>
+          <p class="wizard__field-error" data-dates-error role="alert" aria-live="polite"></p>
+        </form>
+      </section>
+
+      <section class="wizard__panel page-planificar__panel" data-step="3" aria-labelledby="step-3-title" hidden>
+        <header class="wizard__panel-head">
+          <span class="page-planificar__panel-num">03</span>
+          <h2 id="step-3-title" class="wizard__panel-title">Alojamiento + Material</h2>
+          <p class="wizard__panel-sub">Dónde dormir y qué llevar.</p>
+        </header>
+
+        <div class="page-planificar__group">
+          <h3 class="page-planificar__group-title">Alojamiento</h3>
+          <ul class="wizard__lodgings page-planificar__lodgings" id="wizard-lodgings" role="listbox" aria-label="Alojamientos disponibles"></ul>
+        </div>
+
+        <div class="page-planificar__group">
+          <h3 class="page-planificar__group-title">Material</h3>
+          <ul class="page-planificar__materials" id="wizard-materials" role="listbox" aria-label="Material disponible">
+            <li class="page-planificar__material" data-material-id="ski-basic" data-material-name="Pack Esquí Básico" data-material-price="24" tabindex="0"><div><strong>Pack Esquí Básico</strong><br><span>Esquís + botas + bastones</span></div><span class="page-planificar__material-price">24€<small>/día</small></span></li>
+            <li class="page-planificar__material" data-material-id="ski-premium" data-material-name="Pack Esquí Premium" data-material-price="49" tabindex="0"><div><strong>Pack Esquí Premium</strong><br><span>Carving + botas térmicas</span></div><span class="page-planificar__material-price">49€<small>/día</small></span></li>
+            <li class="page-planificar__material" data-material-id="snowboard" data-material-name="Pack Snowboard" data-material-price="39" tabindex="0"><div><strong>Pack Snowboard</strong><br><span>Tabla + fijaciones + botas</span></div><span class="page-planificar__material-price">39€<small>/día</small></span></li>
+            <li class="page-planificar__material" data-material-id="kids" data-material-name="Pack Infantil" data-material-price="18" tabindex="0"><div><strong>Pack Infantil</strong><br><span>Equipo escalado para peques</span></div><span class="page-planificar__material-price">18€<small>/día</small></span></li>
+            <li class="page-planificar__material page-planificar__material--none" data-material-id="none" data-material-name="Sin material" data-material-price="0" tabindex="0"><div><strong>Sin material</strong><br><span>Llevo el mío</span></div><span class="page-planificar__material-price">0€</span></li>
+          </ul>
+        </div>
+      </section>
+
+      <section class="wizard__panel page-planificar__panel" data-step="4" aria-labelledby="step-4-title" hidden>
+        <header class="wizard__panel-head">
+          <span class="page-planificar__panel-num">04</span>
+          <h2 id="step-4-title" class="wizard__panel-title">Forfait + Extras</h2>
+          <p class="wizard__panel-sub">Pase de remontes y añadidos.</p>
+        </header>
+
+        <div class="page-planificar__group">
+          <h3 class="page-planificar__group-title">Forfait</h3>
+          <div class="wizard__forfait page-planificar__forfait" id="wizard-forfait">
+            <p class="wizard__forfait-station page-planificar__forfait-station" data-forfait-station>Selecciona una estación primero.</p>
+            <div class="wizard__forfait-types page-planificar__radios">
+              <label class="wizard__radio page-planificar__radio"><input type="radio" name="forfait-tipo" value="adulto" checked><span class="wizard__radio-label">Adulto</span><span class="wizard__radio-price" data-price-adulto>—</span></label>
+              <label class="wizard__radio page-planificar__radio"><input type="radio" name="forfait-tipo" value="nino"><span class="wizard__radio-label">Niño</span><span class="wizard__radio-price" data-price-nino>—</span></label>
+              <label class="wizard__radio page-planificar__radio"><input type="radio" name="forfait-tipo" value="senior"><span class="wizard__radio-label">Senior</span><span class="wizard__radio-price" data-price-senior>—</span></label>
+              <label class="wizard__radio page-planificar__radio page-planificar__radio--none"><input type="radio" name="forfait-tipo" value="ninguno"><span class="wizard__radio-label">Sin forfait</span><span class="wizard__radio-price">0,00€</span></label>
+            </div>
+            <div class="wizard__field">
+              <label class="page-planificar__field-label" for="wizard-forfait-qty">Cantidad</label>
+              <input type="number" id="wizard-forfait-qty" min="0" max="10" value="1">
+            </div>
+          </div>
+        </div>
+
+        <div class="page-planificar__group">
+          <h3 class="page-planificar__group-title">Extras</h3>
+          <ul class="page-planificar__extras" id="wizard-extras">
+            <li><label class="page-planificar__check"><input type="checkbox" data-extra-id="casco" data-extra-name="Casco + Gafas" data-extra-price="9"><span><strong>Casco + Gafas</strong><br><small>Homologados, fotocromáticas</small></span><span class="page-planificar__extra-price">9€<small>/día</small></span></label></li>
+            <li><label class="page-planificar__check"><input type="checkbox" data-extra-id="seguro" data-extra-name="Seguro de nieve" data-extra-price="5"><span><strong>Seguro de nieve</strong><br><small>Rescate + RC + rotura</small></span><span class="page-planificar__extra-price">5€<small>/día</small></span></label></li>
+            <li><label class="page-planificar__check"><input type="checkbox" data-extra-id="wax" data-extra-name="Encerado profesional" data-extra-price="12"><span><strong>Encerado profesional</strong><br><small>Cantos + suela + cera</small></span><span class="page-planificar__extra-price">12€<small>único</small></span></label></li>
+          </ul>
+        </div>
+      </section>
+
+      <section class="wizard__panel page-planificar__panel" data-step="5" aria-labelledby="step-5-title" hidden>
+        <div class="wizard__success page-planificar__success">
+          <span class="page-planificar__panel-num">05</span>
+          <h2 id="step-5-title" class="wizard__success-title">PLANIFICACIÓN LISTA</h2>
+          <p class="wizard__success-sub" data-success-msg>Tu ticket está completo. Confírmalo cuando quieras.</p>
+          <div class="wizard__success-actions page-planificar__success-actions">
+            <a href="/cesta" class="sb-btn sb-btn--solid sb-btn--lg" data-go-cart>Ir a la cesta</a>
+            <a href="/" class="sb-btn">Volver al inicio</a>
+          </div>
+        </div>
+      </section>
+
+      <footer class="wizard__nav page-planificar__nav">
+        <button type="button" class="sb-btn" id="wizard-prev" hidden>← Atrás</button>
+        <button type="button" class="sb-btn sb-btn--solid" id="wizard-next" disabled>Continuar →</button>
+      </footer>
+
+    </main>
+
+    <aside class="page-planificar__ticket-col" aria-label="Resumen de tu viaje en formato ticket">
+      <div class="sb-ticket page-planificar__ticket" id="trip-ticket" data-trip-ticket>
+        <header class="sb-ticket__head">
+          <h2 class="sb-ticket__title">SNOWBREAK<br>TRIP RECEIPT</h2>
+          <p class="sb-ticket__sub">── Resumen de tu viaje ──<br>C/ Premium 26 · Pirineos · ES<br>Caja 01 · Operador: AUTOMÁTICO</p>
+          <p class="sb-ticket__date" data-trip-date></p>
+        </header>
+
+        <dl class="page-planificar__ticket-lines" data-trip-lines>
+          <div class="page-planificar__ticket-line" data-line="station">
+            <dt>ESTACIÓN</dt>
+            <dd data-trip-station>Estación pendiente</dd>
+            <dd class="page-planificar__ticket-meta" data-trip-station-meta>—</dd>
+          </div>
+          <div class="page-planificar__ticket-line" data-line="dates">
+            <dt>FECHAS</dt>
+            <dd data-trip-dates>Fechas pendientes</dd>
+            <dd class="page-planificar__ticket-meta" data-trip-nights>—</dd>
+          </div>
+          <div class="page-planificar__ticket-line" data-line="guests">
+            <dt>HUÉSPEDES</dt>
+            <dd data-trip-guests>—</dd>
+          </div>
+          <div class="page-planificar__ticket-line" data-line="lodging">
+            <dt>ALOJAMIENTO</dt>
+            <dd data-trip-lodging>Alojamiento pendiente</dd>
+            <dd class="page-planificar__ticket-price" data-trip-lodging-price>—</dd>
+          </div>
+          <div class="page-planificar__ticket-line" data-line="material">
+            <dt>MATERIAL</dt>
+            <dd data-trip-material>Material pendiente</dd>
+            <dd class="page-planificar__ticket-price" data-trip-material-price>—</dd>
+          </div>
+          <div class="page-planificar__ticket-line" data-line="forfait">
+            <dt>FORFAIT</dt>
+            <dd data-trip-forfait>Sin forfait</dd>
+            <dd class="page-planificar__ticket-price" data-trip-forfait-price>0,00€</dd>
+          </div>
+          <div class="page-planificar__ticket-line" data-line="extras">
+            <dt>EXTRAS</dt>
+            <dd data-trip-extras>Ninguno</dd>
+            <dd class="page-planificar__ticket-price" data-trip-extras-price>0,00€</dd>
+          </div>
+        </dl>
+
+        <dl class="sb-ticket__totals page-planificar__ticket-totals">
+          <div><dt>Subtotal</dt><dd data-trip-subtotal>0,00€</dd></div>
+          <div><dt>IVA (21%)</dt><dd data-trip-iva>0,00€</dd></div>
+          <div class="sb-ticket__total-row"><dt>TOTAL</dt><dd data-trip-total>0,00€</dd></div>
+        </dl>
+
+        <div class="page-planificar__ticket-barcode" aria-hidden="true">
+          <span class="sb-barcode__bars" data-trip-barcode></span>
+          <span class="sb-barcode__num" data-trip-barcode-num>SB 0 000 000 0 000</span>
+        </div>
+
+        <footer class="page-planificar__ticket-footer">
+          <p>·· GRACIAS POR ELEGIR SNOWBREAK ··<br>Conserve este ticket como justificante.</p>
+          <a href="/cesta" class="sb-btn sb-btn--solid sb-btn--block" data-trip-cta>Continuar reserva</a>
+          <button type="button" class="page-planificar__reset" data-trip-reset>Reiniciar planificación</button>
+        </footer>
+      </div>
+    </aside>
+
+  </div>
+</section>
+
+</div>
+
+<script src="/static/js/trip-planner-ticket.js"></script>
+<script src="/static/js/planificar.js"></script>
+{{end}}

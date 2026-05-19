@@ -26,6 +26,7 @@ func CargarPlantillas(dir string) (Cache, error) {
 		"admin_usuarios", "admin_usuario", "legal",
 		"forfaits", "cesta", "pistas",
 		"pago",
+		"planificar",
 	}
 	layout := filepath.Join(dir, "layout.tmpl")
 	for _, p := range paginas {

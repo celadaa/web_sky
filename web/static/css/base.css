@@ -1,0 +1,72 @@
+/* base.css — capa base SCOPED a body.theme-premium */
+
+body.theme-premium {
+  background: var(--sb-c-bg);
+  color: var(--sb-c-ink);
+  font-family: var(--sb-font-display);
+  font-size: var(--sb-fs-300);
+  line-height: var(--sb-lh-body);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body.theme-premium h1, body.theme-premium h2, body.theme-premium h3,
+body.theme-premium h4, body.theme-premium h5, body.theme-premium h6 {
+  font-family: var(--sb-font-display);
+  font-weight: 600;
+  letter-spacing: var(--sb-tracking-tight);
+  line-height: var(--sb-lh-tight);
+}
+
+body.theme-premium ::selection { background: var(--sb-c-ink); color: var(--sb-c-on-ink); }
+
+body.theme-premium a {
+  color: inherit;
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
+  text-decoration-color: var(--sb-c-line-soft);
+  transition: text-decoration-color var(--sb-dur-1) var(--sb-ease-out);
+}
+body.theme-premium a:hover { text-decoration-color: var(--sb-c-ink); }
+
+body.theme-premium a.no-underline,
+body.theme-premium .sb-btn,
+body.theme-premium .navbar__link,
+body.theme-premium .navbar__btn,
+body.theme-premium .footer__link,
+body.theme-premium .cart-button,
+body.theme-premium .cart-dropdown__btn,
+body.theme-premium .text-link,
+body.theme-premium .station-card a,
+body.theme-premium .skip-link { text-decoration: none; }
+
+body.theme-premium :focus-visible { outline: 2px solid var(--sb-c-ink); outline-offset: 3px; border-radius: 0; }
+
+body.theme-premium .skip-link {
+  position: absolute; left: -9999px; top: 0;
+  background: var(--sb-c-ink); color: var(--sb-c-on-ink);
+  padding: .6rem 1rem;
+  font-family: var(--sb-font-mono);
+  font-size: var(--sb-fs-100);
+  letter-spacing: var(--sb-tracking-mono);
+  text-transform: uppercase;
+  z-index: var(--sb-z-toast);
+}
+body.theme-premium .skip-link:focus { left: .5rem; top: .5rem; }
+
+/* Reveal opt-in seguro: estado base visible, .reveal-in lo anima */
+[data-reveal] { will-change: transform; }
+[data-reveal].reveal-in { animation: sb-reveal-in .9s cubic-bezier(.2,.8,.2,1) both; }
+@keyframes sb-reveal-in {
+  from { transform: translateY(20px); opacity: .001; }
+  to   { transform: translateY(0);    opacity: 1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body.theme-premium, body.theme-premium *, body.theme-premium *::before, body.theme-premium *::after {
+    animation-duration: .01ms !important;
+    transition-duration: .01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

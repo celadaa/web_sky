@@ -124,6 +124,7 @@ func main() {
 	mux.HandleFunc("/forfaits", app.Forfaits)
 	mux.HandleFunc("/cesta", app.Cesta)
 	mux.HandleFunc("/pago", app.Pago)
+	mux.HandleFunc("/planificar-estancia", app.PlanificarEstancia)
 	mux.Handle("/registro", rlAuth(http.HandlerFunc(app.Registro)))
 	mux.HandleFunc("/legal/aviso-legal", app.AvisoLegal)
 	mux.HandleFunc("/legal/privacidad", app.PoliticaPrivacidad)

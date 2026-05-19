@@ -1,0 +1,30 @@
+# .gitleaks.toml — Configuración personalizada de gitleaks.
+#
+# Heredamos las reglas por defecto y añadimos una allowlist global que
+# exime nuestras claves de localStorage / sessionStorage / IDs visibles.
+# Estos identificadores existen en el cliente y NO son secretos; gitleaks
+# los marca a veces porque la regla `generic-api-key` mide entropía y
+# strings largos como "snowbreak_trip_planner_v1" la pasan.
+
+[extend]
+useDefault = true
+
+[allowlist]
+description = "Identificadores públicos de cliente (storage keys, IDs, namespaces)"
+
+# Strings concretos que sabemos no son secretos.
+regexes = [
+  '''snowbreak_trip_planner_v[0-9]+''',
+  '''snowbreak_market_v[0-9]+''',
+  '''skihub_cart_v[0-9]+''',
+  '''skihub_csrf''',
+]
+
+# Líneas o ficheros que se ignoran enteros para reglas con entropía.
+paths = [
+  '''web/static/js/trip-planner-ticket\.js''',
+  '''web/static/js/premium-cart\.js''',
+  '''web/static/cart\.js''',
+]
+
+# Comentarios inline `gitleaks:allow` siguen funcionando como antes.

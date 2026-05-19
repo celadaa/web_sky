@@ -1,0 +1,397 @@
+/* pages.css — estilos específicos de cada página.
+   Scopeados a body.theme-premium para no salpicar fuera del sistema. */
+
+/* ============================================================
+   PAGE: PLANIFICAR  (/planificar-estancia)
+   ============================================================ */
+
+body.theme-premium .page-planificar { isolation: isolate; }
+
+/* ---- Hero ---- */
+body.theme-premium .page-planificar__hero {
+  background: var(--sb-c-bg); color: var(--sb-c-ink);
+  padding: clamp(1.2rem, 2.5vw, 2.4rem);
+  border-bottom: var(--sb-bd);
+  display: flex; flex-direction: column; gap: clamp(1.5rem, 3vw, 2rem);
+  position: relative;
+}
+body.theme-premium .page-planificar__hero::before,
+body.theme-premium .page-planificar__hero::after { content: none !important; background: none !important; }
+
+body.theme-premium .page-planificar__topbar {
+  display: flex; align-items: center; justify-content: space-between; gap: var(--sb-sp-4);
+  font-family: var(--sb-font-mono); font-size: var(--sb-fs-100);
+  letter-spacing: var(--sb-tracking-mono); text-transform: uppercase;
+}
+body.theme-premium .page-planificar__mark { font-weight: 700; padding: .25rem .55rem; border: var(--sb-bd); }
+body.theme-premium .page-planificar__meta { flex: 1; text-align: center; color: var(--sb-c-ink-muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+body.theme-premium .page-planificar__clock { font-variant-numeric: tabular-nums; min-width: 8ch; text-align: right; }
+
+body.theme-premium .page-planificar__hero-inner {
+  max-width: 1280px; width: 100%; margin: 0 auto;
+  display: flex; flex-direction: column; gap: var(--sb-sp-4);
+}
+body.theme-premium .page-planificar .hero__eyebrow-pill.page-planificar__eyebrow {
+  width: max-content; background: transparent; color: var(--sb-c-ink-muted);
+  border: 0; border-top: var(--sb-bd-thin); border-radius: 0;
+  padding: var(--sb-sp-2) 0 0;
+  font-family: var(--sb-font-mono); font-size: var(--sb-fs-100);
+  letter-spacing: var(--sb-tracking-mono); text-transform: uppercase;
+  box-shadow: none;
+}
+body.theme-premium .page-planificar .hero__title-v2.page-planificar__title {
+  margin: 0;
+  font-family: var(--sb-font-display); font-weight: 700;
+  font-size: clamp(2.8rem, 10vw, 8rem);
+  line-height: .85; letter-spacing: var(--sb-tracking-tight); text-transform: uppercase;
+  color: var(--sb-c-ink);
+  background: none;
+  -webkit-text-fill-color: currentColor;
+  display: flex; flex-direction: column; gap: clamp(.1rem, .3vw, .3rem);
+}
+body.theme-premium .page-planificar__line { display: block; }
+body.theme-premium .page-planificar__line--alt {
+  font-style: italic; font-weight: 500;
+  -webkit-text-stroke: 2px var(--sb-c-ink);
+  color: transparent; -webkit-text-fill-color: transparent;
+}
+body.theme-premium .page-planificar .hero__subtitle-v2.page-planificar__lede {
+  margin: 0; max-width: 56ch;
+  color: var(--sb-c-ink); font-size: var(--sb-fs-400); line-height: 1.45;
+}
+
+/* ---- Stage (layout 2 columnas) ---- */
+body.theme-premium .page-planificar__stage {
+  padding: clamp(2rem, 4vw, 3rem) clamp(1.2rem, 2.5vw, 2.4rem) clamp(4rem, 7vw, 6rem);
+}
+body.theme-premium .page-planificar__cols {
+  max-width: 1320px; margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1fr 360px;
+  gap: clamp(1.5rem, 3vw, 2.5rem);
+  align-items: start;
+}
+@media (max-width: 1000px) {
+  body.theme-premium .page-planificar__cols { grid-template-columns: 1fr; }
+}
+
+/* ---- Wizard izda ---- */
+body.theme-premium .page-planificar__main {
+  background: var(--sb-c-paper);
+  border: var(--sb-bd);
+  padding: clamp(1.2rem, 2.2vw, 2rem);
+}
+
+body.theme-premium .page-planificar__steps {
+  list-style: none; padding: 0; margin: 0 0 var(--sb-sp-5);
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0;
+  border-bottom: var(--sb-bd);
+}
+body.theme-premium .page-planificar__steps li {
+  display: flex; flex-direction: column; gap: var(--sb-sp-1);
+  padding: var(--sb-sp-3);
+  border-right: var(--sb-bd-dashed);
+  color: var(--sb-c-ink-muted);
+  font-family: var(--sb-font-mono);
+}
+body.theme-premium .page-planificar__steps li:last-child { border-right: 0; }
+body.theme-premium .page-planificar__steps .wizard__step-num {
+  font-size: var(--sb-fs-100); letter-spacing: var(--sb-tracking-mono);
+}
+body.theme-premium .page-planificar__steps .wizard__step-label {
+  font-family: var(--sb-font-display); font-weight: 600;
+  font-size: var(--sb-fs-300); color: var(--sb-c-ink);
+  text-transform: uppercase; letter-spacing: -.01em;
+}
+body.theme-premium .page-planificar__steps .is-active { background: var(--sb-c-bg); color: var(--sb-c-ink); }
+body.theme-premium .page-planificar__steps .is-active::after {
+  content: ""; display: block; width: 32px; height: 2px; background: var(--sb-c-ink); margin-top: var(--sb-sp-1);
+}
+body.theme-premium .page-planificar__steps .is-done { opacity: .6; }
+@media (max-width: 720px) {
+  body.theme-premium .page-planificar__steps { grid-template-columns: repeat(2, 1fr); border-bottom: 0; }
+  body.theme-premium .page-planificar__steps li { border-bottom: var(--sb-bd-dashed); }
+}
+
+/* Panel */
+body.theme-premium .page-planificar__panel { padding-top: var(--sb-sp-3); }
+body.theme-premium .page-planificar__panel-num {
+  display: inline-block;
+  font-family: var(--sb-font-mono); font-size: var(--sb-fs-100);
+  letter-spacing: var(--sb-tracking-mono); color: var(--sb-c-ink-muted);
+  margin-bottom: var(--sb-sp-2);
+}
+body.theme-premium .page-planificar .wizard__panel-title {
+  font-family: var(--sb-font-display); font-weight: 600;
+  font-size: var(--sb-fs-600); margin: 0 0 var(--sb-sp-2);
+  letter-spacing: var(--sb-tracking-tight); text-transform: uppercase;
+}
+body.theme-premium .page-planificar .wizard__panel-sub {
+  font-family: var(--sb-font-mono); font-size: var(--sb-fs-200);
+  color: var(--sb-c-ink-muted); margin: 0 0 var(--sb-sp-4);
+}
+body.theme-premium .page-planificar__field-label {
+  display: block;
+  font-family: var(--sb-font-mono); font-size: var(--sb-fs-100);
+  letter-spacing: var(--sb-tracking-mono); text-transform: uppercase;
+  color: var(--sb-c-ink-muted);
+  margin-bottom: var(--sb-sp-1);
+}
+
+/* Estaciones */
+body.theme-premium .page-planificar__stations {
+  list-style: none; padding: 0; margin: var(--sb-sp-3) 0 0;
+  display: grid; grid-template-columns: 1fr; gap: 0;
+  border-top: var(--sb-bd);
+}
+body.theme-premium .wizard__station {
+  display: flex; align-items: center; justify-content: space-between; gap: var(--sb-sp-3);
+  padding: var(--sb-sp-3) var(--sb-sp-4);
+  border-bottom: var(--sb-bd-dashed);
+  background: transparent; cursor: pointer;
+  transition: background var(--sb-dur-1) var(--sb-ease-out);
+}
+body.theme-premium .wizard__station:hover { background: var(--sb-c-bg); }
+body.theme-premium .wizard__station.is-selected { background: var(--sb-c-ink); color: var(--sb-c-on-ink); }
+body.theme-premium .wizard__station-body { display: flex; flex-direction: column; gap: 2px; }
+body.theme-premium .wizard__station-name { font-family: var(--sb-font-display); font-size: var(--sb-fs-400); text-transform: uppercase; }
+body.theme-premium .wizard__station-ubic { font-family: var(--sb-font-mono); font-size: var(--sb-fs-100); letter-spacing: var(--sb-tracking-mono); text-transform: uppercase; color: var(--sb-c-ink-muted); }
+body.theme-premium .wizard__station.is-selected .wizard__station-ubic { color: rgba(250,249,245,.7); }
+body.theme-premium .wizard__station-meta { font-family: var(--sb-font-mono); font-size: var(--sb-fs-100); color: var(--sb-c-ink-muted); }
+body.theme-premium .wizard__station.is-selected .wizard__station-meta { color: rgba(250,249,245,.7); }
+body.theme-premium .wizard__station-price { text-align: right; }
+body.theme-premium .wizard__station-price-label { display: block; font-family: var(--sb-font-mono); font-size: var(--sb-fs-100); color: var(--sb-c-ink-muted); }
+body.theme-premium .wizard__station.is-selected .wizard__station-price-label { color: rgba(250,249,245,.7); }
+body.theme-premium .wizard__station-price-value { font-family: var(--sb-font-display); font-size: var(--sb-fs-500); font-weight: 700; }
+
+body.theme-premium .page-planificar__empty {
+  text-align: center; padding: var(--sb-sp-5);
+  font-family: var(--sb-font-mono); color: var(--sb-c-ink-muted);
+  letter-spacing: var(--sb-tracking-mono); text-transform: uppercase;
+}
+
+/* Forms (fechas, etc.) */
+body.theme-premium .page-planificar__form {
+  display: grid; grid-template-columns: 1fr 1fr 120px; gap: var(--sb-sp-4);
+}
+@media (max-width: 720px) {
+  body.theme-premium .page-planificar__form { grid-template-columns: 1fr; }
+}
+body.theme-premium .page-planificar .wizard__field-error {
+  grid-column: 1 / -1;
+  margin: 0;
+  font-family: var(--sb-font-mono); font-size: var(--sb-fs-100);
+  letter-spacing: var(--sb-tracking-mono); color: var(--sb-c-danger);
+}
+
+/* Grupos paso 3 / 4 */
+body.theme-premium .page-planificar__group { margin-bottom: var(--sb-sp-5); }
+body.theme-premium .page-planificar__group-title {
+  font-family: var(--sb-font-mono); font-size: var(--sb-fs-100);
+  letter-spacing: var(--sb-tracking-mono); text-transform: uppercase;
+  color: var(--sb-c-ink); margin: 0 0 var(--sb-sp-3);
+  padding-bottom: var(--sb-sp-2); border-bottom: var(--sb-bd-dashed);
+}
+
+/* Lodgings, materials, extras — listas tipo inventario */
+body.theme-premium .page-planificar__lodgings,
+body.theme-premium .page-planificar__materials,
+body.theme-premium .page-planificar__extras {
+  list-style: none; padding: 0; margin: 0;
+  display: grid; gap: 0;
+  border-top: var(--sb-bd);
+}
+body.theme-premium .page-planificar__lodging,
+body.theme-premium .page-planificar__material {
+  display: flex; align-items: center; justify-content: space-between; gap: var(--sb-sp-3);
+  padding: var(--sb-sp-3) var(--sb-sp-4);
+  border-bottom: var(--sb-bd-dashed);
+  cursor: pointer;
+  transition: background var(--sb-dur-1) var(--sb-ease-out);
+}
+body.theme-premium .page-planificar__lodging:hover,
+body.theme-premium .page-planificar__material:hover { background: var(--sb-c-bg); }
+body.theme-premium .page-planificar__lodging.is-selected,
+body.theme-premium .page-planificar__material.is-selected { background: var(--sb-c-ink); color: var(--sb-c-on-ink); }
+body.theme-premium .page-planificar__lodging strong,
+body.theme-premium .page-planificar__material strong {
+  font-family: var(--sb-font-display); font-size: var(--sb-fs-400); text-transform: uppercase;
+}
+body.theme-premium .page-planificar__lodging-body span,
+body.theme-premium .page-planificar__material span {
+  font-family: var(--sb-font-mono); font-size: var(--sb-fs-100); color: var(--sb-c-ink-muted);
+}
+body.theme-premium .page-planificar__lodging.is-selected .page-planificar__lodging-body span,
+body.theme-premium .page-planificar__material.is-selected span { color: rgba(250,249,245,.7); }
+body.theme-premium .page-planificar__lodging-price,
+body.theme-premium .page-planificar__material-price {
+  font-family: var(--sb-font-display); font-weight: 700; font-size: var(--sb-fs-500);
+  text-align: right;
+}
+body.theme-premium .page-planificar__lodging-price small,
+body.theme-premium .page-planificar__material-price small {
+  font-family: var(--sb-font-mono); font-size: var(--sb-fs-100); font-weight: 400;
+  color: var(--sb-c-ink-muted);
+  display: block; margin-top: 2px;
+}
+body.theme-premium .page-planificar__lodging.is-selected .page-planificar__lodging-price small,
+body.theme-premium .page-planificar__material.is-selected small { color: rgba(250,249,245,.7); }
+body.theme-premium .page-planificar__lodging-price strong {
+  display: block;
+  font-family: var(--sb-font-display); font-size: var(--sb-fs-500); font-weight: 700;
+}
+
+/* Radios + checks tipo editorial */
+body.theme-premium .page-planificar__radios {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 0;
+  border-top: var(--sb-bd);
+}
+body.theme-premium .page-planificar__radio {
+  display: flex; align-items: center; justify-content: space-between; gap: var(--sb-sp-2);
+  padding: var(--sb-sp-3) var(--sb-sp-4);
+  border-right: var(--sb-bd-dashed);
+  border-bottom: var(--sb-bd-dashed);
+  cursor: pointer;
+  font-family: var(--sb-font-mono);
+}
+body.theme-premium .page-planificar__radio input { accent-color: var(--sb-c-ink); }
+body.theme-premium .page-planificar__radio .wizard__radio-label {
+  font-family: var(--sb-font-display); font-size: var(--sb-fs-300); text-transform: uppercase; font-weight: 500;
+}
+body.theme-premium .page-planificar__radio .wizard__radio-price {
+  font-family: var(--sb-font-mono); font-size: var(--sb-fs-100);
+  letter-spacing: var(--sb-tracking-mono); color: var(--sb-c-ink-muted);
+}
+body.theme-premium .page-planificar__forfait-station {
+  font-family: var(--sb-font-mono); font-size: var(--sb-fs-100);
+  letter-spacing: var(--sb-tracking-mono); text-transform: uppercase;
+  color: var(--sb-c-ink-muted); margin: 0 0 var(--sb-sp-3);
+}
+
+body.theme-premium .page-planificar__check {
+  display: grid; grid-template-columns: auto 1fr auto; gap: var(--sb-sp-3);
+  align-items: center;
+  padding: var(--sb-sp-3) var(--sb-sp-4);
+  border-bottom: var(--sb-bd-dashed);
+  cursor: pointer;
+}
+body.theme-premium .page-planificar__check:hover { background: var(--sb-c-bg); }
+body.theme-premium .page-planificar__check input { accent-color: var(--sb-c-ink); transform: scale(1.2); }
+body.theme-premium .page-planificar__check strong {
+  font-family: var(--sb-font-display); font-size: var(--sb-fs-300); text-transform: uppercase;
+}
+body.theme-premium .page-planificar__check small {
+  font-family: var(--sb-font-mono); font-size: var(--sb-fs-100); color: var(--sb-c-ink-muted);
+}
+body.theme-premium .page-planificar__extra-price {
+  font-family: var(--sb-font-display); font-weight: 700; font-size: var(--sb-fs-400);
+  white-space: nowrap;
+}
+
+/* Success */
+body.theme-premium .page-planificar__success {
+  text-align: center; padding: var(--sb-sp-7) var(--sb-sp-5);
+}
+body.theme-premium .page-planificar .wizard__success-title {
+  font-family: var(--sb-font-display); font-weight: 700;
+  font-size: var(--sb-fs-700); margin: var(--sb-sp-3) 0; letter-spacing: var(--sb-tracking-tight);
+}
+body.theme-premium .page-planificar .wizard__success-sub { color: var(--sb-c-ink-muted); }
+body.theme-premium .page-planificar__success-actions {
+  display: flex; justify-content: center; gap: var(--sb-sp-3); margin-top: var(--sb-sp-5); flex-wrap: wrap;
+}
+
+/* Nav */
+body.theme-premium .page-planificar__nav {
+  display: flex; justify-content: space-between; gap: var(--sb-sp-3);
+  margin-top: var(--sb-sp-5);
+  padding-top: var(--sb-sp-4); border-top: var(--sb-bd);
+}
+
+/* ============ TICKET STICKY (columna derecha) ============ */
+body.theme-premium .page-planificar__ticket-col {
+  position: sticky; top: calc(var(--sb-sp-4));
+  align-self: start;
+}
+@media (max-width: 1000px) {
+  body.theme-premium .page-planificar__ticket-col { position: static; }
+}
+
+body.theme-premium .page-planificar__ticket-lines {
+  margin: var(--sb-sp-3) 0 0;
+  padding: 0;
+  display: flex; flex-direction: column; gap: var(--sb-sp-1);
+}
+body.theme-premium .page-planificar__ticket-line {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  grid-template-areas: "label price" "value price" "meta meta";
+  align-items: baseline;
+  gap: 2px var(--sb-sp-2);
+  padding: var(--sb-sp-2) 0;
+  border-bottom: var(--sb-bd-dashed);
+}
+body.theme-premium .page-planificar__ticket-line dt {
+  grid-area: label;
+  font-family: var(--sb-font-mono);
+  font-size: var(--sb-fs-100);
+  letter-spacing: var(--sb-tracking-mono);
+  text-transform: uppercase;
+  color: var(--sb-c-ink-muted);
+  margin: 0;
+}
+body.theme-premium .page-planificar__ticket-line dd {
+  grid-area: value;
+  font-family: var(--sb-font-mono);
+  font-size: var(--sb-fs-200);
+  font-weight: 700;
+  margin: 0;
+  text-transform: uppercase;
+  word-break: break-word;
+}
+body.theme-premium .page-planificar__ticket-meta {
+  grid-area: meta !important;
+  font-weight: 400 !important;
+  text-transform: none !important;
+  font-size: var(--sb-fs-100) !important;
+  color: var(--sb-c-ink-muted) !important;
+}
+body.theme-premium .page-planificar__ticket-price {
+  grid-area: price !important;
+  font-family: var(--sb-font-display) !important;
+  font-weight: 700 !important;
+  font-size: var(--sb-fs-400) !important;
+  white-space: nowrap;
+  text-transform: none !important;
+}
+
+body.theme-premium .page-planificar__ticket-totals { margin-top: var(--sb-sp-3); padding-top: var(--sb-sp-2); border-top: var(--sb-bd-dashed); }
+
+body.theme-premium .page-planificar__ticket-barcode {
+  margin: var(--sb-sp-4) 0 var(--sb-sp-3);
+  text-align: center;
+  display: flex; flex-direction: column; align-items: center; gap: var(--sb-sp-1);
+}
+
+body.theme-premium .page-planificar__ticket-footer { text-align: center; }
+body.theme-premium .page-planificar__ticket-footer p {
+  font-size: var(--sb-fs-100); letter-spacing: var(--sb-tracking-mono);
+  margin: 0 0 var(--sb-sp-4); color: var(--sb-c-ink-muted);
+}
+body.theme-premium .page-planificar__reset {
+  background: none; border: 0;
+  font-family: var(--sb-font-mono);
+  font-size: var(--sb-fs-100);
+  letter-spacing: var(--sb-tracking-mono);
+  text-transform: uppercase;
+  color: var(--sb-c-ink-muted);
+  text-decoration: underline;
+  cursor: pointer;
+  margin-top: var(--sb-sp-3);
+  padding: 0;
+}
+body.theme-premium .page-planificar__reset:hover { color: var(--sb-c-ink); }
+
+body.theme-premium .page-planificar__ticket.is-complete { /* hook si quieres efecto extra */ }
