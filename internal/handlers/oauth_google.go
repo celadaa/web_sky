@@ -165,4 +165,3 @@ func borrarCookieEstado(w http.ResponseWriter, a *App) {
 		SameSite: http.SameSiteLaxMode,
 	})
 }
-

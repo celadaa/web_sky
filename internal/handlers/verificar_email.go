@@ -6,10 +6,10 @@
 //
 // Resultado:
 //
-//	- Token válido: marca el usuario como verificado y renderiza la pantalla
-//	  de éxito.
-//	- Token inválido / caducado: renderiza la pantalla de error sin filtrar
-//	  cuál de las dos cosas ocurrió.
+//   - Token válido: marca el usuario como verificado y renderiza la pantalla
+//     de éxito.
+//   - Token inválido / caducado: renderiza la pantalla de error sin filtrar
+//     cuál de las dos cosas ocurrió.
 //
 // No requiere sesión: el propio token es el "factor de autenticación" para
 // esta operación. Por eso lo enviamos por un canal externo (email) y lo

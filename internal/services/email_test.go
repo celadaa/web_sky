@@ -9,13 +9,13 @@ import (
 // vacíos. Sin esto, los emails dirían "Hola ," que queda raro.
 func TestPrimerNombreFallback(t *testing.T) {
 	cases := map[string]string{
-		"":                    "esquiador",
-		" ":                   "esquiador",
-		"María":               "María",
-		"María José":          "María",
-		"\tCelada\nOrtega":    "Celada",
-		"Juan Carlos Pérez":   "Juan",
-		" Juan ":              "Juan",
+		"":                  "esquiador",
+		" ":                 "esquiador",
+		"María":             "María",
+		"María José":        "María",
+		"\tCelada\nOrtega":  "Celada",
+		"Juan Carlos Pérez": "Juan",
+		" Juan ":            "Juan",
 	}
 	for in, want := range cases {
 		got := primerNombre(in)
