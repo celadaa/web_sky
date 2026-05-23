@@ -239,66 +239,158 @@
   // ---------- API ----------
   function set(patch) {
     if (!patch || typeof patch !== 'object') return;
-    // Merge superficial campo a campo
+    // Recordamos qué claves cambian REALMENTE para el feedback visual.
+    // (Si el handler llama .set({lodging: null}) tras reset de estación,
+    //  no queremos hacer flash de "lodging".)
+    var cambios = [];
     Object.keys(patch).forEach(function (k) {
+      var antes = JSON.stringify(state[k] || null);
+      var despues = JSON.stringify(patch[k] || null);
       state[k] = patch[k];
-      // Cuando cambian las fechas, recalculamos noches automáticamente
       if (k === 'dates' && patch.dates) {
         state.dates.nights = nightsBetween(patch.dates.checkin, patch.dates.checkout);
       }
+      if (antes !== despues && patch[k]) cambios.push(k);
     });
+    saveState();
+    render();
+    notify();
+    // Microfeedback: marca la línea + dispara el toast. Diferido un tick
+    // para que render() haya pintado el nuevo texto antes de animarlo.
+    if (cambios.length) {
+      setTimeout(function () { aplicarFeedback(cambios); }, 0);
+    }
+  }
+
+  // Mapa clave de estado → atributo data-line del ticket. guests no
+  // tiene flash propio porque suele cambiar a la vez que dates y se
+  // vería un doble parpadeo confuso.
+  var LINE_FOR_KEY = {
+    station:  'station',
+    dates:    'dates',
+    lodging:  'lodging',
+    material: 'material',
+    forfait:  'forfait',
+    extras:   'extras'
+  };
+
+  // Texto del toast por clave. Si la clave no está mapeada no se muestra
+  // toast (eso evita un toast al hacer reset interno).
+  var TOAST_FOR_KEY = {
+    station:  'Estación añadida al ticket',
+    dates:    'Fechas guardadas',
+    lodging:  'Alojamiento añadido al ticket',
+    material: 'Material añadido al ticket',
+    forfait:  'Plan actualizado',
+    extras:   'Plan actualizado'
+  };
+
+  // ---------- Microfeedback: toast ----------------------------------------
+  // Un solo timer global: si el usuario actúa rápido no se acumulan toasts.
+  var _toastTimer = null;
+
+  function showPlannerToast(message) {
+    var toast = document.querySelector('[data-trip-toast]');
+    if (!toast) return;
+    var msg = toast.querySelector('[data-trip-toast-msg]');
+    if (msg) msg.textContent = message;
+    // Cancelar hide pendiente antes de volver a mostrar.
+    if (_toastTimer) { clearTimeout(_toastTimer); _toastTimer = null; }
+    // Si ya estaba visible, quitamos .is-visible un tick para reiniciar la
+    // transición (evita que se quede congelado al recibir varios cambios).
+    toast.classList.remove('is-visible');
+    toast.hidden = false;
+    // rAF garantiza que hidden=false se procesa antes de añadir la clase.
+    requestAnimationFrame(function () {
+      requestAnimationFrame(function () {
+        toast.classList.add('is-visible');
+        _toastTimer = setTimeout(function () {
+          toast.classList.remove('is-visible');
+          // Esperar a que termine la transición CSS (~250ms) antes de hidden.
+          setTimeout(function () {
+            toast.hidden = true;
+            _toastTimer = null;
+          }, 300);
+        }, 2200);
+      });
+    });
+  }
+
+  // ---------- Microfeedback: flash de línea del ticket --------------------
+  // Un timer por clave para no acumular si el usuario elige varias veces.
+  var _lineTimers = {};
+
+  function flashTicketLine(key) {
+    var attr = LINE_FOR_KEY[key];
+    if (!attr) return;
+    var line = document.querySelector('[data-line="' + attr + '"]');
+    if (!line) return;
+    // Reiniciar si ya había un flash activo.
+    if (_lineTimers[key]) {
+      clearTimeout(_lineTimers[key]);
+      line.classList.remove('is-flash');
+      // Forzar reflow para que el navegador reinicie la animación CSS.
+      void line.offsetWidth; // eslint-disable-line no-void
+    }
+    line.classList.add('is-flash');
+    _lineTimers[key] = setTimeout(function () {
+      line.classList.remove('is-flash');
+      _lineTimers[key] = null;
+    }, 900);
+  }
+
+  // ---------- Microfeedback: orquestador --------------------------------
+  // Llamado desde set() tras detectar qué claves cambiaron realmente.
+  function aplicarFeedback(cambios) {
+    // Elegimos el toast más representativo (último en la lista, por prioridad).
+    var toastMsg = null;
+    for (var i = 0; i < cambios.length; i++) {
+      var m = TOAST_FOR_KEY[cambios[i]];
+      if (m) toastMsg = m;
+    }
+    if (toastMsg) showPlannerToast(toastMsg);
+    for (var j = 0; j < cambios.length; j++) {
+      flashTicketLine(cambios[j]);
+    }
+  }
+
+  // ---------- Suscriptores (para refreshNext del wizard) ------------------
+  var _subscribers = [];
+  function notify() {
+    for (var i = 0; i < _subscribers.length; i++) {
+      try { _subscribers[i](state); } catch (e) { /* noop */ }
+    }
+  }
+
+  // ---------- API pública -------------------------------------------------
+  function get() { return clone(state); }
+
+  function reset() {
+    state = clone(defaultState);
     saveState();
     render();
     notify();
   }
 
-  function reset() {
-    state = clone(defaultState);
-    try { localStorage.removeItem(STORAGE_KEY); } catch (e) {}
-    render();
-    notify();
+  function subscribe(fn) {
+    if (typeof fn === 'function') _subscribers.push(fn);
   }
 
-  // ---------- Suscriptores externos (planificar.js) ----------
-  var subs = [];
-  function subscribe(fn) { subs.push(fn); }
-  function notify() {
-    for (var i = 0; i < subs.length; i++) {
-      try { subs[i](state); } catch (e) {}
-    }
-  }
-
-  // ---------- Botón reset + CTA ----------
-  function bindUI() {
-    document.addEventListener('click', function (e) {
-      var t = e.target;
-      if (!t) return;
-      if (t.matches && t.matches('[data-trip-reset]')) {
-        if (window.confirm('¿Reiniciar la planificación? Se perderá el ticket actual.')) {
-          reset();
-        }
-      }
-    });
-  }
-
-  // ---------- Boot ----------
-  function boot() {
-    bindUI();
-    render();
-  }
-
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', boot);
-  } else {
-    boot();
-  }
-
-  // API pública
   window.SBTrip = {
-    set: set,
-    reset: reset,
-    get: function () { return clone(state); },
+    set:       set,
+    get:       get,
+    reset:     reset,
     subscribe: subscribe,
-    render: render
+    render:    render,
+    // Expuestas para que planificar.js pueda usarlas directamente si es necesario.
+    showToast: showPlannerToast,
+    flashLine: flashTicketLine
   };
+
+  // ---------- Boot --------------------------------------------------------
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', render);
+  } else {
+    render();
+  }
 })();

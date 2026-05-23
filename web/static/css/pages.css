@@ -243,6 +243,29 @@ body.theme-premium .page-planificar__lodging-price strong {
   font-family: var(--sb-font-display); font-size: var(--sb-fs-500); font-weight: 700;
 }
 
+/* Espejo aria-selected="true" → mismo aspecto que .is-selected. Permite
+   alternar sólo el atributo ARIA y mantener el visual coherente. */
+body.theme-premium .wizard__station[aria-selected="true"],
+body.theme-premium .page-planificar__lodging[aria-selected="true"],
+body.theme-premium .page-planificar__material[aria-selected="true"] {
+  background: var(--sb-c-ink); color: var(--sb-c-on-ink);
+}
+body.theme-premium .wizard__station[aria-selected="true"] .wizard__station-ubic,
+body.theme-premium .wizard__station[aria-selected="true"] .wizard__station-meta,
+body.theme-premium .wizard__station[aria-selected="true"] .wizard__station-price-label,
+body.theme-premium .page-planificar__lodging[aria-selected="true"] .page-planificar__lodging-body span,
+body.theme-premium .page-planificar__lodging[aria-selected="true"] .page-planificar__lodging-price small,
+body.theme-premium .page-planificar__material[aria-selected="true"] span,
+body.theme-premium .page-planificar__material[aria-selected="true"] small {
+  color: rgba(250,249,245,.7);
+}
+/* Foco visible al saltar al título del paso por teclado/autoavance. */
+body.theme-premium .page-planificar .wizard__panel-title:focus-visible,
+body.theme-premium .page-planificar .wizard__success-title:focus-visible {
+  outline: 2px solid var(--sb-c-ink);
+  outline-offset: 4px;
+}
+
 /* Radios + checks tipo editorial */
 body.theme-premium .page-planificar__radios {
   display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 0;
@@ -395,3 +418,270 @@ body.theme-premium .page-planificar__reset {
 body.theme-premium .page-planificar__reset:hover { color: var(--sb-c-ink); }
 
 body.theme-premium .page-planificar__ticket.is-complete { /* hook si quieres efecto extra */ }
+
+/* ─── Microfeedback: flash en línea del ticket ─────────────────────────── */
+/* Se aplica .is-flash a la línea recién cambiada del ticket. Dura ~700ms
+   y la quita JS para no dejarla pegada. Se desactiva con reduced-motion. */
+@keyframes sbTripLineFlash {
+  0%   { background: var(--sb-c-ink); color: var(--sb-c-on-ink); transform: translateX(0); }
+  35%  { background: var(--sb-c-ink); color: var(--sb-c-on-ink); transform: translateX(2px); }
+  100% { background: transparent; color: inherit; transform: translateX(0); }
+}
+body.theme-premium .page-planificar__ticket-line.is-flash {
+  animation: sbTripLineFlash 700ms var(--sb-ease-out, ease-out) both;
+}
+@media (prefers-reduced-motion: reduce) {
+  body.theme-premium .page-planificar__ticket-line.is-flash { animation: none; }
+}
+
+/* ─── Toast "Añadido al ticket" ─────────────────────────────────────────── */
+/* Fixed arriba a la derecha en desktop. En móvil baja a la parte inferior
+   para no tapar el formulario ni la cabecera. aria-live="polite" en HTML. */
+body.theme-premium .trip-toast {
+  position: fixed;
+  top: var(--sb-sp-4); right: var(--sb-sp-4);
+  z-index: 50;
+  display: inline-flex; align-items: center; gap: var(--sb-sp-2);
+  padding: var(--sb-sp-2) var(--sb-sp-3);
+  background: var(--sb-c-ink); color: var(--sb-c-on-ink);
+  border: 1px solid var(--sb-c-ink);
+  font-family: var(--sb-font-mono); font-size: var(--sb-fs-100);
+  letter-spacing: var(--sb-tracking-mono); text-transform: uppercase;
+  opacity: 0; transform: translateY(-6px);
+  transition: opacity .2s var(--sb-ease-out, ease-out), transform .2s var(--sb-ease-out, ease-out);
+  pointer-events: none;
+}
+body.theme-premium .trip-toast.is-visible { opacity: 1; transform: translateY(0); }
+body.theme-premium .trip-toast__dot {
+  display: inline-block; width: 8px; height: 8px;
+  background: #6ee7b7; border-radius: 50%;
+}
+@media (max-width: 720px) {
+  body.theme-premium .trip-toast {
+    top: auto; bottom: var(--sb-sp-4); left: 50%; right: auto;
+    transform: translate(-50%, 6px);
+    max-width: calc(100vw - var(--sb-sp-6));
+  }
+  body.theme-premium .trip-toast.is-visible { transform: translate(-50%, 0); }
+}
+@media (prefers-reduced-motion: reduce) {
+  body.theme-premium .trip-toast { transition: none; }
+}
+
+/* ─── Disclaimer bajo CTA del ticket y del paso éxito ───────────────────── */
+body.theme-premium .page-planificar__ticket-disclaimer,
+body.theme-premium .page-planificar__success-disclaimer {
+  margin: var(--sb-sp-2) 0 0;
+  font-family: var(--sb-font-mono);
+  font-size: var(--sb-fs-100);
+  letter-spacing: var(--sb-tracking-mono);
+  color: var(--sb-c-ink-muted);
+  text-transform: none;
+  line-height: 1.4;
+}
+
+/* ─── Ajustes móvil del planificador ───────────────────────────────────── */
+@media (max-width: 1000px) {
+  body.theme-premium .page-planificar__ticket-col { margin-top: var(--sb-sp-5); }
+}
+@media (max-width: 720px) {
+  body.theme-premium .wizard__station,
+  body.theme-premium .page-planificar__lodging,
+  body.theme-premium .page-planificar__material {
+    padding: var(--sb-sp-3) var(--sb-sp-3);
+  }
+  body.theme-premium .page-planificar__nav .sb-btn { min-height: 44px; }
+  body.theme-premium .page-planificar__ticket { padding: var(--sb-sp-4) var(--sb-sp-3); }
+}
+
+/* ─── Microfeedback: flash en línea del ticket ─────────────────────────── */
+/* Se aplica una clase .is-flash a la línea recién cambiada del ticket.
+   La animación dura ~700ms y la quita JS para no dejarla pegada.
+   Si el usuario tiene prefers-reduced-motion=reduce, lo desactivamos. */
+@keyframes sbTripLineFlash {
+  0%   { background: var(--sb-c-ink); color: var(--sb-c-on-ink); transform: translateX(0); }
+  35%  { background: var(--sb-c-ink); color: var(--sb-c-on-ink); transform: translateX(2px); }
+  100% { background: transparent; color: inherit; transform: translateX(0); }
+}
+body.theme-premium .page-planificar__ticket-line.is-flash {
+  animation: sbTripLineFlash 700ms var(--sb-ease-out, ease-out) both;
+}
+@media (prefers-reduced-motion: reduce) {
+  body.theme-premium .page-planificar__ticket-line.is-flash { animation: none; }
+}
+
+/* ─── Toast "Añadido al ticket" ─────────────────────────────────────────── */
+/* Fixed arriba a la derecha en desktop. En móvil baja a la parte inferior
+   para no tapar el formulario ni la cabecera. */
+body.theme-premium .trip-toast {
+  position: fixed;
+  top: var(--sb-sp-4); right: var(--sb-sp-4);
+  z-index: 50;
+  display: inline-flex; align-items: center; gap: var(--sb-sp-2);
+  padding: var(--sb-sp-2) var(--sb-sp-3);
+  background: var(--sb-c-ink); color: var(--sb-c-on-ink);
+  border: 1px solid var(--sb-c-ink);
+  font-family: var(--sb-font-mono); font-size: var(--sb-fs-100);
+  letter-spacing: var(--sb-tracking-mono); text-transform: uppercase;
+  opacity: 0; transform: translateY(-6px);
+  transition: opacity .2s var(--sb-ease-out, ease-out), transform .2s var(--sb-ease-out, ease-out);
+  pointer-events: none; /* informativo, no debe robar clicks */
+}
+body.theme-premium .trip-toast.is-visible {
+  opacity: 1; transform: translateY(0);
+}
+body.theme-premium .trip-toast__dot {
+  display: inline-block; width: 8px; height: 8px;
+  background: #6ee7b7; border-radius: 50%;
+}
+@media (max-width: 720px) {
+  body.theme-premium .trip-toast {
+    top: auto; bottom: var(--sb-sp-4); left: 50%;
+    right: auto;
+    transform: translate(-50%, 6px);
+    max-width: calc(100vw - var(--sb-sp-6));
+  }
+  body.theme-premium .trip-toast.is-visible { transform: translate(-50%, 0); }
+}
+@media (prefers-reduced-motion: reduce) {
+  body.theme-premium .trip-toast { transition: none; }
+}
+
+/* ─── Disclaimer bajo el CTA del ticket y del paso éxito ─────────────────── */
+body.theme-premium .page-planificar__ticket-disclaimer,
+body.theme-premium .page-planificar__success-disclaimer {
+  margin: var(--sb-sp-2) 0 0;
+  font-family: var(--sb-font-mono);
+  font-size: var(--sb-fs-100);
+  letter-spacing: var(--sb-tracking-mono);
+  color: var(--sb-c-ink-muted);
+  text-transform: none;
+  line-height: 1.4;
+}
+
+/* ─── Ajustes móvil del planificador ───────────────────────────────────── */
+@media (max-width: 1000px) {
+  /* El ticket no debe pegarse al wizard: separación visible y
+     título "Tu ticket" implícito por el borde superior del ticket. */
+  body.theme-premium .page-planificar__ticket-col {
+    margin-top: var(--sb-sp-5);
+  }
+}
+@media (max-width: 720px) {
+  /* Más aire entre cards (estaciones, alojamiento, material). */
+  body.theme-premium .wizard__station,
+  body.theme-premium .page-planificar__lodging,
+  body.theme-premium .page-planificar__material {
+    padding: var(--sb-sp-3) var(--sb-sp-3);
+  }
+  /* Botones del wizard a 100% en móvil para target táctil. */
+  body.theme-premium .page-planificar__nav .sb-btn { min-height: 44px; }
+  /* Que el ticket "respire" en móvil y no compita con el wizard. */
+  body.theme-premium .page-planificar__ticket { padding: var(--sb-sp-4) var(--sb-sp-3); }
+}
+
+/* ─── Microfeedback: flash en línea del ticket ─────────────────────────── */
+/* La clase .is-flash se aplica desde JS (si se ha cableado feedback). Si
+   el JS no la aplica, no pasa nada — la animación nunca se dispara. */
+@keyframes sbTripLineFlash {
+  0%   { background: var(--sb-c-ink); color: var(--sb-c-on-ink); transform: translateX(0); }
+  35%  { background: var(--sb-c-ink); color: var(--sb-c-on-ink); transform: translateX(2px); }
+  100% { background: transparent; color: inherit; transform: translateX(0); }
+}
+body.theme-premium .page-planificar__ticket-line.is-flash {
+  animation: sbTripLineFlash 700ms var(--sb-ease-out, ease-out) both;
+}
+@media (prefers-reduced-motion: reduce) {
+  body.theme-premium .page-planificar__ticket-line.is-flash { animation: none; }
+}
+
+/* ─── Toast "Añadido al ticket" ─────────────────────────────────────────── */
+/* Aria-live="polite" en HTML; aquí solo el visual. Sin JS que lo dispare
+   queda hidden (inerte). */
+body.theme-premium .trip-toast {
+  position: fixed; top: var(--sb-sp-4); right: var(--sb-sp-4);
+  z-index: 50;
+  display: inline-flex; align-items: center; gap: var(--sb-sp-2);
+  padding: var(--sb-sp-2) var(--sb-sp-3);
+  background: var(--sb-c-ink); color: var(--sb-c-on-ink);
+  border: 1px solid var(--sb-c-ink);
+  font-family: var(--sb-font-mono); font-size: var(--sb-fs-100);
+  letter-spacing: var(--sb-tracking-mono); text-transform: uppercase;
+  opacity: 0; transform: translateY(-6px);
+  transition: opacity .2s ease-out, transform .2s ease-out;
+  pointer-events: none;
+}
+body.theme-premium .trip-toast.is-visible { opacity: 1; transform: translateY(0); }
+body.theme-premium .trip-toast__dot {
+  display: inline-block; width: 8px; height: 8px;
+  background: #6ee7b7; border-radius: 50%;
+}
+@media (max-width: 720px) {
+  body.theme-premium .trip-toast {
+    top: auto; bottom: var(--sb-sp-4); left: 50%; right: auto;
+    transform: translate(-50%, 6px);
+    max-width: calc(100vw - var(--sb-sp-6));
+  }
+  body.theme-premium .trip-toast.is-visible { transform: translate(-50%, 0); }
+}
+@media (prefers-reduced-motion: reduce) {
+  body.theme-premium .trip-toast { transition: none; }
+}
+
+
+/* ─── Microfeedback: .is-just-selected en cards y opciones ─────────────── */
+/* La clase se aplica momentáneamente desde JS (markJustSelected).
+   Sin JS la clase nunca aparece — ningún efecto colateral.             */
+@keyframes sbJustSelected {
+  0%   { outline-width: 3px; outline-color: var(--sb-c-ink); }
+  100% { outline-width: 0px; outline-color: transparent; }
+}
+body.theme-premium .wizard__station.is-just-selected,
+body.theme-premium .page-planificar__lodging.is-just-selected,
+body.theme-premium .page-planificar__material.is-just-selected,
+body.theme-premium label.is-just-selected {
+  outline: 2px solid var(--sb-c-ink);
+  outline-offset: 2px;
+}
+@media (prefers-reduced-motion: no-preference) {
+  body.theme-premium .wizard__station.is-just-selected,
+  body.theme-premium .page-planificar__lodging.is-just-selected,
+  body.theme-premium .page-planificar__material.is-just-selected,
+  body.theme-premium label.is-just-selected {
+    animation: sbJustSelected 650ms var(--sb-ease-out, ease-out) forwards;
+    outline: 3px solid var(--sb-c-ink);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  body.theme-premium .wizard__station.is-just-selected,
+  body.theme-premium .page-planificar__lodging.is-just-selected,
+  body.theme-premium .page-planificar__material.is-just-selected,
+  body.theme-premium label.is-just-selected {
+    outline: 2px solid var(--sb-c-ink);
+  }
+}
+
+/* ─── Disclaimer bajo CTA del ticket y del paso éxito ───────────────────── */
+body.theme-premium .page-planificar__ticket-disclaimer,
+body.theme-premium .page-planificar__success-disclaimer {
+  margin: var(--sb-sp-2) 0 0;
+  font-family: var(--sb-font-mono); font-size: var(--sb-fs-100);
+  letter-spacing: var(--sb-tracking-mono);
+  color: var(--sb-c-ink-muted);
+  text-transform: none;
+  line-height: 1.4;
+}
+
+/* ─── Ajustes móvil del planificador ───────────────────────────────────── */
+@media (max-width: 1000px) {
+  body.theme-premium .page-planificar__ticket-col { margin-top: var(--sb-sp-5); }
+}
+@media (max-width: 720px) {
+  body.theme-premium .wizard__station,
+  body.theme-premium .page-planificar__lodging,
+  body.theme-premium .page-planificar__material {
+    padding: var(--sb-sp-3) var(--sb-sp-3);
+  }
+  body.theme-premium .page-planificar__nav .sb-btn { min-height: 44px; }
+  body.theme-premium .page-planificar__ticket { padding: var(--sb-sp-4) var(--sb-sp-3); }
+}
