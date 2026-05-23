@@ -292,3 +292,357 @@ body.theme-premium .sb-barcode__num {
   font-family: var(--sb-font-mono); font-size: var(--sb-fs-100);
   letter-spacing: var(--sb-tracking-mono); display: inline-block; margin-top: var(--sb-sp-1);
 }
+
+/* ─── Botón "Continuar con Google" + divisor "o" ─────────────────────────── */
+/* Estilo coherente con .navbar__btn pero con icono inline. No requiere
+   carga de scripts externos: el redirect a Google es server-side. */
+body.theme-premium .auth-divider {
+  display: flex; align-items: center; gap: var(--sb-sp-3);
+  margin: var(--sb-sp-4) 0;
+  font-family: var(--sb-font-mono); font-size: var(--sb-fs-100);
+  letter-spacing: var(--sb-tracking-mono); text-transform: uppercase;
+  color: var(--sb-c-ink-muted);
+}
+body.theme-premium .auth-divider::before,
+body.theme-premium .auth-divider::after {
+  content: ""; flex: 1; border-top: var(--sb-bd-dashed);
+}
+body.theme-premium .auth-google-btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: var(--sb-sp-3);
+  width: 100%;
+  padding: var(--sb-sp-3) var(--sb-sp-4);
+  border: 1px solid var(--sb-c-ink); background: var(--sb-c-paper, #fff); color: var(--sb-c-ink);
+  text-decoration: none;
+  font-family: var(--sb-font-display); font-weight: 600; font-size: var(--sb-fs-300);
+  text-transform: uppercase; letter-spacing: 0.02em;
+  transition: background var(--sb-dur-1) var(--sb-ease-out), color var(--sb-dur-1) var(--sb-ease-out);
+}
+body.theme-premium .auth-google-btn:hover { background: var(--sb-c-ink); color: var(--sb-c-on-ink); }
+body.theme-premium .auth-google-btn:focus-visible { outline: 2px solid var(--sb-c-ink); outline-offset: 3px; }
+/* El icono usa currentColor → se invierte solo al hacer hover, sin parches. */
+body.theme-premium .auth-google-btn__icon {
+  flex: 0 0 18px; width: 18px; height: 18px;
+  transition: transform var(--sb-dur-1) var(--sb-ease-out);
+}
+body.theme-premium .auth-google-btn:hover .auth-google-btn__icon { transform: translateX(-1px); }
+body.theme-premium .auth-google-btn__label { line-height: 1; }
+
+/* ─── CTA de la home hacia /planificar-estancia ─────────────────────────── */
+/* Mismo lenguaje visual que el ticket premium: borde negro, display en
+   mayúsculas para el título, mono para metadatos. Sin librerías. */
+body.theme-premium .home-planner-cta {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: var(--sb-sp-5);
+  align-items: center;
+  padding: clamp(1.5rem, 3vw, 2.5rem);
+  border: 1px solid var(--sb-c-ink);
+  background: var(--sb-c-paper, #fff);
+  position: relative;
+}
+body.theme-premium .home-planner-cta::before {
+  content: "SNOWBREAK · TRIP";
+  position: absolute; top: -9px; left: 16px;
+  background: var(--sb-c-paper, #fff);
+  padding: 0 8px;
+  font-family: var(--sb-font-mono);
+  font-size: var(--sb-fs-100);
+  letter-spacing: var(--sb-tracking-mono);
+  color: var(--sb-c-ink);
+}
+body.theme-premium .home-planner-cta__eyebrow {
+  display: inline-block;
+  font-family: var(--sb-font-mono);
+  font-size: var(--sb-fs-100);
+  letter-spacing: var(--sb-tracking-mono);
+  text-transform: uppercase;
+  color: var(--sb-c-ink-muted);
+  margin-bottom: var(--sb-sp-2);
+}
+body.theme-premium .home-planner-cta__title {
+  margin: 0 0 var(--sb-sp-2);
+  font-family: var(--sb-font-display);
+  font-weight: 700;
+  font-size: clamp(1.6rem, 3vw, 2.4rem);
+  letter-spacing: -0.01em;
+  text-transform: uppercase;
+  line-height: 1.05;
+}
+body.theme-premium .home-planner-cta__lede {
+  margin: 0 0 var(--sb-sp-3);
+  color: var(--sb-c-ink);
+  font-size: var(--sb-fs-400);
+  line-height: 1.5;
+  max-width: 56ch;
+}
+body.theme-premium .home-planner-cta__bullets {
+  list-style: none; padding: 0; margin: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: var(--sb-sp-1) var(--sb-sp-4);
+}
+body.theme-premium .home-planner-cta__bullets li {
+  font-family: var(--sb-font-mono);
+  font-size: var(--sb-fs-100);
+  letter-spacing: var(--sb-tracking-mono);
+  text-transform: uppercase;
+  color: var(--sb-c-ink-muted);
+  padding-left: 18px;
+  position: relative;
+}
+body.theme-premium .home-planner-cta__bullets li::before {
+  content: "→"; position: absolute; left: 0; color: var(--sb-c-ink);
+  font-weight: 700;
+}
+body.theme-premium .home-planner-cta__action {
+  display: flex; flex-direction: column; gap: var(--sb-sp-2);
+  align-items: stretch; min-width: 240px;
+}
+body.theme-premium .home-planner-cta__btn {
+  display: inline-flex; align-items: center; justify-content: center;
+  gap: var(--sb-sp-2);
+  padding: var(--sb-sp-3) var(--sb-sp-4);
+  background: var(--sb-c-ink); color: var(--sb-c-on-ink);
+  border: 1px solid var(--sb-c-ink);
+  font-family: var(--sb-font-display); font-weight: 700;
+  font-size: var(--sb-fs-300);
+  letter-spacing: 0.04em; text-transform: uppercase;
+  text-decoration: none;
+  transition: background var(--sb-dur-1) var(--sb-ease-out), color var(--sb-dur-1) var(--sb-ease-out), transform var(--sb-dur-1) var(--sb-ease-out);
+}
+body.theme-premium .home-planner-cta__btn:hover {
+  background: var(--sb-c-paper, #fff); color: var(--sb-c-ink);
+  transform: translateX(2px);
+}
+body.theme-premium .home-planner-cta__btn:focus-visible {
+  outline: 2px solid var(--sb-c-ink); outline-offset: 3px;
+}
+body.theme-premium .home-planner-cta__note {
+  margin: 0;
+  font-family: var(--sb-font-mono); font-size: var(--sb-fs-100);
+  letter-spacing: var(--sb-tracking-mono); text-transform: uppercase;
+  color: var(--sb-c-ink-muted); text-align: center;
+}
+@media (max-width: 720px) {
+  body.theme-premium .home-planner-cta { grid-template-columns: 1fr; gap: var(--sb-sp-4); }
+  body.theme-premium .home-planner-cta__action { min-width: 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  body.theme-premium .home-planner-cta__btn { transition: none; }
+  body.theme-premium .home-planner-cta__btn:hover { transform: none; }
+}
+
+/* ─── CTA de la home hacia /planificar-estancia ─────────────────────────── */
+/* Bloque con la misma estética que el ticket premium: borde negro,
+   tipografía display en mayúsculas para el título, mono para metadatos. */
+body.theme-premium .home-planner-cta {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: var(--sb-sp-5);
+  align-items: center;
+  padding: clamp(1.5rem, 3vw, 2.5rem);
+  border: 1px solid var(--sb-c-ink);
+  background: var(--sb-c-paper, #fff);
+  position: relative;
+}
+/* Pequeña esquina ticket en la parte superior-izquierda para amarrar
+   la pieza al lenguaje visual de "trip receipt". */
+body.theme-premium .home-planner-cta::before {
+  content: "SNOWBREAK · TRIP";
+  position: absolute; top: -9px; left: 16px;
+  background: var(--sb-c-paper, #fff);
+  padding: 0 8px;
+  font-family: var(--sb-font-mono);
+  font-size: var(--sb-fs-100);
+  letter-spacing: var(--sb-tracking-mono);
+  color: var(--sb-c-ink);
+}
+body.theme-premium .home-planner-cta__eyebrow {
+  display: inline-block;
+  font-family: var(--sb-font-mono);
+  font-size: var(--sb-fs-100);
+  letter-spacing: var(--sb-tracking-mono);
+  text-transform: uppercase;
+  color: var(--sb-c-ink-muted);
+  margin-bottom: var(--sb-sp-2);
+}
+body.theme-premium .home-planner-cta__title {
+  margin: 0 0 var(--sb-sp-2);
+  font-family: var(--sb-font-display);
+  font-weight: 700;
+  font-size: clamp(1.6rem, 3vw, 2.4rem);
+  letter-spacing: -0.01em;
+  text-transform: uppercase;
+  line-height: 1.05;
+}
+body.theme-premium .home-planner-cta__lede {
+  margin: 0 0 var(--sb-sp-3);
+  color: var(--sb-c-ink);
+  font-size: var(--sb-fs-400);
+  line-height: 1.5;
+  max-width: 56ch;
+}
+body.theme-premium .home-planner-cta__bullets {
+  list-style: none; padding: 0; margin: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: var(--sb-sp-1) var(--sb-sp-4);
+}
+body.theme-premium .home-planner-cta__bullets li {
+  font-family: var(--sb-font-mono);
+  font-size: var(--sb-fs-100);
+  letter-spacing: var(--sb-tracking-mono);
+  text-transform: uppercase;
+  color: var(--sb-c-ink-muted);
+  padding-left: 18px;
+  position: relative;
+}
+body.theme-premium .home-planner-cta__bullets li::before {
+  content: "→"; position: absolute; left: 0; color: var(--sb-c-ink);
+  font-weight: 700;
+}
+body.theme-premium .home-planner-cta__action {
+  display: flex; flex-direction: column; gap: var(--sb-sp-2);
+  align-items: stretch; min-width: 240px;
+}
+body.theme-premium .home-planner-cta__btn {
+  display: inline-flex; align-items: center; justify-content: center;
+  gap: var(--sb-sp-2);
+  padding: var(--sb-sp-3) var(--sb-sp-4);
+  background: var(--sb-c-ink); color: var(--sb-c-on-ink);
+  border: 1px solid var(--sb-c-ink);
+  font-family: var(--sb-font-display); font-weight: 700;
+  font-size: var(--sb-fs-300);
+  letter-spacing: 0.04em; text-transform: uppercase;
+  text-decoration: none;
+  transition: background var(--sb-dur-1) var(--sb-ease-out), color var(--sb-dur-1) var(--sb-ease-out), transform var(--sb-dur-1) var(--sb-ease-out);
+}
+body.theme-premium .home-planner-cta__btn:hover {
+  background: var(--sb-c-paper, #fff); color: var(--sb-c-ink);
+  transform: translateX(2px);
+}
+body.theme-premium .home-planner-cta__btn:focus-visible {
+  outline: 2px solid var(--sb-c-ink); outline-offset: 3px;
+}
+body.theme-premium .home-planner-cta__note {
+  margin: 0;
+  font-family: var(--sb-font-mono); font-size: var(--sb-fs-100);
+  letter-spacing: var(--sb-tracking-mono); text-transform: uppercase;
+  color: var(--sb-c-ink-muted); text-align: center;
+}
+@media (max-width: 720px) {
+  body.theme-premium .home-planner-cta {
+    grid-template-columns: 1fr;
+    gap: var(--sb-sp-4);
+  }
+  body.theme-premium .home-planner-cta__action { min-width: 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  body.theme-premium .home-planner-cta__btn { transition: none; }
+  body.theme-premium .home-planner-cta__btn:hover { transform: none; }
+}
+
+/* ─── CTA de la home hacia /planificar-estancia ─────────────────────────── */
+/* Mismo lenguaje visual que el ticket premium: borde negro, display en
+   mayúsculas para el título, mono para metadatos. Sin librerías nuevas. */
+body.theme-premium .home-planner-cta {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: var(--sb-sp-5);
+  align-items: center;
+  padding: clamp(1.5rem, 3vw, 2.5rem);
+  border: 1px solid var(--sb-c-ink);
+  background: var(--sb-c-paper, #fff);
+  position: relative;
+}
+body.theme-premium .home-planner-cta::before {
+  content: "SNOWBREAK · TRIP";
+  position: absolute; top: -9px; left: 16px;
+  background: var(--sb-c-paper, #fff);
+  padding: 0 8px;
+  font-family: var(--sb-font-mono);
+  font-size: var(--sb-fs-100);
+  letter-spacing: var(--sb-tracking-mono);
+  color: var(--sb-c-ink);
+}
+body.theme-premium .home-planner-cta__eyebrow {
+  display: inline-block;
+  font-family: var(--sb-font-mono);
+  font-size: var(--sb-fs-100);
+  letter-spacing: var(--sb-tracking-mono);
+  text-transform: uppercase;
+  color: var(--sb-c-ink-muted);
+  margin-bottom: var(--sb-sp-2);
+}
+body.theme-premium .home-planner-cta__title {
+  margin: 0 0 var(--sb-sp-2);
+  font-family: var(--sb-font-display);
+  font-weight: 700;
+  font-size: clamp(1.6rem, 3vw, 2.4rem);
+  letter-spacing: -0.01em;
+  text-transform: uppercase;
+  line-height: 1.05;
+}
+body.theme-premium .home-planner-cta__lede {
+  margin: 0 0 var(--sb-sp-3);
+  color: var(--sb-c-ink);
+  font-size: var(--sb-fs-400);
+  line-height: 1.5;
+  max-width: 56ch;
+}
+body.theme-premium .home-planner-cta__bullets {
+  list-style: none; padding: 0; margin: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: var(--sb-sp-1) var(--sb-sp-4);
+}
+body.theme-premium .home-planner-cta__bullets li {
+  font-family: var(--sb-font-mono);
+  font-size: var(--sb-fs-100);
+  letter-spacing: var(--sb-tracking-mono);
+  text-transform: uppercase;
+  color: var(--sb-c-ink-muted);
+  padding-left: 18px;
+  position: relative;
+}
+body.theme-premium .home-planner-cta__bullets li::before {
+  content: "→"; position: absolute; left: 0; color: var(--sb-c-ink);
+  font-weight: 700;
+}
+body.theme-premium .home-planner-cta__action {
+  display: flex; flex-direction: column; gap: var(--sb-sp-2);
+  align-items: stretch; min-width: 240px;
+}
+body.theme-premium .home-planner-cta__btn {
+  display: inline-flex; align-items: center; justify-content: center;
+  gap: var(--sb-sp-2);
+  padding: var(--sb-sp-3) var(--sb-sp-4);
+  background: var(--sb-c-ink); color: var(--sb-c-on-ink);
+  border: 1px solid var(--sb-c-ink);
+  font-family: var(--sb-font-display); font-weight: 700;
+  font-size: var(--sb-fs-300);
+  letter-spacing: 0.04em; text-transform: uppercase;
+  text-decoration: none;
+  transition: background var(--sb-dur-1) var(--sb-ease-out), color var(--sb-dur-1) var(--sb-ease-out), transform var(--sb-dur-1) var(--sb-ease-out);
+}
+body.theme-premium .home-planner-cta__btn:hover {
+  background: var(--sb-c-paper, #fff); color: var(--sb-c-ink);
+  transform: translateX(2px);
+}
+body.theme-premium .home-planner-cta__btn:focus-visible {
+  outline: 2px solid var(--sb-c-ink); outline-offset: 3px;
+}
+body.theme-premium .home-planner-cta__note {
+  margin: 0;
+  font-family: var(--sb-font-mono); font-size: var(--sb-fs-100);
+  letter-spacing: var(--sb-tracking-mono); text-transform: uppercase;
+  color: var(--sb-c-ink-muted); text-align: center;
+}
+@media (max-width: 720px) {
+  body.theme-premium .home-planner-cta { grid-template-columns: 1fr; gap: var(--sb-sp-4); }
+  body.theme-premium .home-planner-cta__action { min-width: 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  body.theme-premium .home-planner-cta__btn { transition: none; }
+  body.theme-premium .home-planner-cta__btn:hover { transform: none; }
+}

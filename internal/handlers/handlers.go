@@ -25,6 +25,12 @@ type App struct {
 	// NieveSvc añade datos en directo de pistas vía infonieve.es.
 	// Es opcional: si es nil, los handlers /api/nieve/* devuelven 503.
 	NieveSvc *services.NieveService
+	// EmailSvc envía correos transaccionales (verificación, bienvenida).
+	// Opcional: si es nil, los handlers no intentan enviar.
+	EmailSvc *services.EmailService
+	// GoogleAuth implementa OAuth + OIDC con Google. Opcional: si es nil
+	// los handlers /auth/google/* redirigen a /login con un mensaje.
+	GoogleAuth *services.GoogleOAuthService
 	// Cfg expone la configuración (entorno, flags Secure, secrets).
 	Cfg *config.Config
 	// Sec expone los middlewares y utilidades de seguridad.

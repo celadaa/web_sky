@@ -1,0 +1,17 @@
+{{define "contenido"}}
+<section class="hero hero--home">
+  <h1 class="hero__title">Enlace no válido</h1>
+  <p class="hero__subtitle">No hemos podido confirmar tu correo con este enlace.</p>
+</section>
+
+<section class="container section-stack">
+  <div class="panel panel--form panel--centered">
+    <div class="alert alert--error" role="alert">{{.Error}}</div>
+    <p class="form-footnote">Si crees que se trata de un error, inicia sesión y pide reenvío del correo de verificación.</p>
+    <p class="button-row button-row--center">
+      <a href="/login" class="navbar__btn navbar__btn--link">Iniciar sesión</a>
+      <a href="/registro" class="navbar__btn navbar__btn--link">Crear cuenta nueva</a>
+    </p>
+  </div>
+</section>
+{{end}}

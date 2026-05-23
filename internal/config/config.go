@@ -52,6 +52,25 @@ type Config struct {
 	AdminEmail    string
 	AdminName     string
 	AdminPassword string
+
+	// URL base pública (para construir enlaces en emails y redirects OAuth).
+	AppBaseURL string
+
+	// Google OAuth — opcional. Si ClientID/Secret están vacíos, el login con
+	// Google queda desactivado y /auth/google devuelve 503.
+	GoogleClientID     string
+	GoogleClientSecret string
+	GoogleRedirectURL  string
+
+	// SMTP — opcional. Si SMTPHost está vacío o EmailDisabled=true, el
+	// servicio de email loguea los enlaces por stdout en vez de enviar.
+	SMTPHost      string
+	SMTPPort      int
+	SMTPUser      string
+	SMTPPass      string
+	SMTPFromEmail string
+	SMTPFromName  string
+	EmailDisabled bool
 }
 
 // EsProduccion devuelve true cuando APP_ENV=production.
@@ -101,6 +120,18 @@ func LoadFromEnv() (*Config, error) {
 		AdminEmail:    getenv("ADMIN_EMAIL", "admin@skihub.local"),
 		AdminName:     getenv("ADMIN_NAME", "Administrador"),
 		AdminPassword: getenv("ADMIN_PASSWORD", ""),
+
+		AppBaseURL: strings.TrimRight(getenv("APP_BASE_URL", "http://localhost:8080"), "/"),
+
+		GoogleClientID:     getenv("GOOGLE_CLIENT_ID", ""),
+		GoogleClientSecret: getenv("GOOGLE_CLIENT_SECRET", ""),
+		GoogleRedirectURL:  getenv("GOOGLE_REDIRECT_URL", ""),
+
+		SMTPHost:      getenv("SMTP_HOST", ""),
+		SMTPUser:      getenv("SMTP_USER", ""),
+		SMTPPass:      getenv("SMTP_PASS", ""),
+		SMTPFromEmail: getenv("SMTP_FROM_EMAIL", ""),
+		SMTPFromName:  getenv("SMTP_FROM_NAME", "Snowbreak"),
 	}
 
 	port, err := getenvInt("DB_PORT", 0)
@@ -132,6 +163,24 @@ func LoadFromEnv() (*Config, error) {
 	cfg.RateLimitPerMin, err = getenvInt("RATE_LIMIT_PER_MIN", 30)
 	if err != nil {
 		return nil, err
+	}
+
+	// SMTP_PORT — 587 (STARTTLS) por defecto. Si la variable está pero
+	// no es un entero válido el binario no arranca.
+	cfg.SMTPPort, err = getenvInt("SMTP_PORT", 587)
+	if err != nil {
+		return nil, err
+	}
+
+	// EMAIL_DISABLED y default sensato: si no se ha configurado SMTP_HOST
+	// el envío queda implícitamente desactivado, da igual la variable.
+	cfg.EmailDisabled = getenvBool("EMAIL_DISABLED", cfg.SMTPHost == "")
+
+	// GoogleRedirectURL — si no se ha configurado explícitamente lo
+	// derivamos de AppBaseURL para que en local con APP_BASE_URL=
+	// http://localhost:8080 no haya que poner las dos variables.
+	if cfg.GoogleRedirectURL == "" && cfg.AppBaseURL != "" {
+		cfg.GoogleRedirectURL = cfg.AppBaseURL + "/auth/google/callback"
 	}
 
 	// COOKIE_SECURE: por defecto activo en producción, desactivado en dev
@@ -188,7 +237,33 @@ func (c *Config) validar() error {
 		if c.CSRFSecret == "" || len(c.CSRFSecret) < 32 {
 			return errors.New("CSRF_SECRET requerida en producción (32+ caracteres aleatorios)")
 		}
+		// En producción el host base debe ser HTTPS — los enlaces de email
+		// y los redirects OAuth pasarán por aquí.
+		if !strings.HasPrefix(c.AppBaseURL, "https://") {
+			return errors.New("APP_BASE_URL debe empezar por https:// en producción")
+		}
 	}
+
+	// Coherencia de Google OAuth: si das uno tienes que dar los dos.
+	hasID := c.GoogleClientID != ""
+	hasSecret := c.GoogleClientSecret != ""
+	if hasID != hasSecret {
+		return errors.New("GOOGLE_CLIENT_ID y GOOGLE_CLIENT_SECRET deben configurarse juntos o ambos vacíos")
+	}
+	if hasID && c.GoogleRedirectURL == "" {
+		return errors.New("GOOGLE_REDIRECT_URL no puede quedar vacío si GOOGLE_CLIENT_ID está configurado")
+	}
+
+	// Coherencia de SMTP: si EmailDisabled=false debe haber al menos host y from.
+	if !c.EmailDisabled {
+		if c.SMTPHost == "" || c.SMTPFromEmail == "" {
+			return errors.New("SMTP_HOST y SMTP_FROM_EMAIL son obligatorios si EMAIL_DISABLED=false")
+		}
+		if c.SMTPPort <= 0 || c.SMTPPort > 65535 {
+			return errors.New("SMTP_PORT fuera de rango (1..65535)")
+		}
+	}
+
 	return nil
 }
 

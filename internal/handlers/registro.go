@@ -30,7 +30,11 @@ type datosRegistroOK struct {
 	Activa      string
 	Nombre      string
 	Email       string
-	Usuario     *models.Usuario
+	// PendienteVerificar=true cuando el email aún no se ha confirmado
+	// (registro local). En el caso de Google con email_verified=true no
+	// se renderiza esta plantilla; se redirige al usuario logueado.
+	PendienteVerificar bool
+	Usuario            *models.Usuario
 }
 
 func (a *App) Registro(w http.ResponseWriter, r *http.Request) {
@@ -69,7 +73,7 @@ func (a *App) procesarRegistro(w http.ResponseWriter, r *http.Request) {
 		Password2: r.FormValue("password2"),
 	}
 
-	u, err := a.UsuarioSvc.Registrar(r.Context(), datos)
+	u, tokenPlano, err := a.UsuarioSvc.RegistrarConVerificacion(r.Context(), datos)
 	if err != nil {
 		if esErrorDeValidacion(err) {
 			a.mostrarFormulario(w, r, datosRegistro{
@@ -88,13 +92,25 @@ func (a *App) procesarRegistro(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Envío del email de verificación (24h TTL). Si falla NO rompemos el
+	// flujo — el usuario ya se ha creado y podrá reenviar el correo más
+	// tarde desde su cuenta.
+	if a.EmailSvc != nil {
+		if err := a.EmailSvc.SendEmailVerification(r.Context(), u.Nombre, u.Email, tokenPlano, 24); err != nil {
+			log.Printf("EMAIL verificación fallo email=%s usuario=%d: %v",
+				maskEmail(u.Email), u.ID, err)
+			// Se sigue, pero indicamos en logs que el correo no se envió.
+		}
+	}
+
 	render(w, r, a.Plantillas, "registro_ok", datosRegistroOK{
-		Titulo:      "Registro completado - SnowBreak",
-		Descripcion: "Tu cuenta se ha creado correctamente en SnowBreak.",
-		Activa:      "registro",
-		Nombre:      u.Nombre,
-		Email:       u.Email,
-		Usuario:     nil,
+		Titulo:             "Registro completado - SnowBreak",
+		Descripcion:        "Tu cuenta se ha creado correctamente en SnowBreak.",
+		Activa:             "registro",
+		Nombre:             u.Nombre,
+		Email:              u.Email,
+		PendienteVerificar: true,
+		Usuario:            nil,
 	})
 }
 

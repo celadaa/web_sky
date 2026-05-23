@@ -83,6 +83,27 @@ func main() {
 
 	// Servicios + estado de seguridad.
 	sec := handlers.NuevoSec(cfg)
+
+	// Email — opcional. Si la inicialización falla (plantillas missing,
+	// etc.) lo logueamos pero seguimos: el resto de la app debe arrancar.
+	emailSvc, err := services.NuevoEmailService(cfg, cfg.AppTemplates)
+	if err != nil {
+		log.Printf("AVISO: EmailService no inicializado: %v (los emails no se enviarán)", err)
+		emailSvc = nil
+	}
+
+	// Google OAuth — opcional. Si Client ID/Secret no están configurados,
+	// services.NuevoGoogleOAuthService devuelve nil sin error y el handler
+	// correspondiente responderá con un mensaje claro.
+	googleAuth, err := services.NuevoGoogleOAuthService(bootCtx, cfg, usuarioRepo)
+	if err != nil {
+		log.Printf("AVISO: Google OAuth no inicializado: %v (login con Google desactivado)", err)
+		googleAuth = nil
+	}
+	if googleAuth == nil && cfg.GoogleClientID == "" {
+		log.Println("INFO: GOOGLE_CLIENT_ID vacío — login con Google desactivado")
+	}
+
 	app := &handlers.App{
 		UsuarioSvc:  services.NuevoUsuarioService(usuarioRepo),
 		EstacionSvc: services.NuevoEstacionService(estacionRepo, favoritoRepo),
@@ -91,11 +112,13 @@ func main() {
 		FavoritoSvc: services.NuevoFavoritoService(favoritoRepo),
 		PedidoSvc:   services.NuevoPedidoService(pedidoRepo, estacionRepo),
 		// Servicio de pistas en directo (scraping cacheado de infonieve.es).
-		NieveSvc: services.NuevoNieveService(),
-		Cfg:      cfg,
-		Sec:      sec,
-		BD:       bd,
-		Version:  version,
+		NieveSvc:   services.NuevoNieveService(),
+		EmailSvc:   emailSvc,
+		GoogleAuth: googleAuth,
+		Cfg:        cfg,
+		Sec:        sec,
+		BD:         bd,
+		Version:    version,
 	}
 
 	plantillas, err := handlers.CargarPlantillas(cfg.AppTemplates)
@@ -134,6 +157,11 @@ func main() {
 	mux.Handle("/login", rlAuth(http.HandlerFunc(app.Login)))
 	mux.HandleFunc("/logout", app.Logout)
 	mux.Handle("/cambiar-password", rlAuth(http.HandlerFunc(app.CambiarPassword)))
+
+	// Login con Google (OAuth + OIDC) + verificación de email.
+	mux.Handle("/auth/google", rlAuth(http.HandlerFunc(app.AuthGoogleInicio)))
+	mux.Handle("/auth/google/callback", rlAuth(http.HandlerFunc(app.AuthGoogleCallback)))
+	mux.Handle("/confirmar-email", rlAuth(http.HandlerFunc(app.ConfirmarEmail)))
 
 	// Favoritos
 	mux.HandleFunc("/favoritos", app.FavoritosPagina)
