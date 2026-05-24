@@ -1,10 +1,13 @@
 {{define "contenido"}}
 <section class="hero hero--premium-v2">
   <div class="hero__premium-v2-inner">
-    <span class="hero__eyebrow-pill">Estaciones de esquí · Nieve · Forfaits</span>
-    <h1 class="hero__title-v2">PLANIFICA TU DÍA PERFECTO EN LA NIEVE</h1>
+    <span class="hero__eyebrow-pill">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 1 0 0 20A10 10 0 0 0 12 2zm0 18a8 8 0 1 1 0-16 8 8 0 0 1 0 16zm-1-13h2v6h-2zm0 8h2v2h-2z" opacity=".6"/></svg>
+      {{len .Estaciones}} estaciones · Nieve en tiempo real · Forfaits online
+    </span>
+    <h1 class="hero__title-v2">Tu escapada<br>a la nieve,<br>sin complicaciones.</h1>
     <p class="hero__subtitle-v2">
-      Consulta estaciones, estado de pistas, nieve disponible y reserva tus forfaits desde un solo lugar.
+      Compara estaciones, consulta el parte de nieve en directo y compra forfaits sin colas desde cualquier dispositivo.
     </p>
 
     <div id="hero-estaciones-data" hidden aria-hidden="true">{{range .Estaciones}}<span data-id="{{.ID}}" data-nombre="{{.Nombre}}" data-ubicacion="{{.Ubicacion}}"></span>{{end}}</div>
@@ -37,32 +40,52 @@
       </div>
       <button type="submit" class="hero__sv2-btn">
         <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
-        Buscar estaciones
+        Buscar forfaits
       </button>
     </form>
+
+    <div class="hero__cta-secondary" style="display:flex;flex-wrap:wrap;gap:.65rem;margin-bottom:2rem;">
+      <a href="/forfaits" class="hero__cta-pill hero__cta-pill--primary">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+        Comprar forfaits
+      </a>
+      <a href="/estaciones" class="hero__cta-pill">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M6 50 L22 22 L32 38"/><polyline points="4 17 9 12 4 7"/><line x1="2" y1="12" x2="22" y2="12"/></svg>
+        Ver estaciones abiertas
+      </a>
+      <a href="/pistas" class="hero__cta-pill">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M2 12h20M12 2l-4 10 4 4 4-4z"/></svg>
+        Estado de pistas
+      </a>
+    </div>
 
     <div class="hero__ubic" data-ubicacion-selector></div>
 
     <ul class="hero__metrics-v2" aria-label="Métricas destacadas">
       <li>
-        <span class="hero__mv2-value">{{with .MasCercana}}{{.Nombre}}{{else}}—{{end}}</span>
-        <span class="hero__mv2-label">Más cercana · {{with .MasCercana}}{{printf "%.0f" .Distancia}} km{{else}}sin datos{{end}}</span>
-      </li>
-      <li class="hero__mv2-sep" aria-hidden="true"></li>
-      <li>
-        <span class="hero__mv2-value">{{printf "%.0f" .DistanciaPromedio}} km</span>
-        <span class="hero__mv2-label">Distancia media</span>
-      </li>
-      <li class="hero__mv2-sep" aria-hidden="true"></li>
-      <li>
         <span class="hero__mv2-value">{{len .Estaciones}}</span>
-        <span class="hero__mv2-label">Estaciones disponibles</span>
+        <span class="hero__mv2-label">Estaciones en España</span>
+      </li>
+      <li class="hero__mv2-sep" aria-hidden="true"></li>
+      <li>
+        <span class="hero__mv2-value">{{with .MasCercana}}{{printf "%.0f" .Distancia}} km{{else}}—{{end}}</span>
+        <span class="hero__mv2-label">Estación más cercana a ti</span>
+      </li>
+      <li class="hero__mv2-sep" aria-hidden="true"></li>
+      <li>
+        <span class="hero__mv2-value">Tiempo real</span>
+        <span class="hero__mv2-label">Partes de nieve actualizados</span>
+      </li>
+      <li class="hero__mv2-sep" aria-hidden="true"></li>
+      <li>
+        <span class="hero__mv2-value">Sin colas</span>
+        <span class="hero__mv2-label">Forfaits online al instante</span>
       </li>
     </ul>
   </div>
 </section>
 
-<section>
+<section data-reveal>
   <ul class="stats-grid">
     <li>
       <article class="stats__item stats__item--near">
@@ -90,7 +113,7 @@
      ya es la experiencia central de Snowbreak. Estructura simple: dos
      bloques (texto + acción) flex con responsive a una columna en móvil. -->
 <section class="container">
-  <article class="home-planner-cta" data-home-planner-cta>
+  <article class="home-planner-cta" data-home-planner-cta data-reveal>
     <div class="home-planner-cta__body">
       <span class="home-planner-cta__eyebrow">Snowbreak Trip · Ticket vivo</span>
       <h2 class="home-planner-cta__title">PLANIFICA TU VIAJE A LA NIEVE</h2>

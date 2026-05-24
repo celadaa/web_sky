@@ -50,6 +50,8 @@
   <link rel="stylesheet" href="/static/css/base.css">
   <link rel="stylesheet" href="/static/css/components.css">
   <link rel="stylesheet" href="/static/css/pages.css">
+  <!-- Premium visual layer — override cosméticos, carga última -->
+  <link rel="stylesheet" href="/static/css/premium.css">
 
     <script src="/static/csrf.js"></script>
     <script src="/static/csp-events.js"></script>
@@ -71,6 +73,24 @@
   <!-- Capa de microinteracciones global (mínima y segura, post-hotfix).
        Solo reloj y reveal opt-in. NO GSAP/SplitType/Lenis aquí. -->
   <script defer src="/static/js/animations-global.js"></script>
+  <script>
+  /* navbar scroll shadow + reveal scroll-in */
+  (function(){
+    var nav = document.querySelector('.navbar');
+    if(nav){
+      var onScroll = function(){ nav.classList.toggle('scrolled', window.scrollY > 12); };
+      window.addEventListener('scroll', onScroll, {passive:true});
+      onScroll();
+    }
+    /* scroll reveal */
+    if('IntersectionObserver' in window){
+      var io = new IntersectionObserver(function(entries){
+        entries.forEach(function(e){ if(e.isIntersecting) e.target.classList.add('is-visible'); });
+      },{threshold:.12});
+      document.querySelectorAll('[data-reveal]').forEach(function(el){ io.observe(el); });
+    }
+  })();
+  </script>
 </body>
 </html>
 {{end}}
@@ -113,18 +133,26 @@
           <span class="navbar__welcome">Hola, <strong>{{.Usuario.Nombre}}</strong></span>
           <a href="/cambiar-password" class="navbar__link navbar__link--secondary {{if eq .Activa "cambiar_password"}}navbar__link--active{{end}}" title="Cambiar contraseña">Contraseña</a>
           {{template "cart_button" .}}
+          <a href="/forfaits" class="navbar__btn" aria-label="Comprar forfait">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+            Reservar
+          </a>
           <form method="POST" action="/logout" class="inline-form">
             <button type="submit" class="navbar__btn navbar__btn--ghost">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" x2="9" y1="12" y2="12"/></svg>
-              Cerrar sesión
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" x2="9" y1="12" y2="12"/></svg>
+              Salir
             </button>
           </form>
         {{else}}
           <a href="/login" class="navbar__link {{if eq .Activa "login"}}navbar__link--active{{end}}">Iniciar sesión</a>
           {{template "cart_button" .}}
-          <a href="/registro" class="navbar__btn navbar__btn--link">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-            Registrarse
+          <a href="/registro" class="navbar__btn navbar__btn--ghost">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            Registro
+          </a>
+          <a href="/forfaits" class="navbar__btn" aria-label="Comprar forfait">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+            Reservar
           </a>
         {{end}}
       </div>
