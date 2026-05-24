@@ -9,15 +9,15 @@ import (
 
 // datosHome es el struct que se pasa a la plantilla index.tmpl.
 type datosHome struct {
-	Titulo                string
-	Descripcion           string
-	Activa                string
-	Estaciones            []models.Estacion // todas (autocomplete + métricas)
-	EstacionesDestacadas  []models.Estacion // solo las 3 de la home
-	MasCercana            *models.Estacion
-	MasLejana             *models.Estacion
-	DistanciaPromedio     float64
-	Usuario               *models.Usuario
+	Titulo               string
+	Descripcion          string
+	Activa               string
+	Estaciones           []models.Estacion // todas (autocomplete + métricas)
+	EstacionesDestacadas []models.Estacion // solo las 3 de la home
+	MasCercana           *models.Estacion
+	MasLejana            *models.Estacion
+	DistanciaPromedio    float64
+	Usuario              *models.Usuario
 }
 
 // Home responde a GET / con el listado de estaciones más cercanas y el resumen.
@@ -63,14 +63,14 @@ func (a *App) Home(w http.ResponseWriter, r *http.Request) {
 			}
 		}
 	}
-	// Eliminar posiciones vacías si alguna estación no existe en la BD
+	// Eliminar posiciones vacías si alguna estación no existe en la BD.
 	var destacadasFinal []models.Estacion
 	for _, e := range destacadas {
 		if e.ID != 0 {
 			destacadasFinal = append(destacadasFinal, e)
 		}
 	}
-	// Fallback: si no se encontró ninguna, usar las 3 primeras
+	// Fallback: si no se encontró ninguna, usar las 3 primeras.
 	if len(destacadasFinal) == 0 && len(estaciones) > 0 {
 		n := 3
 		if len(estaciones) < n {
