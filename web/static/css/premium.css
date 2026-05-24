@@ -1858,3 +1858,123 @@ button, a[class*="btn"], a[class*="cta"] {
   opacity: .6;
   font-weight: 500;
 }
+
+/* ─── 28. Hero centrado ──────────────────────────────────────────────────────── */
+/* Centra el bloque de contenido dentro del hero para dar aspecto premium. */
+.hero__premium-v2-inner {
+  text-align: center;
+}
+
+/* Centrar bloques con max-width (no se centran solo con text-align) */
+.hero__title-v2,
+.hero__subtitle-v2 {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* El buscador se centra dentro del inner */
+.hero__search-v2 {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* Alinear los CTA pills al centro */
+.hero__cta-secondary {
+  justify-content: center;
+}
+
+/* Métricas centradas */
+.hero__metrics-v2 {
+  justify-content: center;
+}
+
+/* Selector de ubicación centrado */
+.hero__ubic {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 1.5rem;
+}
+
+/* ─── 29. Espaciado entre secciones de la home ─────────────────────────────── */
+/* La sección de stats (sin contenedor en la plantilla original) necesita
+   padding vertical explícito para que no colisione visualmente con el hero. */
+.stats-section {
+  padding-top: 3rem;
+  padding-bottom: 2rem;
+}
+
+/* Más aire entre la sección de pistas en directo y la anterior */
+.pistas-home {
+  padding-top: 3.5rem;
+  padding-bottom: 3.5rem;
+}
+
+/* Destacadas: espacio superior consistente */
+.home-destacadas__header {
+  margin-top: .5rem;
+}
+
+/* ─── 30. CTA planner — evitar texto cortado ─────────────────────────────── */
+/* El eyebrow "Snowbreak Trip · Ticket vivo" con letter-spacing .1em en
+   uppercase puede superar el ancho del contenedor en pantallas < 420px. */
+.home-planner-cta__eyebrow {
+  overflow-wrap: break-word;
+  word-break: break-word;
+  max-width: 100%;
+}
+
+@media (max-width: 520px) {
+  .home-planner-cta {
+    padding: 1.5rem 1.25rem;
+  }
+  .home-planner-cta__eyebrow {
+    letter-spacing: .04em;
+  }
+}
+
+@media (max-width: 420px) {
+  .home-planner-cta {
+    padding: 1.25rem 1rem;
+  }
+  .home-planner-cta__eyebrow {
+    letter-spacing: 0;
+    font-size: .68rem;
+  }
+}
+
+/* ─── 31. Mobile 360–420px — ajustes finos ──────────────────────────────────── */
+@media (max-width: 420px) {
+  /* Ocultar separadores verticales entre métricas del hero cuando el flex
+     rompe a múltiples filas (quedan flotando sueltos). */
+  .hero__mv2-sep {
+    display: none;
+  }
+
+  /* Más gap entre items de métricas al estar en varias líneas */
+  .hero__metrics-v2 {
+    gap: .75rem 1rem;
+  }
+
+  /* Evitar desbordamiento horizontal en el buscador */
+  .hero__search-v2 {
+    max-width: 100%;
+  }
+
+  /* Menos padding interno del hero para que quede más aireado */
+  .hero__premium-v2-inner {
+    padding: 3rem 1rem 4.5rem;
+  }
+
+  /* Stats grid: una sola columna en móvil muy pequeño */
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+  .home-bottom-cta {
+    padding: 2.5rem 1rem;
+  }
+}
+
+/* --- 32. Prevencion de scroll horizontal global -------------------------------- */
+main#contenido-principal {
+  overflow-x: hidden;
+}
