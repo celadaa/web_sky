@@ -149,6 +149,51 @@ func (s *NieveService) Detalle(slug string) (*infonieve.EstacionDetalle, error) 
 	return d, nil
 }
 
+// ListadoPorSlug devuelve el listado de infonieve indexado por slug.
+// Reutiliza la misma caché de 10 minutos que EstacionesCercanas, por lo que
+// llamarlo en paralelo con Listar() no genera peticiones adicionales.
+func (s *NieveService) ListadoPorSlug() (map[string]EstacionDirecto, error) {
+	lista, err := s.listadoCacheado()
+	if err != nil {
+		return nil, err
+	}
+	m := make(map[string]EstacionDirecto, len(lista))
+	for _, e := range lista {
+		dto := EstacionDirecto{
+			Slug:         e.Slug,
+			Nombre:       e.Nombre,
+			URL:          e.URL,
+			Estado:       normalizarEstado(e.Estado, e.Pistas),
+			Remontes:     e.Remontes,
+			Pistas:       e.Pistas,
+			Kilometros:   e.Kilometros,
+			NieveCm:      e.NieveCm,
+			CalidadNieve: e.CalidadNieve,
+			Temperatura:  e.Temperatura,
+		}
+		m[e.Slug] = dto
+	}
+	return m, nil
+}
+
+// PorNombre busca la estación de infonieve que corresponde al nombre dado,
+// usando la tabla de mapping de infonieve.SlugPorNombre. Devuelve nil si no
+// hay mapping conocido o si la estación no aparece en el listado actual.
+func (s *NieveService) PorNombre(nombre string) *EstacionDirecto {
+	slug, ok := infonieve.SlugPorNombre(nombre)
+	if !ok {
+		return nil
+	}
+	m, err := s.ListadoPorSlug()
+	if err != nil {
+		return nil
+	}
+	if dto, found := m[slug]; found {
+		return &dto
+	}
+	return nil
+}
+
 // Regiones expone la lista de regiones soportadas.
 func (s *NieveService) Regiones() []infonieve.Region {
 	return infonieve.Regiones
@@ -257,3 +302,4 @@ func normalizarEstado(orig infonieve.Estado, pistas infonieve.Fraccion) infoniev
 	}
 	return orig
 }
+

@@ -64,9 +64,9 @@
         <div class="parte__update">
           <span class="parte__update-tag" data-parte-tag>
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-            Parte actualizado a las {{.ParteHora}}
+            {{if .TieneDatosReales}}Parte actualizado a las {{.ParteHora}}{{else}}Sin datos en tiempo real{{end}}
           </span>
-          <span class="parte__update-fecha" data-parte-fecha>Última actualización: {{.ParteActualizadoTexto}}</span>
+          <span class="parte__update-fecha" data-parte-fecha>{{if .TieneDatosReales}}Última actualización: {{.ParteActualizadoTexto}}{{else}}—{{end}}</span>
           <button type="button" class="parte__refresh" data-parte-refresh aria-label="Actualizar parte">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 0 1 15-6.7L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-15 6.7L3 16"/><path d="M3 21v-5h5"/></svg>
             Actualizar parte
@@ -81,44 +81,44 @@
         </div>
         <div class="parte__estado-mini">
           <span class="parte__estado-mini-label">Pistas</span>
-          <span class="parte__estado-mini-valor" data-parte-pistas>{{.PistasAbiertas}}/{{.PistasTotales}}</span>
+          <span class="parte__estado-mini-valor" data-parte-pistas>{{if .TieneDatosReales}}{{.PistasAbiertas}}/{{.PistasTotales}}{{else}}—{{end}}</span>
           <span class="parte__estado-mini-label">Remontes</span>
-          <span class="parte__estado-mini-valor" data-parte-remontes>{{.RemontesOp}}/{{.RemontesTot}}</span>
+          <span class="parte__estado-mini-valor" data-parte-remontes>{{if .TieneDatosReales}}{{.RemontesOp}}/{{.RemontesTot}}{{else}}—{{end}}</span>
         </div>
       </div>
 
       <dl class="conditions__grid">
         <div class="conditions__item">
           <dt class="conditions__label">Temperatura</dt>
-          <dd class="conditions__value" data-parte-temp>{{.Temperatura}} °C</dd>
+          <dd class="conditions__value" data-parte-temp>{{if .TieneDatosReales}}{{.Temperatura}} °C{{else}}—{{end}}</dd>
         </div>
         <div class="conditions__item">
           <dt class="conditions__label">Nieve</dt>
-          <dd class="conditions__value" data-parte-nieve>{{.NieveMin}}–{{.NieveMax}} cm</dd>
+          <dd class="conditions__value" data-parte-nieve>{{if and .TieneDatosReales (or (gt .NieveMin 0) (gt .NieveMax 0))}}{{.NieveMin}}–{{.NieveMax}} cm{{else if .TieneDatosReales}}0 cm{{else}}—{{end}}</dd>
         </div>
         <div class="conditions__item">
           <dt class="conditions__label">Nieve nueva (24 h)</dt>
-          <dd class="conditions__value text-success" data-parte-nueva>+ {{.NieveNueva}} cm</dd>
+          <dd class="conditions__value text-success" data-parte-nueva>{{if and .TieneDatosReales (gt .NieveNueva 0)}}+ {{.NieveNueva}} cm{{else}}—{{end}}</dd>
         </div>
         <div class="conditions__item">
           <dt class="conditions__label">Viento</dt>
-          <dd class="conditions__value" data-parte-viento>{{.Viento}}</dd>
+          <dd class="conditions__value" data-parte-viento>{{if .Viento}}{{.Viento}}{{else}}—{{end}}</dd>
         </div>
         <div class="conditions__item">
           <dt class="conditions__label">Última nevada</dt>
-          <dd class="conditions__value" data-parte-ultima>{{.UltimaNevada}}</dd>
+          <dd class="conditions__value" data-parte-ultima>{{if .UltimaNevada}}{{.UltimaNevada}}{{else}}—{{end}}</dd>
         </div>
         <div class="conditions__item">
           <dt class="conditions__label">Pistas abiertas</dt>
-          <dd class="conditions__value">{{.PistasAbiertas}} / {{.PistasTotales}}</dd>
+          <dd class="conditions__value">{{if .TieneDatosReales}}{{.PistasAbiertas}} / {{.PistasTotales}}{{else}}—{{end}}</dd>
         </div>
         <div class="conditions__item">
           <dt class="conditions__label">Remontes operativos</dt>
-          <dd class="conditions__value">{{.RemontesOp}} / {{.RemontesTot}}</dd>
+          <dd class="conditions__value">{{if .TieneDatosReales}}{{.RemontesOp}} / {{.RemontesTot}}{{else}}—{{end}}</dd>
         </div>
         <div class="conditions__item">
           <dt class="conditions__label">Km esquiables</dt>
-          <dd class="conditions__value">{{printf "%.0f" .KmEsquiables}} km</dd>
+          <dd class="conditions__value">{{if and .TieneDatosReales (gt .KmEsquiables 0.0)}}{{printf "%.0f" .KmEsquiables}} km{{else}}—{{end}}</dd>
         </div>
       </dl>
 

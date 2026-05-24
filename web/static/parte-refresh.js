@@ -52,14 +52,15 @@
   }
 
   function aplicar(parte, d) {
+    var real = !!d.tiene_datos_reales;
     setText(parte, '[data-parte-estado]',   d.estado);
-    setText(parte, '[data-parte-temp]',     formatear(d.temperatura, ' °C'));
-    setText(parte, '[data-parte-nieve]',    d.nieve_min + '–' + d.nieve_max + ' cm');
-    setText(parte, '[data-parte-nueva]',    '+ ' + d.nieve_nueva + ' cm');
+    setText(parte, '[data-parte-temp]',     real ? formatear(d.temperatura, ' °C') : '—');
+    setText(parte, '[data-parte-nieve]',    real ? (d.nieve_min > 0 || d.nieve_max > 0 ? d.nieve_min + '–' + d.nieve_max + ' cm' : '0 cm') : '—');
+    setText(parte, '[data-parte-nueva]',    real && d.nieve_nueva > 0 ? '+ ' + d.nieve_nueva + ' cm' : '—');
     setText(parte, '[data-parte-viento]',   d.viento || '—');
     setText(parte, '[data-parte-ultima]',   d.ultima_nevada || '—');
-    setText(parte, '[data-parte-pistas]',   d.pistas_abiertas + '/' + d.pistas_totales);
-    setText(parte, '[data-parte-remontes]', d.remontes_op + '/' + d.remontes_tot);
+    setText(parte, '[data-parte-pistas]',   real ? d.pistas_abiertas + '/' + d.pistas_totales : '—');
+    setText(parte, '[data-parte-remontes]', real ? d.remontes_op + '/' + d.remontes_tot : '—');
 
     var tag = parte.querySelector('[data-parte-tag]');
     if (tag) {

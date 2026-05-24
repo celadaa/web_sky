@@ -104,21 +104,28 @@ func main() {
 		log.Println("INFO: GOOGLE_CLIENT_ID vacío — login con Google desactivado")
 	}
 
+	// nieveSvc es el servicio de pistas en directo (scraping cacheado de
+	// infonieve.es). Se pasa también a EstacionService para que home,
+	// /estaciones y la ficha de estación usen la misma fuente de datos.
+	nieveSvc := services.NuevoNieveService()
+
+	estacionSvc := services.NuevoEstacionService(estacionRepo, favoritoRepo)
+	estacionSvc.NieveSvc = nieveSvc // fuente única de verdad para datos de nieve
+
 	app := &handlers.App{
 		UsuarioSvc:  services.NuevoUsuarioService(usuarioRepo),
-		EstacionSvc: services.NuevoEstacionService(estacionRepo, favoritoRepo),
+		EstacionSvc: estacionSvc,
 		NoticiaSvc:  services.NuevoNoticiaService(noticiaRepo),
 		SesionSvc:   services.NuevoSesionService(sesionRepo, usuarioRepo),
 		FavoritoSvc: services.NuevoFavoritoService(favoritoRepo),
 		PedidoSvc:   services.NuevoPedidoService(pedidoRepo, estacionRepo),
-		// Servicio de pistas en directo (scraping cacheado de infonieve.es).
-		NieveSvc:   services.NuevoNieveService(),
-		EmailSvc:   emailSvc,
-		GoogleAuth: googleAuth,
-		Cfg:        cfg,
-		Sec:        sec,
-		BD:         bd,
-		Version:    version,
+		NieveSvc:    nieveSvc,
+		EmailSvc:    emailSvc,
+		GoogleAuth:  googleAuth,
+		Cfg:         cfg,
+		Sec:         sec,
+		BD:          bd,
+		Version:     version,
 	}
 
 	plantillas, err := handlers.CargarPlantillas(cfg.AppTemplates)

@@ -1,25 +1,17 @@
-// Package handlers — endpoint de "refresco" del parte de nieve.
-//
-// GET /api/estacion/{id}/parte
-//
-// Devuelve los datos completos de una estación en JSON, recalculando los
-// campos derivados (nieve mín/máx, viento, fecha de última actualización)
-// con la lógica determinista del servicio. Sirve para que el botón
-// "Actualizar parte" de la ficha de estación pueda refrescar los valores
-// sin recargar la página entera.
 package handlers
 
 import (
+	"database/sql"
 	"errors"
 	"log"
 	"net/http"
 	"strconv"
 	"strings"
-
-	"database/sql"
 )
 
-// parteJSON es el DTO que consume parte-refresh.js
+// parteJSON es el DTO que consume parte-refresh.js.
+// tiene_datos_reales indica si los campos dinamicos provienen de infonieve.es;
+// si es false, el JS muestra "--" en lugar de cero.
 type parteJSON struct {
 	ID               int64  `json:"id"`
 	Estado           string `json:"estado"`
@@ -37,17 +29,17 @@ type parteJSON struct {
 	ParteHora        string `json:"parte_hora"`
 	ParteActualizado string `json:"parte_actualizado"`
 	ParteHaceMinutos int    `json:"parte_hace_minutos"`
+	TieneDatosReales bool   `json:"tiene_datos_reales"`
 }
 
 // ApiParteEstacion responde a GET /api/estacion/{id}/parte
 func (a *App) ApiParteEstacion(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodGet {
 		w.Header().Set("Allow", "GET")
-		escribirError(w, http.StatusMethodNotAllowed, "método no permitido")
+		escribirError(w, http.StatusMethodNotAllowed, "metodo no permitido")
 		return
 	}
 
-	// La ruta es "/api/estacion/{id}/parte"
 	path := strings.TrimPrefix(r.URL.Path, "/api/estacion/")
 	if !strings.HasSuffix(path, "/parte") {
 		escribirError(w, http.StatusNotFound, "endpoint no encontrado")
@@ -56,17 +48,17 @@ func (a *App) ApiParteEstacion(w http.ResponseWriter, r *http.Request) {
 	idStr := strings.TrimSuffix(path, "/parte")
 	id, err := strconv.ParseInt(idStr, 10, 64)
 	if err != nil || id <= 0 {
-		escribirError(w, http.StatusBadRequest, "id inválido")
+		escribirError(w, http.StatusBadRequest, "id invalido")
 		return
 	}
 
 	e, err := a.EstacionSvc.Obtener(r.Context(), id, 0)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			escribirError(w, http.StatusNotFound, "estación no encontrada")
+			escribirError(w, http.StatusNotFound, "estacion no encontrada")
 			return
 		}
-		log.Printf("ERROR API parte estación %d: %v", id, err)
+		log.Printf("ERROR API parte estacion %d: %v", id, err)
 		escribirError(w, http.StatusInternalServerError, "no hemos podido cargar el parte")
 		return
 	}
@@ -88,6 +80,7 @@ func (a *App) ApiParteEstacion(w http.ResponseWriter, r *http.Request) {
 		ParteHora:        e.ParteHora(),
 		ParteActualizado: e.ParteActualizadoTexto(),
 		ParteHaceMinutos: e.ParteHaceMinutos(),
+		TieneDatosReales: e.TieneDatosReales,
 	}
 	escribirJSON(w, http.StatusOK, out)
 }

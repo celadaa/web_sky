@@ -36,13 +36,19 @@ type Estacion struct {
 	// servicio en función del usuario autenticado que vea la página.
 	EsFavorita bool
 
-	// Campos derivados ("parte de nieve") que pobla EstacionService a
-	// partir de NieveBase y un hash determinista del ID. No se leen de
-	// la BD: son orientativos y se marcan como tal en la UI.
-	NieveMin         int       // cm — espesor mínimo en pistas bajas
-	NieveMax         int       // cm — espesor máximo en cumbres
-	Viento           string    // p.ej. "12 km/h"
-	ParteActualizado time.Time // fecha/hora del último parte
+	// Campos dinámicos del "parte de nieve". Los rellena EstacionService
+	// con datos en tiempo real de infonieve.es a través de NieveService.
+	// NO se leen de la BD y NO se generan de forma ficticia: si no hay
+	// datos reales disponibles quedan a cero/vacío y TieneDatosReales=false.
+	NieveMin         int       // cm — espesor mínimo (= NieveMax cuando viene de infonieve)
+	NieveMax         int       // cm — espesor máximo
+	Viento           string    // vacío si no está disponible en la fuente
+	ParteActualizado time.Time // momento de la última actualización real
+
+	// TieneDatosReales es true cuando los campos dinámicos anteriores
+	// provienen de infonieve.es en tiempo real. Úsalo en plantillas para
+	// mostrar "—" en lugar de cero cuando no hay dato.
+	TieneDatosReales bool
 }
 
 // ParteActualizadoTexto devuelve el momento del parte en formato

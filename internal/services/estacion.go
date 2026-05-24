@@ -2,28 +2,31 @@ package services
 
 import (
 	"context"
-	"hash/fnv"
 	"strconv"
+	"strings"
 	"time"
 
+	"skihub/internal/infonieve"
 	"skihub/internal/models"
 	"skihub/internal/repository"
 )
 
-// EstacionService centraliza la lógica relacionada con estaciones.
+// EstacionService centraliza la logica relacionada con estaciones.
 type EstacionService struct {
 	Repo    *repository.EstacionRepo
-	FavRepo *repository.FavoritoRepo // opcional, para marcar favoritas
+	FavRepo *repository.FavoritoRepo
+	// NieveSvc enriquece las estaciones con datos en tiempo real de infonieve.es.
+	// Si es nil, los campos dinamicos quedan a cero/vacio (nunca ficticios).
+	NieveSvc *NieveService
 }
 
-// NuevoEstacionService construye el servicio. Si favRepo es nil, no se
-// marcan favoritas.
+// NuevoEstacionService construye el servicio. Si favRepo es nil, no se marcan favoritas.
 func NuevoEstacionService(repo *repository.EstacionRepo, favRepo *repository.FavoritoRepo) *EstacionService {
 	return &EstacionService{Repo: repo, FavRepo: favRepo}
 }
 
-// Listar devuelve todas las estaciones ordenadas por distancia. Si
-// usuarioID > 0 marca las que son favoritas para ese usuario.
+// Listar devuelve todas las estaciones ordenadas por distancia. Si usuarioID > 0
+// marca las que son favoritas. Los campos dinamicos se enriquecen con datos reales.
 func (s *EstacionService) Listar(ctx context.Context, usuarioID int64) ([]models.Estacion, error) {
 	lista, err := s.Repo.ListarPorDistancia(ctx)
 	if err != nil {
@@ -41,13 +44,13 @@ func (s *EstacionService) Listar(ctx context.Context, usuarioID int64) ([]models
 		}
 	}
 	for i := range lista {
-		enriquecerParte(&lista[i])
+		s.enriquecerConNieve(&lista[i])
 	}
 	return lista, nil
 }
 
-// Obtener devuelve la ficha de una estación, marcándola como favorita
-// si procede.
+// Obtener devuelve la ficha de una estacion, marcandola como favorita si
+// procede. Los campos dinamicos se enriquecen con datos reales de infonieve.es.
 func (s *EstacionService) Obtener(ctx context.Context, id, usuarioID int64) (*models.Estacion, error) {
 	e, err := s.Repo.ObtenerPorID(ctx, id)
 	if err != nil {
@@ -60,12 +63,12 @@ func (s *EstacionService) Obtener(ctx context.Context, id, usuarioID int64) (*mo
 		}
 		e.EsFavorita = fav
 	}
-	enriquecerParte(e)
+	s.enriquecerConNieve(e)
 	return e, nil
 }
 
-// ResumenHome calcula la estación más cercana, la más lejana y la
-// distancia promedio para el panel de estadísticas de la home.
+// ResumenHome calcula la estacion mas cercana, la mas lejana y la
+// distancia promedio para el panel de estadisticas de la home.
 func (s *EstacionService) ResumenHome(ctx context.Context) (cercana, lejana *models.Estacion, promedio float64, total int, err error) {
 	lista, err := s.Repo.ListarPorDistancia(ctx)
 	if err != nil || len(lista) == 0 {
@@ -77,71 +80,113 @@ func (s *EstacionService) ResumenHome(ctx context.Context) (cercana, lejana *mod
 	}
 	c := lista[0]
 	l := lista[len(lista)-1]
-	enriquecerParte(&c)
-	enriquecerParte(&l)
+	s.enriquecerConNieve(&c)
+	s.enriquecerConNieve(&l)
 	return &c, &l, suma / float64(len(lista)), len(lista), nil
 }
 
-// enriquecerParte rellena los campos derivados del "parte de nieve"
-// (NieveMin/Max, Viento, ParteActualizado). No tocan la BD: son datos
-// orientativos, generados de forma estable a
-// partir del ID para que las cifras se mantengan constantes entre
-// peticiones del mismo proceso.
-func enriquecerParte(e *models.Estacion) {
-	if e == nil {
+// enriquecerConNieve reemplaza a enriquecerParte(). Obtiene datos en tiempo real
+// de infonieve.es para la estacion e a traves de NieveSvc.
+//
+// Si hay datos reales: sobrescribe los campos dinamicos (pistas, remontes,
+// km, nieve, temperatura) con los valores de infonieve.es y marca
+// TieneDatosReales=true.
+//
+// Si NO hay datos reales (servicio nil, estacion sin mapping, o error de red):
+// llama a limpiarCamposDinamicos — nunca se generan valores ficticios.
+func (s *EstacionService) enriquecerConNieve(e *models.Estacion) {
+	if s.NieveSvc == nil {
+		limpiarCamposDinamicos(e)
 		return
 	}
-	h := fnv.New32a()
-	_, _ = h.Write([]byte{
-		byte(e.ID), byte(e.ID >> 8), byte(e.ID >> 16), byte(e.ID >> 24),
-	})
-	semilla := h.Sum32()
-
-	// Rango de nieve: alrededor del valor base.
-	base := e.NieveBase
-	if base < 0 {
-		base = 0
+	dto := s.NieveSvc.PorNombre(e.Nombre)
+	if dto == nil {
+		limpiarCamposDinamicos(e)
+		return
 	}
-	jitterMin := int(semilla%21) - 10 // -10..+10
-	jitterMax := int((semilla>>5)%26) + 10
-	min := base - 15 + jitterMin
-	if min < 0 {
-		min = 0
-	}
-	max := base + jitterMax
-	if max < min+5 {
-		max = min + 5
-	}
-	e.NieveMin = min
-	e.NieveMax = max
 
-	// Viento: 5..40 km/h estable según hash.
-	viento := 5 + int((semilla>>11)%36)
-	e.Viento = formatearViento(viento)
+	// Pistas abiertas / totales
+	if dto.Pistas.Abiertos != nil {
+		e.PistasAbiertas = int(*dto.Pistas.Abiertos)
+	} else if dto.Estado == infonieve.EstadoCerrada {
+		e.PistasAbiertas = 0
+	}
+	if dto.Pistas.Total != nil {
+		if t := int(*dto.Pistas.Total); t > 0 {
+			e.PistasTotales = t
+		}
+	}
 
-	// Parte actualizado: ahora redondeado a 15 minutos hacia abajo,
-	// menos un pequeño desfase determinista (0..14 min) para que cada
-	// estación muestre minutos distintos.
-	desfase := time.Duration((semilla>>17)%15) * time.Minute
-	t := time.Now().Add(-desfase)
-	t = t.Truncate(15 * time.Minute)
-	e.ParteActualizado = t
+	// Remontes
+	if dto.Remontes.Abiertos != nil {
+		e.RemontesOp = int(*dto.Remontes.Abiertos)
+	}
+	if dto.Remontes.Total != nil {
+		if t := int(*dto.Remontes.Total); t > 0 {
+			e.RemontesTot = t
+		}
+	}
+
+	// Km esquiables
+	if dto.Kilometros.Abiertos != nil {
+		e.KmEsquiables = *dto.Kilometros.Abiertos
+	}
+
+	// Nieve: infonieve da un unico valor; lo asignamos a Min y Max.
+	// Si es nil (sin datos de nieve) dejamos ambos a 0.
+	if dto.NieveCm != nil {
+		cm := int(*dto.NieveCm)
+		e.NieveBase = cm
+		e.NieveMin = cm
+		e.NieveMax = cm
+	} else {
+		e.NieveMin = 0
+		e.NieveMax = 0
+	}
+
+	// Temperatura: infonieve la devuelve como string "2C", "-5 C", etc.
+	if dto.Temperatura != "" {
+		e.Temperatura = parsearTemperatura(dto.Temperatura)
+	}
+
+	// Viento: no esta disponible en el listado de infonieve -> vacio, no ficticio.
+	e.Viento = ""
+
+	// Timestamp del parte (cache ~10 min; usamos now() como aproximacion).
+	e.ParteActualizado = time.Now()
+
+	e.TieneDatosReales = true
 }
 
-func formatearViento(kmh int) string {
-	// pequeña narrativa descriptiva además del número
-	switch {
-	case kmh < 10:
-		return formatNumeroKmH(kmh) + " (calmo)"
-	case kmh < 20:
-		return formatNumeroKmH(kmh)
-	case kmh < 30:
-		return formatNumeroKmH(kmh) + " (moderado)"
-	default:
-		return formatNumeroKmH(kmh) + " (fuerte)"
-	}
+// limpiarCamposDinamicos pone a cero/vacio todos los campos que antes
+// enriquecerParte() generaba de forma ficticia desde un hash del ID.
+func limpiarCamposDinamicos(e *models.Estacion) {
+	e.NieveMin = 0
+	e.NieveMax = 0
+	e.Viento = ""
+	e.ParteActualizado = time.Time{} // zero -> ParteHora() devuelve ""
+	e.TieneDatosReales = false
 }
 
-func formatNumeroKmH(kmh int) string {
-	return strconv.Itoa(kmh) + " km/h"
+// parsearTemperatura extrae el entero con signo de cadenas como
+// "2C", "-5 C", "+3C". Devuelve 0 si no puede parsear.
+func parsearTemperatura(s string) int {
+	s = strings.TrimSpace(s)
+	var sign, digits string
+	i := 0
+	if i < len(s) && (s[i] == '-' || s[i] == '+') {
+		if s[i] == '-' {
+			sign = "-"
+		}
+		i++
+	}
+	for i < len(s) && s[i] >= '0' && s[i] <= '9' {
+		digits += string(s[i])
+		i++
+	}
+	if digits == "" {
+		return 0
+	}
+	n, _ := strconv.Atoi(sign + digits)
+	return n
 }
