@@ -84,7 +84,7 @@ func (s *EstacionService) ResumenHome(ctx context.Context) (cercana, lejana *mod
 
 // enriquecerParte rellena los campos derivados del "parte de nieve"
 // (NieveMin/Max, Viento, ParteActualizado). No tocan la BD: son datos
-// orientativos para la demo académica, generados de forma estable a
+// orientativos, generados de forma estable a
 // partir del ID para que las cifras se mantengan constantes entre
 // peticiones del mismo proceso.
 func enriquecerParte(e *models.Estacion) {

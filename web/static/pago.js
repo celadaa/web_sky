@@ -166,7 +166,7 @@
             '<h2>¡Reserva confirmada!</h2>' +
             '<p>Hemos recibido tu pedido correctamente.</p>' +
             '<p class="pago-confirmacion__nota">Recibirás un correo de confirmación en breve.</p>' +
-            '<p class="pago-confirmacion__demo"><strong>Demo académica:</strong> No se ha procesado ningún pago real.</p>' +
+            '<p class="pago-confirmacion__demo"><strong>Reserva en validación:</strong> No se realizará ningún cargo hasta confirmar disponibilidad.</p>' +
             '<a href="/" class="btn-forfait-reservar">Volver al inicio</a>' +
           '</div>';
         document.body.appendChild(overlay);

@@ -22,19 +22,19 @@ func (a *App) AvisoLegal(w http.ResponseWriter, r *http.Request) {
 		Titulo:      "Aviso legal - SnowBreak",
 		Descripcion: "Información legal de SnowBreak.",
 		Heading:     "Aviso legal",
-		Intro:       "Información básica sobre este sitio web académico y su alcance.",
+		Intro:       "Información legal sobre Snowbreak y el alcance de sus servicios.",
 		Sections: []legalSection{
 			{
 				Title: "Titularidad del sitio",
 				Paragraphs: []string{
-					"SnowBreak es un proyecto académico desarrollado con fines docentes dentro de la asignatura de Sistemas Web.",
-					"El contenido del sitio se ofrece como demostración técnica y no constituye un servicio comercial real.",
+					"Snowbreak es una plataforma de información turística especializada en viajes de esquí y deportes de nieve.",
+					"El contenido se ofrece con finalidad informativa. Los precios y disponibilidades son orientativos y están sujetos a confirmación.",
 				},
 			},
 			{
 				Title: "Uso de la información",
 				Paragraphs: []string{
-					"Los datos mostrados sobre estaciones, condiciones o noticias tienen carácter informativo y de ejemplo.",
+					"Los datos mostrados sobre estaciones, condiciones de nieve y noticias tienen carácter informativo y orientativo.",
 					"No debe tomarse ninguna decisión de viaje, seguridad o compra basándose exclusivamente en esta web.",
 				},
 			},
@@ -48,19 +48,19 @@ func (a *App) PoliticaPrivacidad(w http.ResponseWriter, r *http.Request) {
 		Titulo:      "Política de privacidad - SnowBreak",
 		Descripcion: "Política de privacidad de SnowBreak.",
 		Heading:     "Política de privacidad",
-		Intro:       "Resumen del tratamiento de datos dentro de este proyecto académico.",
+		Intro:       "Información sobre el tratamiento de datos personales en Snowbreak.",
 		Sections: []legalSection{
 			{
 				Title: "Datos tratados",
 				Paragraphs: []string{
 					"El sitio puede almacenar nombre, correo electrónico y credenciales cifradas para permitir el registro y acceso de usuarios.",
-					"Estos datos se utilizan únicamente para demostrar funcionalidades de autenticación, favoritos y administración.",
+					"Estos datos se utilizan para gestionar tu cuenta, tus estaciones favoritas y el acceso a los servicios de la plataforma.",
 				},
 			},
 			{
 				Title: "Finalidad y conservación",
 				Paragraphs: []string{
-					"Los datos se conservan mientras exista la base de datos usada en el entorno de prácticas.",
+					"Los datos se conservan mientras la cuenta esté activa. Puedes solicitar su eliminación en cualquier momento contactando con nosotros.",
 					"No se comparten con terceros ni se destinan a fines publicitarios.",
 				},
 			},

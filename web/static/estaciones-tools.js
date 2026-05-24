@@ -427,7 +427,7 @@
           '</header>' +
           '<p class="comparador-modal__hint">Máximo 3 estaciones — añade o quita desde cualquier ficha.</p>' +
           tablaComparador(estado.comparador) +
-          '<p class="parte__disclaimer parte__disclaimer--inline">Datos orientativos para demostración académica.</p>' +
+          '<p class="parte__disclaimer parte__disclaimer--inline">Datos orientativos. Consulta la estación para condiciones en tiempo real.</p>' +
           '<footer class="comparador-modal__footer">' +
             '<button type="button" class="ubic-modal__submit" data-vaciar-comparador>Vaciar comparador</button>' +
           '</footer>' +

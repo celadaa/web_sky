@@ -338,7 +338,7 @@ El compose lee del mismo `.env` que la aplicación (`DB_USER`, `DB_PASSWORD`, `D
 
 ## Cambios respecto a la versión SQLite
 
-Para constancia académica de la migración:
+Notas técnicas de la migración SQLite → PostgreSQL:
 
 - Driver: `modernc.org/sqlite` ❌ → `github.com/jackc/pgx/v5/stdlib` ✅
 - Placeholders: `?` → `$1, $2, …`

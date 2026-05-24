@@ -4,7 +4,7 @@
    - Navega entre los 5 paneles (4 pasos + éxito).
    - Llama window.SBTrip.set(...) cada vez que el usuario elige
      algo para que el ticket de la derecha se actualice.
-   - Mocks de alojamiento generados client-side a partir de la
+   - Opciones de alojamiento generadas client-side a partir de la
      estación elegida (no hace falta backend nuevo todavía).
 
    Si trip-planner-ticket.js no carga, window.SBTrip no existe
@@ -35,7 +35,7 @@
   // vuelto/editado deliberadamente. Se resetea al ENTRAR de nuevo a un paso.
   var autoAdvancedFromStep = {};
 
-  // ---------- Mocks de alojamiento ----------
+  // ---------- Opciones de alojamiento ----------
   function lodgingsFor(station) {
     if (!station) return [];
     var base = Math.max(60, Math.round((station.pricePerDayNino || 30) * 2.2));
