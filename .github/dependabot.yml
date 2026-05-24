@@ -40,13 +40,3 @@ updates:
     commit-message:
       prefix: "deps(actions)"
 
-  # Imágenes Docker usadas en docker-compose.yml (si añades Dockerfile, también las cogerá)
-  - package-ecosystem: docker
-    directory: "/"
-    schedule:
-      interval: weekly
-    labels:
-      - "dependencias"
-      - "docker"
-    commit-message:
-      prefix: "deps(docker)"
