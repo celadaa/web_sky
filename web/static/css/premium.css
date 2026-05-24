@@ -1574,6 +1574,120 @@ button, a[class*="btn"], a[class*="cta"] {
   }
 }
 
+/* ─── 22a. Estaciones destacadas (home) ─────────────────────────────────────── */
+.home-destacadas__header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+  margin-bottom: 1.75rem;
+}
+
+.home-destacadas__eyebrow {
+  display: block;
+  font-size: .72rem;
+  font-weight: 700;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--p-blue);
+  margin-bottom: .4rem;
+}
+
+.home-destacadas__header h2 {
+  font-size: clamp(1.4rem, 3vw, 1.9rem);
+  font-weight: 800;
+  color: var(--p-navy);
+  letter-spacing: -.04em;
+  margin-bottom: .35rem;
+}
+
+.home-destacadas__header p {
+  font-size: .88rem;
+  color: var(--p-navy-mid);
+  opacity: .7;
+  max-width: 480px;
+}
+
+.home-destacadas__ver-todas-header {
+  white-space: nowrap;
+  font-size: .88rem;
+  font-weight: 600;
+  color: var(--p-blue);
+  transition: opacity var(--p-fast);
+  flex-shrink: 0;
+}
+
+.home-destacadas__ver-todas-header:hover { opacity: .7; }
+
+/* Grid de 3 tarjetas en la home */
+.grid-cards--destacadas {
+  grid-template-columns: repeat(3, 1fr);
+}
+
+/* CTA "Ver todas" centrado */
+.home-destacadas__cta-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: .65rem;
+  margin-top: 2.5rem;
+  padding-top: 2rem;
+  border-top: 1px solid rgba(6,21,43,.07);
+}
+
+.home-destacadas__cta-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: .5rem;
+  background: var(--p-blue);
+  color: #fff !important;
+  padding: .85rem 2rem;
+  border-radius: var(--p-r-md);
+  font-weight: 700;
+  font-size: 1rem;
+  letter-spacing: -.01em;
+  box-shadow: var(--p-sh-blue);
+  transition: background var(--p-fast), transform var(--p-fast), box-shadow var(--p-fast);
+}
+
+.home-destacadas__cta-btn:hover {
+  background: var(--p-blue-hover);
+  transform: translateY(-2px);
+  box-shadow: 0 12px 36px rgba(27,111,232,.42);
+}
+
+.home-destacadas__cta-nota {
+  font-size: .8rem;
+  color: var(--p-navy-mid);
+  opacity: .55;
+  font-weight: 500;
+}
+
+/* Responsive: 1 columna en móvil */
+@media (max-width: 760px) {
+  .grid-cards--destacadas {
+    grid-template-columns: 1fr;
+  }
+
+  .home-destacadas__header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: .5rem;
+  }
+
+  .home-destacadas__cta-btn {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+@media (min-width: 761px) and (max-width: 1024px) {
+  .grid-cards--destacadas {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
 /* ─── 22b. Hero CTA pills ───────────────────────────────────────────────────── */
 .hero__cta-pill {
   display: inline-flex;

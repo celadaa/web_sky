@@ -153,35 +153,18 @@
   </ul>
 </section>
 
-<section class="container">
-  <div class="filters__header">
+<section class="container" data-reveal>
+  <div class="home-destacadas__header">
     <div>
-      <h2>Estaciones cercanas a ti</h2>
-      <p>Ordena por distancia, espesor de nieve o pistas abiertas.</p>
+      <span class="home-destacadas__eyebrow">Selección editorial</span>
+      <h2>Estaciones destacadas</h2>
+      <p>Las mejores estaciones de España, seleccionadas por condiciones de nieve y oferta de forfaits.</p>
     </div>
-    <div class="filters__controls">
-      <button type="button" class="filters__view-btn filters__view-btn--active" data-vista="lista" aria-pressed="true">Lista</button>
-      <button type="button" class="filters__view-btn" data-vista="mapa" aria-pressed="false">Mapa</button>
-    </div>
+    <a href="/estaciones" class="text-link home-destacadas__ver-todas-header">Ver las {{len .Estaciones}} estaciones →</a>
   </div>
 
-  <div class="estaciones-toolbar estaciones-toolbar--home">
-    <div class="estaciones-toolbar__contador" data-resultados-contador>{{len .Estaciones}} estaciones encontradas</div>
-    <div class="estaciones-toolbar__orden">
-      <label for="selector-orden">Ordenar por:</label>
-      <select id="selector-orden" class="estaciones-toolbar__select">
-        <option value="cercana">Más cercana</option>
-        <option value="nieve">Más nieve</option>
-        <option value="precio">Más barata</option>
-        <option value="pistas">Más pistas abiertas</option>
-        <option value="rating">Mejor valorada</option>
-      </select>
-      <a href="/estaciones" class="estaciones-toolbar__btn">Filtros avanzados →</a>
-    </div>
-  </div>
-
-  <ul class="grid-cards" id="grid-estaciones" data-grid-estaciones>
-    {{range .Estaciones}}
+  <ul class="grid-cards grid-cards--destacadas" id="grid-estaciones" data-grid-estaciones>
+    {{range .EstacionesDestacadas}}
     <li
       data-estacion
       data-id="{{.ID}}"
@@ -319,38 +302,15 @@
     {{end}}
   </ul>
 
-  <div id="mapa-container" class="map-card oculto" aria-live="polite">
-    <header class="map-card__header">
-      <div>
-        <h3 class="map-card__title">Mapa de estaciones</h3>
-        <p class="map-card__subtitle">Pulsa un esquiador para ver el estado de la estación · 27 estaciones agrupadas por macizo</p>
-      </div>
-      <article id="ubicacion-card" class="ubicacion-card oculto" aria-live="polite">
-        <span class="ubicacion-card__icon" aria-hidden="true">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
-        </span>
-        <div class="ubicacion-card__body">
-          <strong class="ubicacion-card__title" data-ub-titulo>Tu ubicación</strong>
-          <span class="ubicacion-card__address" data-ub-direccion></span>
-          <span class="ubicacion-card__coords" data-ub-coords></span>
-        </div>
-      </article>
-    </header>
-    <div class="map-card__layout">
-      <aside class="map-sidebar" aria-label="Estaciones agrupadas por macizo">
-        <div class="map-sidebar__search">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
-          <input id="mapa-search" type="search" placeholder="Buscar estación…" aria-label="Buscar estación">
-        </div>
-        <ul class="map-sidebar__chips" id="mapa-filtros" aria-label="Filtros por macizo"></ul>
-        <div class="map-sidebar__groups" id="mapa-grupos" aria-live="polite"></div>
-      </aside>
-      <div id="mapa-leaflet" class="map-card__canvas"></div>
-    </div>
+  <div class="home-destacadas__cta-wrap">
+    <a href="/estaciones" class="home-destacadas__cta-btn">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 50 L22 22"/><polyline points="4 6 9 12 4 18"/><line x1="2" y1="12" x2="22" y2="12"/></svg>
+      Ver todas las estaciones
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+    </a>
+    <p class="home-destacadas__cta-nota">{{len .Estaciones}} estaciones disponibles · Filtra por nieve, precio y nivel</p>
   </div>
 </section>
-
-<div id="comparador-bar" class="comparador-bar" hidden></div>
 
 <section class="home-bottom-cta">
   <div class="home-bottom-cta__inner container">
