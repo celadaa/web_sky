@@ -1,5 +1,13 @@
 {{define "contenido"}}
 <div class="page-planificar" data-page-planificar>
+<!-- Toast accesible "Añadido al ticket". Aria-live para que lectores
+     de pantalla anuncien el cambio. No se muestra hasta que JS le ponga
+     un mensaje y la clase .is-visible. -->
+<div class="trip-toast" data-trip-toast aria-live="polite" aria-atomic="true" hidden>
+  <span class="trip-toast__dot" aria-hidden="true"></span>
+  <span class="trip-toast__msg" data-trip-toast-msg></span>
+</div>
+
 
 <section class="hero hero--planificar page-planificar__hero" data-hero aria-label="Planifica tu viaje a la nieve">
   <header class="page-planificar__topbar" aria-hidden="true">
@@ -156,9 +164,12 @@
           <h2 id="step-5-title" class="wizard__success-title">PLANIFICACIÓN LISTA</h2>
           <p class="wizard__success-sub" data-success-msg>Tu ticket está completo. Confírmalo cuando quieras.</p>
           <div class="wizard__success-actions page-planificar__success-actions">
-            <a href="/cesta" class="sb-btn sb-btn--solid sb-btn--lg" data-go-cart>Ir a la cesta</a>
-            <a href="/" class="sb-btn">Volver al inicio</a>
+            <a href="#trip-ticket" class="sb-btn sb-btn--solid sb-btn--lg" data-go-cart>Ver mi ticket</a>
+            <a href="/estaciones" class="sb-btn">Explorar estaciones</a>
           </div>
+          <p class="page-planificar__success-disclaimer">
+            La reserva real estará disponible próximamente. Tu ticket queda guardado en este dispositivo.
+          </p>
         </div>
       </section>
 
@@ -227,7 +238,10 @@
 
         <footer class="page-planificar__ticket-footer">
           <p>·· GRACIAS POR ELEGIR SNOWBREAK ··<br>Conserve este ticket como justificante.</p>
-          <a href="/cesta" class="sb-btn sb-btn--solid sb-btn--block" data-trip-cta>Continuar reserva</a>
+          <a href="#trip-ticket" class="sb-btn sb-btn--solid sb-btn--block" data-trip-cta>Ver resumen completo ↑</a>
+          <p class="page-planificar__ticket-disclaimer">
+            La reserva real estará disponible próximamente. Tu planificación se guarda en este dispositivo.
+          </p>
           <button type="button" class="page-planificar__reset" data-trip-reset>Reiniciar planificación</button>
         </footer>
       </div>
