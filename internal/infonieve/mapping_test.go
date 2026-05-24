@@ -4,20 +4,20 @@ import "testing"
 
 func TestSlugPorNombre(t *testing.T) {
 	cases := []struct{ nombre, slug string }{
-		{"Valdesquí",             "valdesqui"},
-		{"Valdesqui",             "valdesqui"},
+		{"Valdesquí", "valdesqui"},
+		{"Valdesqui", "valdesqui"},
 		{"Puerto de Navacerrada", "navacerrada"},
-		{"Navacerrada",           "navacerrada"},
-		{"La Pinilla",            "la-pinilla"},
-		{"Sierra Nevada",         "sierra-nevada"},
-		{"Baqueira Beret",        "baqueira-beret"},
-		{"Baqueira",              "baqueira-beret"},
-		{"Candanchú",             "candanchu"},
-		{"Candanchu",             "candanchu"},
-		{"Formigal",              "formigal"},
-		{"Astún",                 "astun"},
-		{"Alto Campoo",           "alto-campoo"},
-		{"La Covatilla",          "sierra-de-bejar-la-covatilla"},
+		{"Navacerrada", "navacerrada"},
+		{"La Pinilla", "la-pinilla"},
+		{"Sierra Nevada", "sierra-nevada"},
+		{"Baqueira Beret", "baqueira-beret"},
+		{"Baqueira", "baqueira-beret"},
+		{"Candanchú", "candanchu"},
+		{"Candanchu", "candanchu"},
+		{"Formigal", "formigal"},
+		{"Astún", "astun"},
+		{"Alto Campoo", "alto-campoo"},
+		{"La Covatilla", "sierra-de-bejar-la-covatilla"},
 	}
 	for _, c := range cases {
 		got, ok := SlugPorNombre(c.nombre)

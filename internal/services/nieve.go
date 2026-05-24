@@ -63,11 +63,11 @@ type cacheEntry struct {
 // NuevoNieveService construye el servicio con TTLs sensatos.
 func NuevoNieveService() *NieveService {
 	return &NieveService{
-		cli:        infonieve.NewClient(),
-		cache:      make(map[string]cacheEntry),
-		listaTTL:   10 * time.Minute,
-		detalleTTL: 5 * time.Minute,
-		maxResults: 200,
+		cli:	infonieve.NewClient(),
+		cache:	make(map[string]cacheEntry),
+		listaTTL:	10 * time.Minute,
+		detalleTTL:	5 * time.Minute,
+		maxResults:	200,
 	}
 }
 
@@ -89,19 +89,19 @@ func (s *NieveService) EstacionesCercanas(lat, lng float64, limite int) ([]Estac
 	for _, e := range lista {
 		c, ok := infonieve.CoordPorSlug(e.Slug)
 		dto := EstacionDirecto{
-			Slug:         e.Slug,
-			Nombre:       e.Nombre,
-			URL:          e.URL,
-			Estado:       normalizarEstado(e.Estado, e.Pistas),
-			Lat:          c.Lat,
-			Lng:          c.Lng,
-			TieneCoords:  ok,
-			Remontes:     e.Remontes,
-			Pistas:       e.Pistas,
-			Kilometros:   e.Kilometros,
-			NieveCm:      e.NieveCm,
-			CalidadNieve: e.CalidadNieve,
-			Temperatura:  e.Temperatura,
+			Slug:	e.Slug,
+			Nombre:	e.Nombre,
+			URL:	e.URL,
+			Estado:	normalizarEstado(e.Estado, e.Pistas),
+			Lat:	c.Lat,
+			Lng:	c.Lng,
+			TieneCoords:	ok,
+			Remontes:	e.Remontes,
+			Pistas:	e.Pistas,
+			Kilometros:	e.Kilometros,
+			NieveCm:	e.NieveCm,
+			CalidadNieve:	e.CalidadNieve,
+			Temperatura:	e.Temperatura,
 		}
 		if ok && hayUbicacion {
 			d := DistanciaHaversineKm(lat, lng, c.Lat, c.Lng)
@@ -160,16 +160,16 @@ func (s *NieveService) ListadoPorSlug() (map[string]EstacionDirecto, error) {
 	m := make(map[string]EstacionDirecto, len(lista))
 	for _, e := range lista {
 		dto := EstacionDirecto{
-			Slug:         e.Slug,
-			Nombre:       e.Nombre,
-			URL:          e.URL,
-			Estado:       normalizarEstado(e.Estado, e.Pistas),
-			Remontes:     e.Remontes,
-			Pistas:       e.Pistas,
-			Kilometros:   e.Kilometros,
-			NieveCm:      e.NieveCm,
-			CalidadNieve: e.CalidadNieve,
-			Temperatura:  e.Temperatura,
+			Slug:	e.Slug,
+			Nombre:	e.Nombre,
+			URL:	e.URL,
+			Estado:	normalizarEstado(e.Estado, e.Pistas),
+			Remontes:	e.Remontes,
+			Pistas:	e.Pistas,
+			Kilometros:	e.Kilometros,
+			NieveCm:	e.NieveCm,
+			CalidadNieve:	e.CalidadNieve,
+			Temperatura:	e.Temperatura,
 		}
 		m[e.Slug] = dto
 	}
@@ -302,4 +302,3 @@ func normalizarEstado(orig infonieve.Estado, pistas infonieve.Fraccion) infoniev
 	}
 	return orig
 }
-
