@@ -333,98 +333,157 @@ body.theme-premium .auth-google-btn__label { line-height: 1; }
 body.theme-premium .home-planner-cta {
   display: grid;
   grid-template-columns: 1fr auto;
-  gap: var(--sb-sp-5);
+  gap: 2.5rem;
   align-items: center;
-  padding: clamp(1.5rem, 3vw, 2.5rem);
-  border: 1px solid var(--sb-c-ink);
-  background: var(--sb-c-paper, #fff);
+  padding: clamp(2rem, 3vw, 3rem);
+  border: 1px solid rgba(255,255,255,.07);
+  background: linear-gradient(135deg, #06152b 0%, #0d2444 55%, #102e58 100%);
+  border-radius: 24px;
   position: relative;
+  overflow: hidden;
+  box-shadow: 0 20px 60px rgba(6,21,43,.35);
+  margin: 2.5rem 0;
 }
+/* Glow azul arriba-derecha */
 body.theme-premium .home-planner-cta::before {
-  content: "SNOWBREAK · TRIP";
-  position: absolute; top: -9px; left: 16px;
-  background: var(--sb-c-paper, #fff);
-  padding: 0 8px;
-  font-family: var(--sb-font-mono);
-  font-size: var(--sb-fs-100);
-  letter-spacing: var(--sb-tracking-mono);
-  color: var(--sb-c-ink);
+  content: '';
+  position: absolute; top: -100px; right: -80px;
+  width: 320px; height: 320px;
+  background: radial-gradient(circle, rgba(27,111,232,.22) 0%, transparent 65%);
+  pointer-events: none;
+}
+/* Glow celeste abajo-izquierda */
+body.theme-premium .home-planner-cta::after {
+  content: '';
+  position: absolute; bottom: -60px; left: -60px;
+  width: 220px; height: 220px;
+  background: radial-gradient(circle, rgba(56,189,248,.12) 0%, transparent 65%);
+  pointer-events: none;
 }
 body.theme-premium .home-planner-cta__eyebrow {
-  display: inline-block;
+  display: flex;
+  align-items: center;
+  gap: .5rem;
   font-family: var(--sb-font-mono);
-  font-size: var(--sb-fs-100);
-  letter-spacing: var(--sb-tracking-mono);
+  font-size: .68rem;
+  font-weight: 700;
+  letter-spacing: .14em;
   text-transform: uppercase;
-  color: var(--sb-c-ink-muted);
-  margin-bottom: var(--sb-sp-2);
+  color: #38bdf8;
+  margin-bottom: .65rem;
+}
+body.theme-premium .home-planner-cta__eyebrow::before {
+  content: '';
+  display: inline-block;
+  width: 22px; height: 2px;
+  background: #38bdf8;
+  border-radius: 2px;
+  flex-shrink: 0;
 }
 body.theme-premium .home-planner-cta__title {
-  margin: 0 0 var(--sb-sp-2);
+  margin: 0 0 .7rem;
   font-family: var(--sb-font-display);
-  font-weight: 700;
-  font-size: clamp(1.6rem, 3vw, 2.4rem);
-  letter-spacing: -0.01em;
+  font-weight: 800;
+  font-size: clamp(1.55rem, 3.2vw, 2.1rem);
+  letter-spacing: -.04em;
   text-transform: uppercase;
   line-height: 1.05;
+  color: #fff;
 }
 body.theme-premium .home-planner-cta__lede {
-  margin: 0 0 var(--sb-sp-3);
-  color: var(--sb-c-ink);
-  font-size: var(--sb-fs-400);
-  line-height: 1.5;
-  max-width: 56ch;
+  margin: 0;
+  color: rgba(255,255,255,.62);
+  font-size: .92rem;
+  line-height: 1.65;
+  max-width: 44ch;
 }
 body.theme-premium .home-planner-cta__bullets {
-  list-style: none; padding: 0; margin: 0;
+  list-style: none; padding: 0; margin: 1.5rem 0 0;
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: var(--sb-sp-1) var(--sb-sp-4);
+  grid-template-columns: 1fr 1fr;
+  gap: .55rem;
+  counter-reset: steps;
 }
 body.theme-premium .home-planner-cta__bullets li {
-  font-family: var(--sb-font-mono);
-  font-size: var(--sb-fs-100);
-  letter-spacing: var(--sb-tracking-mono);
-  text-transform: uppercase;
-  color: var(--sb-c-ink-muted);
-  padding-left: 18px;
-  position: relative;
+  counter-increment: steps;
+  font-family: inherit;
+  font-size: .78rem;
+  font-weight: 500;
+  letter-spacing: 0;
+  text-transform: none;
+  color: rgba(255,255,255,.75);
+  background: rgba(255,255,255,.06);
+  border: 1px solid rgba(255,255,255,.1);
+  border-radius: 12px;
+  padding: .6rem .85rem .6rem .75rem;
+  display: flex;
+  align-items: flex-start;
+  gap: .55rem;
+  line-height: 1.35;
+  position: static;
+  transition: background .16s, border-color .16s;
+}
+body.theme-premium .home-planner-cta__bullets li:hover {
+  background: rgba(255,255,255,.1);
+  border-color: rgba(255,255,255,.18);
 }
 body.theme-premium .home-planner-cta__bullets li::before {
-  content: "→"; position: absolute; left: 0; color: var(--sb-c-ink);
-  font-weight: 700;
+  content: counter(steps);
+  position: static;
+  min-width: 20px; width: 20px; height: 20px;
+  background: #1b6fe8;
+  color: #fff;
+  font-size: .62rem;
+  font-weight: 800;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-top: .06rem;
 }
 body.theme-premium .home-planner-cta__action {
-  display: flex; flex-direction: column; gap: var(--sb-sp-2);
-  align-items: stretch; min-width: 240px;
+  display: flex; flex-direction: column; gap: .75rem;
+  align-items: stretch; min-width: 220px;
 }
 body.theme-premium .home-planner-cta__btn {
   display: inline-flex; align-items: center; justify-content: center;
-  gap: var(--sb-sp-2);
-  padding: var(--sb-sp-3) var(--sb-sp-4);
-  background: var(--sb-c-ink); color: var(--sb-c-on-ink);
-  border: 1px solid var(--sb-c-ink);
-  font-family: var(--sb-font-display); font-weight: 700;
-  font-size: var(--sb-fs-300);
-  letter-spacing: 0.04em; text-transform: uppercase;
+  gap: .5rem;
+  padding: 1rem 2rem;
+  background: #fff; color: #0d2444 !important;
+  border: none;
+  border-radius: 12px;
+  font-family: var(--sb-font-display); font-weight: 800;
+  font-size: .98rem;
+  letter-spacing: -.01em;
+  text-transform: uppercase;
   text-decoration: none;
-  transition: background var(--sb-dur-1) var(--sb-ease-out), color var(--sb-dur-1) var(--sb-ease-out), transform var(--sb-dur-1) var(--sb-ease-out);
+  box-shadow: 0 8px 32px rgba(0,0,0,.28);
+  transition: transform .16s, box-shadow .16s;
+  white-space: nowrap;
 }
+body.theme-premium .home-planner-cta__btn svg { transition: transform .16s; }
 body.theme-premium .home-planner-cta__btn:hover {
-  background: var(--sb-c-paper, #fff); color: var(--sb-c-ink);
-  transform: translateX(2px);
+  transform: translateY(-3px);
+  box-shadow: 0 16px 48px rgba(0,0,0,.38);
+  color: #0d2444 !important;
 }
+body.theme-premium .home-planner-cta__btn:hover svg { transform: translateX(3px); }
 body.theme-premium .home-planner-cta__btn:focus-visible {
-  outline: 2px solid var(--sb-c-ink); outline-offset: 3px;
+  outline: 2px solid #38bdf8; outline-offset: 3px;
 }
 body.theme-premium .home-planner-cta__note {
   margin: 0;
-  font-family: var(--sb-font-mono); font-size: var(--sb-fs-100);
-  letter-spacing: var(--sb-tracking-mono); text-transform: uppercase;
-  color: var(--sb-c-ink-muted); text-align: center;
+  font-size: .73rem;
+  letter-spacing: 0;
+  text-transform: none;
+  color: rgba(255,255,255,.38);
+  text-align: center;
+  font-weight: 500;
 }
 @media (max-width: 720px) {
-  body.theme-premium .home-planner-cta { grid-template-columns: 1fr; gap: var(--sb-sp-4); }
+  body.theme-premium .home-planner-cta { grid-template-columns: 1fr; gap: 1.75rem; }
+  body.theme-premium .home-planner-cta__bullets { grid-template-columns: 1fr; }
   body.theme-premium .home-planner-cta__action { min-width: 0; }
 }
 @media (prefers-reduced-motion: reduce) {
@@ -432,115 +491,7 @@ body.theme-premium .home-planner-cta__note {
   body.theme-premium .home-planner-cta__btn:hover { transform: none; }
 }
 
-/* ─── CTA de la home hacia /planificar-estancia ─────────────────────────── */
-/* Bloque con la misma estética que el ticket premium: borde negro,
-   tipografía display en mayúsculas para el título, mono para metadatos. */
-body.theme-premium .home-planner-cta {
-  display: grid;
-  grid-template-columns: 1fr auto;
-  gap: var(--sb-sp-5);
-  align-items: center;
-  padding: clamp(1.5rem, 3vw, 2.5rem);
-  border: 1px solid var(--sb-c-ink);
-  background: var(--sb-c-paper, #fff);
-  position: relative;
-}
-/* Pequeña esquina ticket en la parte superior-izquierda para amarrar
-   la pieza al lenguaje visual de "trip receipt". */
-body.theme-premium .home-planner-cta::before {
-  content: "SNOWBREAK · TRIP";
-  position: absolute; top: -9px; left: 16px;
-  background: var(--sb-c-paper, #fff);
-  padding: 0 8px;
-  font-family: var(--sb-font-mono);
-  font-size: var(--sb-fs-100);
-  letter-spacing: var(--sb-tracking-mono);
-  color: var(--sb-c-ink);
-}
-body.theme-premium .home-planner-cta__eyebrow {
-  display: inline-block;
-  font-family: var(--sb-font-mono);
-  font-size: var(--sb-fs-100);
-  letter-spacing: var(--sb-tracking-mono);
-  text-transform: uppercase;
-  color: var(--sb-c-ink-muted);
-  margin-bottom: var(--sb-sp-2);
-}
-body.theme-premium .home-planner-cta__title {
-  margin: 0 0 var(--sb-sp-2);
-  font-family: var(--sb-font-display);
-  font-weight: 700;
-  font-size: clamp(1.6rem, 3vw, 2.4rem);
-  letter-spacing: -0.01em;
-  text-transform: uppercase;
-  line-height: 1.05;
-}
-body.theme-premium .home-planner-cta__lede {
-  margin: 0 0 var(--sb-sp-3);
-  color: var(--sb-c-ink);
-  font-size: var(--sb-fs-400);
-  line-height: 1.5;
-  max-width: 56ch;
-}
-body.theme-premium .home-planner-cta__bullets {
-  list-style: none; padding: 0; margin: 0;
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: var(--sb-sp-1) var(--sb-sp-4);
-}
-body.theme-premium .home-planner-cta__bullets li {
-  font-family: var(--sb-font-mono);
-  font-size: var(--sb-fs-100);
-  letter-spacing: var(--sb-tracking-mono);
-  text-transform: uppercase;
-  color: var(--sb-c-ink-muted);
-  padding-left: 18px;
-  position: relative;
-}
-body.theme-premium .home-planner-cta__bullets li::before {
-  content: "→"; position: absolute; left: 0; color: var(--sb-c-ink);
-  font-weight: 700;
-}
-body.theme-premium .home-planner-cta__action {
-  display: flex; flex-direction: column; gap: var(--sb-sp-2);
-  align-items: stretch; min-width: 240px;
-}
-body.theme-premium .home-planner-cta__btn {
-  display: inline-flex; align-items: center; justify-content: center;
-  gap: var(--sb-sp-2);
-  padding: var(--sb-sp-3) var(--sb-sp-4);
-  background: var(--sb-c-ink); color: var(--sb-c-on-ink);
-  border: 1px solid var(--sb-c-ink);
-  font-family: var(--sb-font-display); font-weight: 700;
-  font-size: var(--sb-fs-300);
-  letter-spacing: 0.04em; text-transform: uppercase;
-  text-decoration: none;
-  transition: background var(--sb-dur-1) var(--sb-ease-out), color var(--sb-dur-1) var(--sb-ease-out), transform var(--sb-dur-1) var(--sb-ease-out);
-}
-body.theme-premium .home-planner-cta__btn:hover {
-  background: var(--sb-c-paper, #fff); color: var(--sb-c-ink);
-  transform: translateX(2px);
-}
-body.theme-premium .home-planner-cta__btn:focus-visible {
-  outline: 2px solid var(--sb-c-ink); outline-offset: 3px;
-}
-body.theme-premium .home-planner-cta__note {
-  margin: 0;
-  font-family: var(--sb-font-mono); font-size: var(--sb-fs-100);
-  letter-spacing: var(--sb-tracking-mono); text-transform: uppercase;
-  color: var(--sb-c-ink-muted); text-align: center;
-}
-@media (max-width: 720px) {
-  body.theme-premium .home-planner-cta {
-    grid-template-columns: 1fr;
-    gap: var(--sb-sp-4);
-  }
-  body.theme-premium .home-planner-cta__action { min-width: 0; }
-}
-@media (prefers-reduced-motion: reduce) {
-  body.theme-premium .home-planner-cta__btn { transition: none; }
-  body.theme-premium .home-planner-cta__btn:hover { transform: none; }
-}
+
 
 /* ─── CTA de la home hacia /planificar-estancia ─────────────────────────── */
 /* Mismo lenguaje visual que el ticket premium: borde negro, display en
@@ -548,98 +499,157 @@ body.theme-premium .home-planner-cta__note {
 body.theme-premium .home-planner-cta {
   display: grid;
   grid-template-columns: 1fr auto;
-  gap: var(--sb-sp-5);
+  gap: 2.5rem;
   align-items: center;
-  padding: clamp(1.5rem, 3vw, 2.5rem);
-  border: 1px solid var(--sb-c-ink);
-  background: var(--sb-c-paper, #fff);
+  padding: clamp(2rem, 3vw, 3rem);
+  border: 1px solid rgba(255,255,255,.07);
+  background: linear-gradient(135deg, #06152b 0%, #0d2444 55%, #102e58 100%);
+  border-radius: 24px;
   position: relative;
+  overflow: hidden;
+  box-shadow: 0 20px 60px rgba(6,21,43,.35);
+  margin: 2.5rem 0;
 }
+/* Glow azul arriba-derecha */
 body.theme-premium .home-planner-cta::before {
-  content: "SNOWBREAK · TRIP";
-  position: absolute; top: -9px; left: 16px;
-  background: var(--sb-c-paper, #fff);
-  padding: 0 8px;
-  font-family: var(--sb-font-mono);
-  font-size: var(--sb-fs-100);
-  letter-spacing: var(--sb-tracking-mono);
-  color: var(--sb-c-ink);
+  content: '';
+  position: absolute; top: -100px; right: -80px;
+  width: 320px; height: 320px;
+  background: radial-gradient(circle, rgba(27,111,232,.22) 0%, transparent 65%);
+  pointer-events: none;
+}
+/* Glow celeste abajo-izquierda */
+body.theme-premium .home-planner-cta::after {
+  content: '';
+  position: absolute; bottom: -60px; left: -60px;
+  width: 220px; height: 220px;
+  background: radial-gradient(circle, rgba(56,189,248,.12) 0%, transparent 65%);
+  pointer-events: none;
 }
 body.theme-premium .home-planner-cta__eyebrow {
-  display: inline-block;
+  display: flex;
+  align-items: center;
+  gap: .5rem;
   font-family: var(--sb-font-mono);
-  font-size: var(--sb-fs-100);
-  letter-spacing: var(--sb-tracking-mono);
+  font-size: .68rem;
+  font-weight: 700;
+  letter-spacing: .14em;
   text-transform: uppercase;
-  color: var(--sb-c-ink-muted);
-  margin-bottom: var(--sb-sp-2);
+  color: #38bdf8;
+  margin-bottom: .65rem;
+}
+body.theme-premium .home-planner-cta__eyebrow::before {
+  content: '';
+  display: inline-block;
+  width: 22px; height: 2px;
+  background: #38bdf8;
+  border-radius: 2px;
+  flex-shrink: 0;
 }
 body.theme-premium .home-planner-cta__title {
-  margin: 0 0 var(--sb-sp-2);
+  margin: 0 0 .7rem;
   font-family: var(--sb-font-display);
-  font-weight: 700;
-  font-size: clamp(1.6rem, 3vw, 2.4rem);
-  letter-spacing: -0.01em;
+  font-weight: 800;
+  font-size: clamp(1.55rem, 3.2vw, 2.1rem);
+  letter-spacing: -.04em;
   text-transform: uppercase;
   line-height: 1.05;
+  color: #fff;
 }
 body.theme-premium .home-planner-cta__lede {
-  margin: 0 0 var(--sb-sp-3);
-  color: var(--sb-c-ink);
-  font-size: var(--sb-fs-400);
-  line-height: 1.5;
-  max-width: 56ch;
+  margin: 0;
+  color: rgba(255,255,255,.62);
+  font-size: .92rem;
+  line-height: 1.65;
+  max-width: 44ch;
 }
 body.theme-premium .home-planner-cta__bullets {
-  list-style: none; padding: 0; margin: 0;
+  list-style: none; padding: 0; margin: 1.5rem 0 0;
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: var(--sb-sp-1) var(--sb-sp-4);
+  grid-template-columns: 1fr 1fr;
+  gap: .55rem;
+  counter-reset: steps;
 }
 body.theme-premium .home-planner-cta__bullets li {
-  font-family: var(--sb-font-mono);
-  font-size: var(--sb-fs-100);
-  letter-spacing: var(--sb-tracking-mono);
-  text-transform: uppercase;
-  color: var(--sb-c-ink-muted);
-  padding-left: 18px;
-  position: relative;
+  counter-increment: steps;
+  font-family: inherit;
+  font-size: .78rem;
+  font-weight: 500;
+  letter-spacing: 0;
+  text-transform: none;
+  color: rgba(255,255,255,.75);
+  background: rgba(255,255,255,.06);
+  border: 1px solid rgba(255,255,255,.1);
+  border-radius: 12px;
+  padding: .6rem .85rem .6rem .75rem;
+  display: flex;
+  align-items: flex-start;
+  gap: .55rem;
+  line-height: 1.35;
+  position: static;
+  transition: background .16s, border-color .16s;
+}
+body.theme-premium .home-planner-cta__bullets li:hover {
+  background: rgba(255,255,255,.1);
+  border-color: rgba(255,255,255,.18);
 }
 body.theme-premium .home-planner-cta__bullets li::before {
-  content: "→"; position: absolute; left: 0; color: var(--sb-c-ink);
-  font-weight: 700;
+  content: counter(steps);
+  position: static;
+  min-width: 20px; width: 20px; height: 20px;
+  background: #1b6fe8;
+  color: #fff;
+  font-size: .62rem;
+  font-weight: 800;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-top: .06rem;
 }
 body.theme-premium .home-planner-cta__action {
-  display: flex; flex-direction: column; gap: var(--sb-sp-2);
-  align-items: stretch; min-width: 240px;
+  display: flex; flex-direction: column; gap: .75rem;
+  align-items: stretch; min-width: 220px;
 }
 body.theme-premium .home-planner-cta__btn {
   display: inline-flex; align-items: center; justify-content: center;
-  gap: var(--sb-sp-2);
-  padding: var(--sb-sp-3) var(--sb-sp-4);
-  background: var(--sb-c-ink); color: var(--sb-c-on-ink);
-  border: 1px solid var(--sb-c-ink);
-  font-family: var(--sb-font-display); font-weight: 700;
-  font-size: var(--sb-fs-300);
-  letter-spacing: 0.04em; text-transform: uppercase;
+  gap: .5rem;
+  padding: 1rem 2rem;
+  background: #fff; color: #0d2444 !important;
+  border: none;
+  border-radius: 12px;
+  font-family: var(--sb-font-display); font-weight: 800;
+  font-size: .98rem;
+  letter-spacing: -.01em;
+  text-transform: uppercase;
   text-decoration: none;
-  transition: background var(--sb-dur-1) var(--sb-ease-out), color var(--sb-dur-1) var(--sb-ease-out), transform var(--sb-dur-1) var(--sb-ease-out);
+  box-shadow: 0 8px 32px rgba(0,0,0,.28);
+  transition: transform .16s, box-shadow .16s;
+  white-space: nowrap;
 }
+body.theme-premium .home-planner-cta__btn svg { transition: transform .16s; }
 body.theme-premium .home-planner-cta__btn:hover {
-  background: var(--sb-c-paper, #fff); color: var(--sb-c-ink);
-  transform: translateX(2px);
+  transform: translateY(-3px);
+  box-shadow: 0 16px 48px rgba(0,0,0,.38);
+  color: #0d2444 !important;
 }
+body.theme-premium .home-planner-cta__btn:hover svg { transform: translateX(3px); }
 body.theme-premium .home-planner-cta__btn:focus-visible {
-  outline: 2px solid var(--sb-c-ink); outline-offset: 3px;
+  outline: 2px solid #38bdf8; outline-offset: 3px;
 }
 body.theme-premium .home-planner-cta__note {
   margin: 0;
-  font-family: var(--sb-font-mono); font-size: var(--sb-fs-100);
-  letter-spacing: var(--sb-tracking-mono); text-transform: uppercase;
-  color: var(--sb-c-ink-muted); text-align: center;
+  font-size: .73rem;
+  letter-spacing: 0;
+  text-transform: none;
+  color: rgba(255,255,255,.38);
+  text-align: center;
+  font-weight: 500;
 }
 @media (max-width: 720px) {
-  body.theme-premium .home-planner-cta { grid-template-columns: 1fr; gap: var(--sb-sp-4); }
+  body.theme-premium .home-planner-cta { grid-template-columns: 1fr; gap: 1.75rem; }
+  body.theme-premium .home-planner-cta__bullets { grid-template-columns: 1fr; }
   body.theme-premium .home-planner-cta__action { min-width: 0; }
 }
 @media (prefers-reduced-motion: reduce) {
