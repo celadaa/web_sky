@@ -56,18 +56,16 @@
         </label>
 
         <div class="pago-tarjeta-campos" id="pago-tarjeta-campos">
-          <div class="pago-field pago-field--card">
-            <label class="pago-field__label" for="pago-numero-tarjeta">Número de tarjeta</label>
-            <input id="pago-numero-tarjeta" type="text" class="pago-field__input" placeholder="•••• •••• •••• ••••" maxlength="19" inputmode="numeric" autocomplete="cc-number">
-          </div>
-          <div class="pago-grid-2">
-            <div class="pago-field">
-              <label class="pago-field__label" for="pago-caducidad">Caducidad</label>
-              <input id="pago-caducidad" type="text" class="pago-field__input" placeholder="MM/AA" maxlength="5" autocomplete="cc-exp">
-            </div>
-            <div class="pago-field">
-              <label class="pago-field__label" for="pago-cvv">CVV</label>
-              <input id="pago-cvv" type="text" class="pago-field__input" placeholder="•••" maxlength="4" inputmode="numeric" autocomplete="cc-csc">
+          <div class="pago-gateway-placeholder">
+            <div class="pago-gateway-placeholder__inner">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+              <p class="pago-gateway-placeholder__title">Pago seguro mediante pasarela certificada</p>
+              <p class="pago-gateway-placeholder__subtitle">Los datos de tu tarjeta se introducirán en un entorno cifrado PCI-DSS nivel 1. Tu información nunca es accesible por Snowbreak.</p>
+              <div class="pago-gateway-placeholder__logos" aria-label="Métodos de pago aceptados">
+                <span class="pago-logo pago-logo--visa">VISA</span>
+                <span class="pago-logo pago-logo--mc">MC</span>
+                <span class="pago-logo pago-logo--amex">AMEX</span>
+              </div>
             </div>
           </div>
         </div>
@@ -166,4 +164,38 @@
   </div>
 </div>
 <script src="/static/pago.js"></script>
+<style>
+.pago-gateway-placeholder {
+  border: 1.5px dashed var(--color-border, #d1d5db);
+  border-radius: 10px;
+  padding: 1.5rem 1rem;
+  background: var(--color-surface-alt, #f9fafb);
+  margin-top: .5rem;
+}
+.pago-gateway-placeholder__inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: .6rem;
+  text-align: center;
+  color: var(--color-text-muted, #6b7280);
+}
+.pago-gateway-placeholder__title {
+  font-size: .9rem;
+  font-weight: 600;
+  color: var(--color-text, #111827);
+  margin: 0;
+}
+.pago-gateway-placeholder__subtitle {
+  font-size: .8rem;
+  line-height: 1.5;
+  margin: 0;
+  max-width: 320px;
+}
+.pago-gateway-placeholder__logos {
+  display: flex;
+  gap: .5rem;
+  margin-top: .25rem;
+}
+</style>
 {{end}}

@@ -233,6 +233,7 @@
             <h3 class="station-card__name">{{.Nombre}}</h3>
             <span class="status-badge status-badge--{{.EstadoClase}}">{{.EstadoTexto}}</span>
           </div>
+          {{if .Dificultad}}<p class="station-card__dificultad station-card__dificultad--{{.Dificultad}}">{{if eq .Dificultad "principiante"}}✦ Ideal para principiantes{{else if eq .Dificultad "familiar"}}✦ Ideal para familias{{else if eq .Dificultad "intermedio"}}✦ Nivel intermedio{{else if eq .Dificultad "avanzado"}}✦ Para esquiadores expertos{{else}}✦ {{.Dificultad}}{{end}}</p>{{end}}
           <p class="station-card__location">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
             {{.Ubicacion}}
@@ -286,7 +287,7 @@
             <span class="station-card__price-value">{{printf "%.0f" .PrecioNino}} €<small> /día</small></span>
           </div>
           <a href="/estacion/{{.ID}}" class="station-card__cta">
-            Ver ficha
+            Ver y reservar
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
           </a>
         </div>
@@ -327,6 +328,81 @@
 </section>
 
 <div id="comparador-bar" class="comparador-bar" hidden></div>
+
+<section class="home-bottom-cta">
+  <div class="home-bottom-cta__inner container">
+    <div class="home-bottom-cta__text">
+      <h2>¿Listo para esquiar?</h2>
+      <p>Compra tu forfait online y evita colas en taquilla. Cancela sin coste hasta 48 h antes.</p>
+    </div>
+    <div class="home-bottom-cta__actions">
+      <a href="/forfaits" class="home-bottom-cta__btn home-bottom-cta__btn--primary">
+        Comprar forfait
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+      </a>
+      <a href="/estaciones" class="home-bottom-cta__btn home-bottom-cta__btn--secondary">Ver todas las estaciones</a>
+    </div>
+  </div>
+</section>
+<style>
+.home-bottom-cta {
+  background: var(--color-primary, #1a6fc4);
+  color: #fff;
+  padding: 3rem 1rem;
+  margin-top: 3rem;
+}
+.home-bottom-cta__inner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+}
+.home-bottom-cta__text h2 {
+  font-size: 1.6rem;
+  font-weight: 700;
+  margin: 0 0 .4rem;
+  color: #fff;
+}
+.home-bottom-cta__text p {
+  margin: 0;
+  opacity: .88;
+  font-size: .95rem;
+}
+.home-bottom-cta__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .75rem;
+}
+.home-bottom-cta__btn {
+  display: inline-flex;
+  align-items: center;
+  gap: .4rem;
+  padding: .7rem 1.4rem;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: .95rem;
+  text-decoration: none;
+  transition: opacity .15s;
+}
+.home-bottom-cta__btn:hover { opacity: .88; }
+.home-bottom-cta__btn--primary {
+  background: #fff;
+  color: var(--color-primary, #1a6fc4);
+}
+.home-bottom-cta__btn--secondary {
+  background: rgba(255,255,255,.15);
+  color: #fff;
+  border: 1.5px solid rgba(255,255,255,.5);
+}
+.station-card__dificultad {
+  font-size: .72rem;
+  font-weight: 500;
+  color: var(--color-primary, #1a6fc4);
+  margin: .15rem 0 0;
+  opacity: .85;
+}
+</style>
 
 <script src="/static/mapa.js"></script>
 <script src="/static/pistas-home.js"></script>
