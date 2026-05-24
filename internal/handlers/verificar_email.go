@@ -21,6 +21,7 @@ import (
 	"log"
 	"net/http"
 
+	"skihub/internal/models"
 	"skihub/internal/services"
 )
 
@@ -31,6 +32,7 @@ type datosConfirmar struct {
 	Nombre      string
 	Email       string
 	Error       string
+	Usuario     *models.Usuario
 }
 
 // ConfirmarEmail procesa el token de verificación.
@@ -64,6 +66,7 @@ func (a *App) ConfirmarEmail(w http.ResponseWriter, r *http.Request) {
 		Activa:      "login",
 		Nombre:      u.Nombre,
 		Email:       u.Email,
+		Usuario:     a.UsuarioActual(r),
 	})
 }
 
@@ -74,5 +77,6 @@ func (a *App) renderConfirmarError(w http.ResponseWriter, r *http.Request, mensa
 		Descripcion: "El enlace de confirmación no es válido.",
 		Activa:      "login",
 		Error:       mensaje,
+		Usuario:     a.UsuarioActual(r),
 	})
 }
