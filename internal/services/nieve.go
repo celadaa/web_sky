@@ -29,35 +29,35 @@ import (
 // EstacionDirecto es el DTO público que se devuelve al frontend.
 // Combina datos del scraping con el cálculo de distancia.
 type EstacionDirecto struct {
-	Slug         string             `json:"slug"`
-	Nombre       string             `json:"nombre"`
-	URL          string             `json:"url"`
-	Estado       infonieve.Estado   `json:"estado,omitempty"`
-	Lat          float64            `json:"lat"`
-	Lng          float64            `json:"lng"`
-	TieneCoords  bool               `json:"tiene_coords"`
-	DistanciaKm  *float64           `json:"distancia_km,omitempty"`
-	Remontes     infonieve.Fraccion `json:"remontes"`
-	Pistas       infonieve.Fraccion `json:"pistas"`
-	Kilometros   infonieve.Fraccion `json:"kilometros"`
-	NieveCm      *float64           `json:"nieve_cm,omitempty"`
-	CalidadNieve string             `json:"calidad_nieve,omitempty"`
-	Temperatura  string             `json:"temperatura,omitempty"`
+	Slug	string	`json:"slug"`
+	Nombre	string	`json:"nombre"`
+	URL	string	`json:"url"`
+	Estado	infonieve.Estado	`json:"estado,omitempty"`
+	Lat	float64	`json:"lat"`
+	Lng	float64	`json:"lng"`
+	TieneCoords	bool	`json:"tiene_coords"`
+	DistanciaKm	*float64	`json:"distancia_km,omitempty"`
+	Remontes	infonieve.Fraccion	`json:"remontes"`
+	Pistas	infonieve.Fraccion	`json:"pistas"`
+	Kilometros	infonieve.Fraccion	`json:"kilometros"`
+	NieveCm	*float64	`json:"nieve_cm,omitempty"`
+	CalidadNieve	string	`json:"calidad_nieve,omitempty"`
+	Temperatura	string	`json:"temperatura,omitempty"`
 }
 
 // NieveService orquesta scraper + cache.
 type NieveService struct {
-	cli        *infonieve.Client
-	mu         sync.RWMutex
-	cache      map[string]cacheEntry
-	listaTTL   time.Duration
-	detalleTTL time.Duration
-	maxResults int
+	cli	*infonieve.Client
+	mu	sync.RWMutex
+	cache	map[string]cacheEntry
+	listaTTL	time.Duration
+	detalleTTL	time.Duration
+	maxResults	int
 }
 
 type cacheEntry struct {
-	dato   any
-	expira time.Time
+	dato	any
+	expira	time.Time
 }
 
 // NuevoNieveService construye el servicio con TTLs sensatos.
