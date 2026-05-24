@@ -29,45 +29,45 @@ import (
 // EstacionDirecto es el DTO público que se devuelve al frontend.
 // Combina datos del scraping con el cálculo de distancia.
 type EstacionDirecto struct {
-	Slug	string	`json:"slug"`
-	Nombre	string	`json:"nombre"`
-	URL	string	`json:"url"`
-	Estado	infonieve.Estado	`json:"estado,omitempty"`
-	Lat	float64	`json:"lat"`
-	Lng	float64	`json:"lng"`
-	TieneCoords	bool	`json:"tiene_coords"`
-	DistanciaKm	*float64	`json:"distancia_km,omitempty"`
-	Remontes	infonieve.Fraccion	`json:"remontes"`
-	Pistas	infonieve.Fraccion	`json:"pistas"`
-	Kilometros	infonieve.Fraccion	`json:"kilometros"`
-	NieveCm	*float64	`json:"nieve_cm,omitempty"`
-	CalidadNieve	string	`json:"calidad_nieve,omitempty"`
-	Temperatura	string	`json:"temperatura,omitempty"`
+	Slug         string             `json:"slug"`
+	Nombre       string             `json:"nombre"`
+	URL          string             `json:"url"`
+	Estado       infonieve.Estado   `json:"estado,omitempty"`
+	Lat          float64            `json:"lat"`
+	Lng          float64            `json:"lng"`
+	TieneCoords  bool               `json:"tiene_coords"`
+	DistanciaKm  *float64           `json:"distancia_km,omitempty"`
+	Remontes     infonieve.Fraccion `json:"remontes"`
+	Pistas       infonieve.Fraccion `json:"pistas"`
+	Kilometros   infonieve.Fraccion `json:"kilometros"`
+	NieveCm      *float64           `json:"nieve_cm,omitempty"`
+	CalidadNieve string             `json:"calidad_nieve,omitempty"`
+	Temperatura  string             `json:"temperatura,omitempty"`
 }
 
 // NieveService orquesta scraper + cache.
 type NieveService struct {
-	cli	*infonieve.Client
-	mu	sync.RWMutex
-	cache	map[string]cacheEntry
-	listaTTL	time.Duration
-	detalleTTL	time.Duration
-	maxResults	int
+	cli        *infonieve.Client
+	mu         sync.RWMutex
+	cache      map[string]cacheEntry
+	listaTTL   time.Duration
+	detalleTTL time.Duration
+	maxResults int
 }
 
 type cacheEntry struct {
-	dato	any
-	expira	time.Time
+	dato   any
+	expira time.Time
 }
 
 // NuevoNieveService construye el servicio con TTLs sensatos.
 func NuevoNieveService() *NieveService {
 	return &NieveService{
-		cli:	infonieve.NewClient(),
-		cache:	make(map[string]cacheEntry),
-		listaTTL:	10 * time.Minute,
-		detalleTTL:	5 * time.Minute,
-		maxResults:	200,
+		cli:        infonieve.NewClient(),
+		cache:      make(map[string]cacheEntry),
+		listaTTL:   10 * time.Minute,
+		detalleTTL: 5 * time.Minute,
+		maxResults: 200,
 	}
 }
 
@@ -89,19 +89,19 @@ func (s *NieveService) EstacionesCercanas(lat, lng float64, limite int) ([]Estac
 	for _, e := range lista {
 		c, ok := infonieve.CoordPorSlug(e.Slug)
 		dto := EstacionDirecto{
-			Slug:	e.Slug,
-			Nombre:	e.Nombre,
-			URL:	e.URL,
-			Estado:	normalizarEstado(e.Estado, e.Pistas),
-			Lat:	c.Lat,
-			Lng:	c.Lng,
-			TieneCoords:	ok,
-			Remontes:	e.Remontes,
-			Pistas:	e.Pistas,
-			Kilometros:	e.Kilometros,
-			NieveCm:	e.NieveCm,
-			CalidadNieve:	e.CalidadNieve,
-			Temperatura:	e.Temperatura,
+			Slug:         e.Slug,
+			Nombre:       e.Nombre,
+			URL:          e.URL,
+			Estado:       normalizarEstado(e.Estado, e.Pistas),
+			Lat:          c.Lat,
+			Lng:          c.Lng,
+			TieneCoords:  ok,
+			Remontes:     e.Remontes,
+			Pistas:       e.Pistas,
+			Kilometros:   e.Kilometros,
+			NieveCm:      e.NieveCm,
+			CalidadNieve: e.CalidadNieve,
+			Temperatura:  e.Temperatura,
 		}
 		if ok && hayUbicacion {
 			d := DistanciaHaversineKm(lat, lng, c.Lat, c.Lng)
@@ -160,16 +160,16 @@ func (s *NieveService) ListadoPorSlug() (map[string]EstacionDirecto, error) {
 	m := make(map[string]EstacionDirecto, len(lista))
 	for _, e := range lista {
 		dto := EstacionDirecto{
-			Slug:	e.Slug,
-			Nombre:	e.Nombre,
-			URL:	e.URL,
-			Estado:	normalizarEstado(e.Estado, e.Pistas),
-			Remontes:	e.Remontes,
-			Pistas:	e.Pistas,
-			Kilometros:	e.Kilometros,
-			NieveCm:	e.NieveCm,
-			CalidadNieve:	e.CalidadNieve,
-			Temperatura:	e.Temperatura,
+			Slug:         e.Slug,
+			Nombre:       e.Nombre,
+			URL:          e.URL,
+			Estado:       normalizarEstado(e.Estado, e.Pistas),
+			Remontes:     e.Remontes,
+			Pistas:       e.Pistas,
+			Kilometros:   e.Kilometros,
+			NieveCm:      e.NieveCm,
+			CalidadNieve: e.CalidadNieve,
+			Temperatura:  e.Temperatura,
 		}
 		m[e.Slug] = dto
 	}
