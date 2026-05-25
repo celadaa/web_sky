@@ -12,37 +12,35 @@ import (
 // CookieSesion es el nombre de la cookie HttpOnly que transporta el token.
 const CookieSesion = "skihub_session"
 
-// App agrupa las dependencias compartidas que usan todos los handlers:
-// servicios de negocio y cache de plantillas.
+// App agrupa las dependencias compartidas que usan todos los handlers.
 type App struct {
 	Plantillas  Cache
 	UsuarioSvc  *services.UsuarioService
 	EstacionSvc *services.EstacionService
 	NoticiaSvc  *services.NoticiaService
+	FeedSvc     *services.FeedSyncService
 	SesionSvc   *services.SesionService
 	FavoritoSvc *services.FavoritoService
 	PedidoSvc   *services.PedidoService
-	// NieveSvc añade datos en directo de pistas vía infonieve.es.
+	// NieveSvc anade datos en directo de pistas via infonieve.es.
 	// Es opcional: si es nil, los handlers /api/nieve/* devuelven 503.
 	NieveSvc *services.NieveService
-	// EmailSvc envía correos transaccionales (verificación, bienvenida).
+	// EmailSvc envia correos transaccionales.
 	// Opcional: si es nil, los handlers no intentan enviar.
 	EmailSvc *services.EmailService
-	// GoogleAuth implementa OAuth + OIDC con Google. Opcional: si es nil
-	// los handlers /auth/google/* redirigen a /login con un mensaje.
+	// GoogleAuth implementa OAuth + OIDC con Google. Opcional.
 	GoogleAuth *services.GoogleOAuthService
-	// Cfg expone la configuración (entorno, flags Secure, secrets).
+	// Cfg expone la configuracion (entorno, flags Secure, secrets).
 	Cfg *config.Config
 	// Sec expone los middlewares y utilidades de seguridad.
 	Sec *Sec
 	// BD se usa en /healthz para pingear la base de datos. Opcional.
 	BD *sql.DB
-	// Version es el commit SHA inyectado en build time (ldflags). Cae a "dev" si no se setea.
+	// Version es el commit SHA inyectado en build time (ldflags).
 	Version string
 }
 
 // CookieSecure devuelve true cuando la app debe emitir cookies Secure.
-// Centraliza el flag para que auth/favoritos/cesta no dupliquen lógica.
 func (a *App) CookieSecure() bool {
 	if a.Cfg == nil {
 		return false
@@ -51,7 +49,7 @@ func (a *App) CookieSecure() bool {
 }
 
 // UsuarioActual intenta recuperar el usuario autenticado a partir de la
-// cookie de sesión. Devuelve nil si no hay sesión o ha expirado.
+// cookie de sesion. Devuelve nil si no hay sesion o ha expirado.
 func (a *App) UsuarioActual(r *http.Request) *models.Usuario {
 	if a.SesionSvc == nil {
 		return nil
@@ -72,9 +70,8 @@ func EsAdmin(u *models.Usuario) bool {
 	return u != nil && u.EsAdmin
 }
 
-// requerirAdmin comprueba la sesión y el rol. Devuelve el usuario si es
+// requerirAdmin comprueba la sesion y el rol. Devuelve el usuario si es
 // admin; en caso contrario escribe la respuesta adecuada y retorna nil.
-// El llamador debe hacer return inmediatamente si recibe nil.
 func (a *App) requerirAdmin(w http.ResponseWriter, r *http.Request) *models.Usuario {
 	u := a.UsuarioActual(r)
 	if u == nil {

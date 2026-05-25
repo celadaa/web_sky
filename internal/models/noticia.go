@@ -1,13 +1,13 @@
 package models
 
 import (
-	"strconv"
+	"fmt"
 	"time"
 )
 
-// Noticia representa una entrada del blog de noticias de Snowbreak.
-// CategoriaClase se usa en la plantilla para aplicar la clase CSS
-// correcta (nevada, consejos, evento, general).
+// Noticia representa una entrada de noticias de Snowbreak.
+// IsExternal=true significa que viene de una fuente RSS externa.
+// CategoriaClase: nevada | consejos | evento | general | seguridad | material
 type Noticia struct {
 	ID             int64
 	Titulo         string
@@ -16,22 +16,42 @@ type Noticia struct {
 	CategoriaClase string
 	Fecha          time.Time
 	Imagen         string
+
+	// Campos solo presentes en noticias externas (RSS/API).
+	SourceName  string
+	SourceURL   string
+	OriginalURL string
+	Slug        string
+	IsExternal  bool
 }
 
-// FechaISO devuelve la fecha en formato YYYY-MM-DD, útil para el
-// atributo datetime de la etiqueta <time>.
+// EnlaceNoticia devuelve la URL del boton "Leer mas".
+func (n Noticia) EnlaceNoticia() string {
+	if n.IsExternal && n.OriginalURL != "" {
+		return n.OriginalURL
+	}
+	return "#"
+}
+
+// AbreEnNuevaVentana indica si el enlace debe abrirse en nueva pestana.
+func (n Noticia) AbreEnNuevaVentana() bool {
+	return n.IsExternal && n.OriginalURL != ""
+}
+
+// FechaISO devuelve la fecha en formato YYYY-MM-DD.
 func (n Noticia) FechaISO() string {
 	return n.Fecha.Format("2006-01-02")
 }
 
-// FechaLarga devuelve la fecha en formato legible en español, por ejemplo
-// "14 de Marzo, 2026".
+// FechaLarga devuelve la fecha legible: "14 de Marzo, 2026".
 func (n Noticia) FechaLarga() string {
 	meses := [...]string{
 		"Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio",
 		"Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre",
 	}
-	return strconv.Itoa(n.Fecha.Day()) + " de " +
-		meses[int(n.Fecha.Month())-1] + ", " +
-		strconv.Itoa(n.Fecha.Year())
+	return fmt.Sprintf("%d de %s, %d",
+		n.Fecha.Day(),
+		meses[int(n.Fecha.Month())-1],
+		n.Fecha.Year(),
+	)
 }

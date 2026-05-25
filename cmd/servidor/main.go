@@ -2,7 +2,7 @@
 //
 // Flujo de arranque:
 //
-//  1. Carga la configuración del entorno (.env + variables exportadas).
+//  1. Carga la configuracion del entorno (.env + variables exportadas).
 //  2. Conecta al PostgreSQL configurado.
 //  3. Aplica las migraciones SQL pendientes (db/migrations/*.sql).
 //  4. Asegura que existe al menos un usuario administrador (bcrypt).
@@ -15,6 +15,8 @@ import (
 	"context"
 	"log"
 	"net/http"
+	"os/signal"
+	"syscall"
 	"time"
 
 	"skihub/internal/config"
@@ -28,7 +30,7 @@ import (
 //
 //	go build -ldflags "-X main.version=$(git rev-parse --short HEAD)" ./cmd/servidor
 //
-// Se expone en /healthz para saber qué commit está sirviendo.
+// Se expone en /healthz para saber que commit esta sirviendo.
 var version = "dev"
 
 func main() {
@@ -42,9 +44,14 @@ func main() {
 
 	bd, err := db.Conectar(cfg)
 	if err != nil {
-		log.Fatalf("conexión BD: %v", err)
+		log.Fatalf("conexion BD: %v", err)
 	}
 	defer bd.Close()
+
+	// appCtx se cancela cuando el proceso recibe SIGINT/SIGTERM.
+	// Lo usamos para detener la goroutine de sincronizacion de feeds.
+	appCtx, stopApp := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)
+	defer stopApp()
 
 	bootCtx, cancel := context.WithTimeout(context.Background(), 60*time.Second)
 	defer cancel()
@@ -53,9 +60,8 @@ func main() {
 		log.Fatalf("migraciones: %v", err)
 	}
 
-	// Si todavía no hay admin, creamos uno con la contraseña indicada en
-	// ADMIN_PASSWORD. Si no se ha definido, dejamos el sistema sin admin
-	// y será necesario crearlo a mano por SQL.
+	// Si todavia no hay admin, creamos uno con la contrasena indicada en
+	// ADMIN_PASSWORD. Si no se ha definido, dejamos el sistema sin admin.
 	if cfg.AdminPassword != "" {
 		hash, err := services.HashPassword(cfg.AdminPassword)
 		if err != nil {
@@ -66,11 +72,11 @@ func main() {
 			log.Fatalf("asegurando admin: %v", err)
 		}
 		if creado {
-			log.Printf("Administrador inicial creado: %s (cámbiale la contraseña al primer login)",
+			log.Printf("Administrador inicial creado: %s (cambia la contrasena al primer login)",
 				cfg.AdminEmail)
 		}
 	} else {
-		log.Println("ADMIN_PASSWORD vacía: no se creará admin automáticamente")
+		log.Println("ADMIN_PASSWORD vacia: no se creara admin automaticamente")
 	}
 
 	// Repositorios
@@ -84,38 +90,37 @@ func main() {
 	// Servicios + estado de seguridad.
 	sec := handlers.NuevoSec(cfg)
 
-	// Email — opcional. Si la inicialización falla (plantillas missing,
-	// etc.) lo logueamos pero seguimos: el resto de la app debe arrancar.
+	// Email — opcional. Si la inicializacion falla lo logueamos pero seguimos.
 	emailSvc, err := services.NuevoEmailService(cfg, cfg.AppTemplates)
 	if err != nil {
-		log.Printf("AVISO: EmailService no inicializado: %v (los emails no se enviarán)", err)
+		log.Printf("AVISO: EmailService no inicializado: %v (los emails no se enviaran)", err)
 		emailSvc = nil
 	}
 
-	// Google OAuth — opcional. Si Client ID/Secret no están configurados,
-	// services.NuevoGoogleOAuthService devuelve nil sin error y el handler
-	// correspondiente responderá con un mensaje claro.
+	// Google OAuth — opcional.
 	googleAuth, err := services.NuevoGoogleOAuthService(bootCtx, cfg, usuarioRepo)
 	if err != nil {
 		log.Printf("AVISO: Google OAuth no inicializado: %v (login con Google desactivado)", err)
 		googleAuth = nil
 	}
 	if googleAuth == nil && cfg.GoogleClientID == "" {
-		log.Println("INFO: GOOGLE_CLIENT_ID vacío — login con Google desactivado")
+		log.Println("INFO: GOOGLE_CLIENT_ID vacio — login con Google desactivado")
 	}
 
-	// nieveSvc es el servicio de pistas en directo (scraping cacheado de
-	// infonieve.es). Se pasa también a EstacionService para que home,
-	// /estaciones y la ficha de estación usen la misma fuente de datos.
+	// nieveSvc es el servicio de pistas en directo (scraping cacheado de infonieve.es).
 	nieveSvc := services.NuevoNieveService()
 
 	estacionSvc := services.NuevoEstacionService(estacionRepo, favoritoRepo)
-	estacionSvc.NieveSvc = nieveSvc // fuente única de verdad para datos de nieve
+	estacionSvc.NieveSvc = nieveSvc
+
+	// feedSvc sincroniza noticias externas (RSS) en background cada 2 horas.
+	feedSvc := services.NuevoFeedSyncService(noticiaRepo)
 
 	app := &handlers.App{
 		UsuarioSvc:  services.NuevoUsuarioService(usuarioRepo),
 		EstacionSvc: estacionSvc,
 		NoticiaSvc:  services.NuevoNoticiaService(noticiaRepo),
+		FeedSvc:     feedSvc,
 		SesionSvc:   services.NuevoSesionService(sesionRepo, usuarioRepo),
 		FavoritoSvc: services.NuevoFavoritoService(favoritoRepo),
 		PedidoSvc:   services.NuevoPedidoService(pedidoRepo, estacionRepo),
@@ -128,6 +133,9 @@ func main() {
 		Version:     version,
 	}
 
+	// Sincronizacion automatica: ejecuta inmediatamente al arrancar y cada 2 horas.
+	feedSvc.IniciarSincronizacionPeriodica(appCtx, 2*time.Hour)
+
 	plantillas, err := handlers.CargarPlantillas(cfg.AppTemplates)
 	if err != nil {
 		log.Fatalf("cargando plantillas: %v", err)
@@ -136,17 +144,14 @@ func main() {
 
 	mux := http.NewServeMux()
 
-	// Rate-limiters específicos de endpoints sensibles. El número son
-	// peticiones/minuto por IP; valores prudentes para uso real con
-	// suficiente margen para usuarios legítimos.
-	rlAuth := sec.LimitarPorIP(10)      // login / registro / cambiar password
-	rlEscritura := sec.LimitarPorIP(20) // toggle favoritos / checkout / parte refresh
+	// Rate-limiters especificos de endpoints sensibles.
+	rlAuth := sec.LimitarPorIP(10)
+	rlEscritura := sec.LimitarPorIP(20)
 
-	// Health check — usado por GitHub Actions tras cada deploy y por monitorización externa.
-	// Sin CSRF (GET seguro) y sin rate limit (esencial para uptime monitoring).
+	// Health check
 	mux.HandleFunc("/healthz", app.Healthz)
 
-	// Páginas
+	// Paginas
 	mux.HandleFunc("/", app.Home)
 	mux.HandleFunc("/estaciones", app.Estaciones)
 	mux.HandleFunc("/estacion/", app.Estacion)
@@ -165,7 +170,7 @@ func main() {
 	mux.HandleFunc("/logout", app.Logout)
 	mux.Handle("/cambiar-password", rlAuth(http.HandlerFunc(app.CambiarPassword)))
 
-	// Login con Google (OAuth + OIDC) + verificación de email.
+	// Login con Google (OAuth + OIDC) + verificacion de email.
 	mux.Handle("/auth/google", rlAuth(http.HandlerFunc(app.AuthGoogleInicio)))
 	mux.Handle("/auth/google/callback", rlAuth(http.HandlerFunc(app.AuthGoogleCallback)))
 	mux.Handle("/confirmar-email", rlAuth(http.HandlerFunc(app.ConfirmarEmail)))
@@ -181,7 +186,7 @@ func main() {
 	mux.Handle("/admin/usuarios/reset", rlEscritura(http.HandlerFunc(app.AdminResetPassword)))
 	mux.Handle("/admin/usuarios/toggle-admin", rlEscritura(http.HandlerFunc(app.AdminToggleAdmin)))
 
-	// API REST (la lectura de usuarios queda restringida a admin en el handler)
+	// API REST
 	mux.HandleFunc("/api/usuarios", app.ApiUsuarios)
 	mux.HandleFunc("/api/usuarios/", app.ApiUsuario)
 	mux.HandleFunc("/api/estaciones", app.ApiEstaciones)
@@ -194,13 +199,9 @@ func main() {
 	mux.HandleFunc("/api/nieve/estaciones/", app.ApiNieveEstacion)
 	mux.HandleFunc("/api/nieve/regiones", app.ApiNieveRegiones)
 
-	// Estáticos
+	// Estaticos
 	mux.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir(cfg.AppStatic))))
 
-	// Encadenamos middlewares globales. Orden: log → cabeceras → body
-	// limit → CSRF emit (GET) → CSRF verify (POST) → rutas. La verificación
-	// CSRF excluye los métodos seguros automáticamente y los endpoints
-	// JSON con Origin del propio host (Origin same-origin).
 	pila := handlers.Encadenar(mux,
 		logMiddleware,
 		sec.CabecerasSeguridad(),
@@ -216,19 +217,17 @@ func main() {
 		ReadTimeout:       30 * time.Second,
 		WriteTimeout:      30 * time.Second,
 		IdleTimeout:       60 * time.Second,
-		MaxHeaderBytes:    1 << 14, // 16 KiB de cabeceras como máximo
+		MaxHeaderBytes:    1 << 14,
 	}
 
 	log.Printf("Servidor escuchando en http://localhost%s (env=%s, cookieSecure=%v)",
 		cfg.AppPort, cfg.AppEnv, cfg.CookieSecure)
 	if err := servidor.ListenAndServe(); err != nil {
-		log.Fatalf("servidor caído: %v", err)
+		log.Fatalf("servidor caido: %v", err)
 	}
 }
 
-// logMiddleware registra cada petición. Útil tanto en desarrollo como
-// en producción detrás de Nginx (Nginx ya pone access logs, pero éste
-// nos da contexto de aplicación).
+// logMiddleware registra cada peticion.
 func logMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		log.Printf("%s %s desde %s", r.Method, r.URL.Path, r.RemoteAddr)
