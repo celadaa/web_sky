@@ -114,7 +114,7 @@ func main() {
 	estacionSvc.NieveSvc = nieveSvc
 
 	// feedSvc sincroniza noticias externas (RSS) en background cada 2 horas.
-	feedSvc := services.NuevoFeedSyncService(noticiaRepo)
+	feedSvc := services.NuevoFeedSyncService(noticiaRepo, cfg.AppStatic)
 
 	app := &handlers.App{
 		UsuarioSvc:  services.NuevoUsuarioService(usuarioRepo),

@@ -26,10 +26,10 @@ type FeedSyncService struct {
 }
 
 // NuevoFeedSyncService construye el servicio con los valores por defecto.
-func NuevoFeedSyncService(repo *repository.NoticiaRepo) *FeedSyncService {
+func NuevoFeedSyncService(repo *repository.NoticiaRepo, staticDir string) *FeedSyncService {
 	return &FeedSyncService{
 		Repo:    repo,
-		Fetcher: feeds.NewFetcher(),
+		Fetcher: feeds.NewFetcher(staticDir),
 	}
 }
 
