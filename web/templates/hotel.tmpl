@@ -1,0 +1,143 @@
+{{define "contenido"}}
+{{$h := .Hotel}}
+<section class="container hotel-detail">
+
+  <nav class="hotel-detail__breadcrumb" aria-label="Miga de pan">
+    <a href="/hoteles" class="text-link">Hoteles</a>
+    <span aria-hidden="true">/</span>
+    <a href="/hoteles?estacion={{$h.EstacionID}}" class="text-link">{{$h.EstacionNombre}}</a>
+    <span aria-hidden="true">/</span>
+    <span>{{$h.Nombre}}</span>
+  </nav>
+
+  <!-- Galería -->
+  <div class="hotel-gallery" id="hotel-gallery">
+    <figure class="hotel-gallery__main">
+      <span class="hotel-cover hotel-cover--detail" aria-hidden="true">
+        <svg class="hotel-cover__icon" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18"/><path d="M5 21V7l7-4 7 4v14"/><path d="M9 9h1"/><path d="M14 9h1"/><path d="M9 13h1"/><path d="M14 13h1"/><path d="M10 21v-4h4v4"/></svg>
+        <span class="hotel-cover__label">{{$h.Nombre}}</span>
+      </span>
+      {{if $h.Imagenes}}
+        {{$primera := index $h.Imagenes 0}}
+        <img src="{{$primera.URL}}" alt="{{if $primera.AltText}}{{$primera.AltText}}{{else}}Foto de {{$h.Nombre}}{{end}}"
+             class="hotel-gallery__main-img" id="hotel-gallery-main" data-index="0"
+             role="button" tabindex="0" aria-label="Ampliar foto de {{$h.Nombre}}" data-remove-on-error>
+      {{else if $h.ImagenURL}}
+        <img src="{{$h.ImagenURL}}" alt="Foto de {{$h.Nombre}}"
+             class="hotel-gallery__main-img" id="hotel-gallery-main" data-index="0"
+             role="button" tabindex="0" aria-label="Ampliar foto de {{$h.Nombre}}" data-remove-on-error>
+      {{end}}
+    </figure>
+    {{if gt (len $h.Imagenes) 1}}
+    <ul class="hotel-gallery__thumbs" role="list" aria-label="Miniaturas de la galería">
+      {{range $i, $img := $h.Imagenes}}
+      <li>
+        <button type="button" class="hotel-gallery__thumb {{if eq $i 0}}is-active{{end}}"
+                data-gallery-thumb data-index="{{$i}}" data-url="{{$img.URL}}"
+                data-alt="{{if $img.AltText}}{{$img.AltText}}{{else}}Foto de {{$h.Nombre}}{{end}}"
+                aria-label="Ver foto {{$i}} de {{$h.Nombre}}">
+          <img src="{{$img.URL}}" alt="" loading="lazy">
+        </button>
+      </li>
+      {{end}}
+    </ul>
+    {{end}}
+  </div>
+
+  <div class="hotel-detail__layout">
+    <div class="hotel-detail__info">
+      <header class="hotel-detail__head">
+        <h1 class="hotel-detail__name">{{$h.Nombre}}</h1>
+        {{if $h.TieneRating}}
+        <p class="hotel-rating hotel-rating--big">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+          <strong>{{printf "%.1f" $h.Rating}}</strong> · {{$h.NumResenas}} reseñas
+        </p>
+        {{end}}
+        <p class="hotel-detail__address">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+          {{if $h.Direccion}}{{$h.Direccion}}, {{end}}{{$h.Ciudad}}{{if $h.Pais}} ({{$h.Pais}}){{end}}
+        </p>
+      </header>
+
+      <dl class="hotel-detail__metrics">
+        <div class="station-metric">
+          <div class="station-metric__body">
+            <dt class="station-metric__label">Distancia a pistas</dt>
+            <dd class="station-metric__value">{{printf "%.1f" $h.DistanciaEstacion}} km</dd>
+          </div>
+        </div>
+        <div class="station-metric">
+          <div class="station-metric__body">
+            <dt class="station-metric__label">Estación</dt>
+            <dd class="station-metric__value"><a href="/estacion/{{$h.EstacionID}}" class="text-link">{{$h.EstacionNombre}}</a></dd>
+          </div>
+        </div>
+        <div class="station-metric">
+          <div class="station-metric__body">
+            <dt class="station-metric__label">Precio orientativo</dt>
+            <dd class="station-metric__value">desde {{printf "%.0f" $h.PrecioDesde}} € /noche</dd>
+          </div>
+        </div>
+      </dl>
+
+      {{if $h.Descripcion}}
+      <section class="hotel-detail__section">
+        <h2>Sobre el alojamiento</h2>
+        <p>{{$h.Descripcion}}</p>
+      </section>
+      {{end}}
+
+      {{with $h.ListaAmenities}}
+      <section class="hotel-detail__section">
+        <h2>Servicios</h2>
+        <ul class="hotel-detail__amenities">
+          {{range .}}
+          <li>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
+            {{.}}
+          </li>
+          {{end}}
+        </ul>
+      </section>
+      {{end}}
+    </div>
+
+    <aside class="hotel-detail__aside">
+      <div class="panel hotel-booking-box">
+        <p class="hotel-booking-box__price">
+          <small>Desde</small>
+          <strong>{{printf "%.0f" $h.PrecioDesde}} €</strong>
+          <small>/noche</small>
+        </p>
+        {{if $h.EnlaceReserva}}
+          <a href="{{$h.EnlaceReserva}}" target="_blank" rel="noopener noreferrer nofollow" class="navbar__btn hotel-booking-box__btn">
+            Ver disponibilidad
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+          </a>
+          {{if $h.OficialURL}}{{if $h.BookingURL}}
+          <a href="{{$h.OficialURL}}" target="_blank" rel="noopener noreferrer nofollow" class="navbar__btn navbar__btn--ghost hotel-booking-box__btn">Web oficial</a>
+          {{end}}{{end}}
+          <p class="hotel-booking-box__aviso">La reserva se completa en la página externa del alojamiento. El precio mostrado es orientativo.</p>
+        {{else}}
+          <p class="hotel-booking-box__aviso">Este alojamiento todavía no tiene enlace de reserva online. Contacta directamente con el establecimiento.</p>
+        {{end}}
+        <a href="/planificar-estancia" class="text-link hotel-booking-box__planner">Añadir a mi plan de viaje →</a>
+      </div>
+    </aside>
+  </div>
+</section>
+
+<!-- Lightbox / modal de la galería (controlado por hotel-galeria.js) -->
+<div class="hotel-lightbox" id="hotel-lightbox" role="dialog" aria-modal="true" aria-label="Galería de fotos de {{$h.Nombre}}" hidden>
+  <button type="button" class="hotel-lightbox__close" data-lightbox-close aria-label="Cerrar galería">×</button>
+  <button type="button" class="hotel-lightbox__nav hotel-lightbox__nav--prev" data-lightbox-prev aria-label="Foto anterior">‹</button>
+  <figure class="hotel-lightbox__figure">
+    <img src="" alt="" class="hotel-lightbox__img" id="hotel-lightbox-img">
+    <figcaption class="hotel-lightbox__caption" id="hotel-lightbox-caption"></figcaption>
+  </figure>
+  <button type="button" class="hotel-lightbox__nav hotel-lightbox__nav--next" data-lightbox-next aria-label="Foto siguiente">›</button>
+</div>
+
+<script src="/static/js/hotel-galeria.js" defer></script>
+{{end}}

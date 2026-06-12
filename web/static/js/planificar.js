@@ -36,6 +36,24 @@
   var autoAdvancedFromStep = {};
 
   // ---------- Opciones de alojamiento ----------
+  // Los hoteles reales se cargan de /api/hoteles?station_id=N. Si la
+  // estación todavía no tiene hoteles en BD (o la petición falla), se usa
+  // el catálogo sintético de lodgingsFor() como fallback, igual que antes.
+  var hotelsCache = {};
+
+  function fetchHotels(stationId, cb) {
+    if (hotelsCache[stationId]) { cb(hotelsCache[stationId]); return; }
+    if (!window.fetch) { cb(null); return; }
+    fetch('/api/hoteles?station_id=' + encodeURIComponent(stationId), { credentials: 'same-origin' })
+      .then(function (r) { return r.ok ? r.json() : null; })
+      .then(function (data) {
+        if (data && data.length) { hotelsCache[stationId] = data; cb(data); }
+        else { cb(null); }
+      })
+      .catch(function () { cb(null); });
+  }
+
+  // Fallback sintético (demo) cuando no hay hoteles reales para la estación.
   function lodgingsFor(station) {
     if (!station) return [];
     var base = Math.max(60, Math.round((station.pricePerDayNino || 30) * 2.2));
@@ -266,10 +284,36 @@
 
   // ---------- PASO 3: alojamiento + material ----------
   var lodgingsList = $('#wizard-lodgings');
+
+  // populateLodgings pinta primero el fallback sintético (respuesta
+  // instantánea) y, si la estación tiene hoteles reales en BD, los
+  // sustituye en cuanto llega la respuesta de /api/hoteles.
   function populateLodgings(station) {
+    if (!lodgingsList || !station) return;
+    renderLodgings(lodgingsFor(station));
+    fetchHotels(station.id, function (hoteles) {
+      if (!hoteles) return; // sin hoteles reales: se queda el fallback
+      renderLodgings(hoteles.map(function (h) {
+        var sub = [];
+        if (typeof h.distancia_estacion_km === 'number') {
+          sub.push(h.distancia_estacion_km.toFixed(1).replace('.', ',') + ' km a pistas');
+        }
+        if (h.rating) sub.push('★ ' + h.rating.toFixed(1));
+        if (h.amenities && h.amenities.length) sub.push(h.amenities.slice(0, 2).join(' · '));
+        return {
+          id: 'hotel-' + h.id,
+          name: h.nombre,
+          sub: sub.join(' · '),
+          pricePerNight: h.precio_desde,
+          url: h.url
+        };
+      }));
+    });
+  }
+
+  function renderLodgings(arr) {
     if (!lodgingsList) return;
     lodgingsList.innerHTML = '';
-    var arr = lodgingsFor(station);
     arr.forEach(function (l) {
       var li = document.createElement('li');
       li.className = 'wizard__lodging page-planificar__lodging';
@@ -278,10 +322,13 @@
       li.setAttribute('data-lodging-id', l.id);
       li.setAttribute('data-lodging-name', l.name);
       li.setAttribute('data-lodging-price', String(l.pricePerNight));
+      var ficha = l.url
+        ? ' <a href="' + escapeHtml(l.url) + '" class="text-link" data-no-autoadvance>Ver ficha</a>'
+        : '';
       li.innerHTML =
         '<div class="page-planificar__lodging-body">' +
           '<strong>' + escapeHtml(l.name) + '</strong>' +
-          '<span>' + escapeHtml(l.sub) + '</span>' +
+          '<span>' + escapeHtml(l.sub) + ficha + '</span>' +
         '</div>' +
         '<div class="page-planificar__lodging-price">' +
           '<small>desde</small>' +
@@ -299,6 +346,16 @@
       });
       lodgingsList.appendChild(li);
     });
+    // Re-aplica la selección guardada en el ticket (si el alojamiento
+    // elegido sigue existiendo en el nuevo catálogo).
+    var s = window.SBTrip && window.SBTrip.get && window.SBTrip.get();
+    if (s && s.lodging) {
+      var sel = lodgingsList.querySelector('[data-lodging-id="' + s.lodging.id + '"]');
+      if (sel) {
+        sel.classList.add('is-selected');
+        sel.setAttribute('aria-selected', 'true');
+      }
+    }
   }
   function selectLodging(li) {
     var siblings = lodgingsList.querySelectorAll('.page-planificar__lodging');

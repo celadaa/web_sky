@@ -86,6 +86,7 @@ func main() {
 	noticiaRepo := repository.NuevoNoticiaRepo(bd)
 	sesionRepo := repository.NuevoSesionRepo(bd)
 	pedidoRepo := repository.NuevoPedidoRepo(bd)
+	hotelRepo := repository.NuevoHotelRepo(bd)
 
 	// Servicios + estado de seguridad.
 	sec := handlers.NuevoSec(cfg)
@@ -124,6 +125,7 @@ func main() {
 		SesionSvc:   services.NuevoSesionService(sesionRepo, usuarioRepo),
 		FavoritoSvc: services.NuevoFavoritoService(favoritoRepo),
 		PedidoSvc:   services.NuevoPedidoService(pedidoRepo, estacionRepo),
+		HotelSvc:    services.NuevoHotelService(hotelRepo),
 		NieveSvc:    nieveSvc,
 		EmailSvc:    emailSvc,
 		GoogleAuth:  googleAuth,
@@ -160,6 +162,8 @@ func main() {
 	mux.HandleFunc("/cesta", app.Cesta)
 	mux.HandleFunc("/pago", app.Pago)
 	mux.HandleFunc("/planificar-estancia", app.PlanificarEstancia)
+	mux.HandleFunc("/hoteles", app.Hoteles)
+	mux.HandleFunc("/hoteles/", app.HotelDetalle)
 	mux.Handle("/registro", rlAuth(http.HandlerFunc(app.Registro)))
 	mux.HandleFunc("/legal/aviso-legal", app.AvisoLegal)
 	mux.HandleFunc("/legal/privacidad", app.PoliticaPrivacidad)
@@ -185,11 +189,16 @@ func main() {
 	mux.Handle("/admin/usuarios/borrar", rlEscritura(http.HandlerFunc(app.AdminBorrarUsuario)))
 	mux.Handle("/admin/usuarios/reset", rlEscritura(http.HandlerFunc(app.AdminResetPassword)))
 	mux.Handle("/admin/usuarios/toggle-admin", rlEscritura(http.HandlerFunc(app.AdminToggleAdmin)))
+	mux.HandleFunc("/admin/hoteles", app.AdminHoteles)
+	mux.HandleFunc("/admin/hotel/", app.AdminHotelForm)
+	mux.Handle("/admin/hoteles/guardar", rlEscritura(http.HandlerFunc(app.AdminGuardarHotel)))
+	mux.Handle("/admin/hoteles/borrar", rlEscritura(http.HandlerFunc(app.AdminBorrarHotel)))
 
 	// API REST
 	mux.HandleFunc("/api/usuarios", app.ApiUsuarios)
 	mux.HandleFunc("/api/usuarios/", app.ApiUsuario)
 	mux.HandleFunc("/api/estaciones", app.ApiEstaciones)
+	mux.HandleFunc("/api/hoteles", app.ApiHoteles)
 	mux.Handle("/api/estacion/", rlEscritura(http.HandlerFunc(app.ApiParteEstacion)))
 	mux.Handle("/api/cesta/checkout", rlEscritura(http.HandlerFunc(app.ApiCheckout)))
 

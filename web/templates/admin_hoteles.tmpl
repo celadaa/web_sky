@@ -1,0 +1,71 @@
+{{define "contenido"}}
+<section class="hero hero--home">
+  <h1 class="hero__title">Administración — Hoteles</h1>
+  <p class="hero__subtitle">Hay <strong>{{.Total}}</strong> {{if eq .Total 1}}hotel publicado{{else}}hoteles publicados{{end}}.</p>
+</section>
+
+<section class="container section-stack">
+  {{if .Mensaje}}
+    <div class="alert alert--success" role="status">{{.Mensaje}}</div>
+  {{end}}
+  {{if .Error}}
+    <div class="alert alert--error" role="alert">{{.Error}}</div>
+  {{end}}
+
+  <div class="button-row">
+    <a href="/admin/hotel/" class="navbar__btn">+ Nuevo hotel</a>
+    <a href="/admin/usuarios" class="navbar__btn navbar__btn--ghost">Usuarios</a>
+  </div>
+
+  <div class="panel admin-table-wrap">
+    {{if .Hoteles}}
+    <table class="admin-table">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Nombre</th>
+          <th>Estación</th>
+          <th>Ciudad</th>
+          <th>Precio desde</th>
+          <th>Dist. pistas</th>
+          <th>Rating</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        {{range .Hoteles}}
+        <tr>
+          <td class="admin-muted">{{.ID}}</td>
+          <td><a href="/admin/hotel/{{.ID}}" class="text-link">{{.Nombre}}</a></td>
+          <td>{{.EstacionNombre}}</td>
+          <td class="admin-muted">{{.Ciudad}}</td>
+          <td>{{printf "%.0f" .PrecioDesde}} €</td>
+          <td class="admin-muted">{{printf "%.1f" .DistanciaEstacion}} km</td>
+          <td>{{if .TieneRating}}{{printf "%.1f" .Rating}}{{else}}—{{end}}</td>
+          <td class="admin-table__actions">
+            <a href="/hoteles/{{.Slug}}" class="admin-action admin-action--view">Ver</a>
+            <a href="/admin/hotel/{{.ID}}" class="admin-action admin-action--warn">Editar</a>
+            <form method="POST" action="/admin/hoteles/borrar" class="inline-form">
+              <input type="hidden" name="hotel_id" value="{{.ID}}">
+              <button type="submit" class="admin-action admin-action--danger" data-confirm="¿Seguro que quieres borrar {{.Nombre}}?\n\nSe eliminará también su galería de imágenes. Esta acción es irreversible.">Borrar</button>
+            </form>
+          </td>
+        </tr>
+        {{end}}
+      </tbody>
+    </table>
+    {{else}}
+    <p class="admin-muted">Todavía no hay hoteles. Crea el primero con el botón "Nuevo hotel".</p>
+    {{end}}
+  </div>
+
+  <aside class="panel admin-help">
+    <h2>Ayuda rápida</h2>
+    <ul>
+      <li><strong>Imágenes:</strong> introduce URLs https de fotos autorizadas (o rutas propias <code>/static/...</code>). La CSP solo permite mostrar imágenes de dominios autorizados (Unsplash, Wikimedia) o del propio servidor.</li>
+      <li><strong>No hagas scraping</strong> ni copies imágenes de Booking sin permiso: usa el campo "Enlace Booking" para dirigir allí la reserva.</li>
+      <li><strong>Precio desde</strong> es orientativo por noche; la reserva se completa siempre en la web externa.</li>
+    </ul>
+  </aside>
+</section>
+{{end}}

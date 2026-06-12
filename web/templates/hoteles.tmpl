@@ -1,0 +1,92 @@
+{{define "contenido"}}
+<section class="hero hero--home">
+  <h1 class="hero__title">{{if .EstacionNombre}}Hoteles en {{.EstacionNombre}}{{else}}Hoteles cerca de las pistas{{end}}</h1>
+  <p class="hero__subtitle">
+    Compara alojamientos por precio, distancia a la estación y servicios.
+    La reserva se completa en la página externa de cada alojamiento.
+  </p>
+</section>
+
+<section class="container">
+  <div class="estaciones-toolbar">
+    <form method="GET" action="/hoteles" class="hoteles-filtro" data-no-submit-js>
+      <label for="filtro-hotel-estacion">Estación:</label>
+      <select id="filtro-hotel-estacion" name="estacion" class="estaciones-toolbar__select" data-autosubmit>
+        <option value="">Todas las estaciones</option>
+        {{$filtro := .EstacionFiltro}}
+        {{range .Estaciones}}
+          <option value="{{.ID}}" {{if eq .ID $filtro}}selected{{end}}>{{.Nombre}}</option>
+        {{end}}
+      </select>
+      <noscript><button type="submit" class="navbar__btn navbar__btn--ghost">Filtrar</button></noscript>
+    </form>
+    <div class="estaciones-toolbar__contador">{{len .Hoteles}} {{if eq (len .Hoteles) 1}}alojamiento encontrado{{else}}alojamientos encontrados{{end}}</div>
+  </div>
+
+  {{if .Hoteles}}
+  <ul class="grid-cards hotels-grid">
+    {{range .Hoteles}}
+    <li>
+      <article class="hotel-card">
+        <figure class="hotel-card__figure">
+          <span class="hotel-card__badge">{{printf "%.1f" .DistanciaEstacion}} km a pistas</span>
+          <a href="/hoteles/{{.Slug}}" tabindex="-1" aria-hidden="true" class="hotel-card__media">
+            <span class="hotel-cover" aria-hidden="true">
+              <svg class="hotel-cover__icon" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18"/><path d="M5 21V7l7-4 7 4v14"/><path d="M9 9h1"/><path d="M14 9h1"/><path d="M9 13h1"/><path d="M14 13h1"/><path d="M10 21v-4h4v4"/></svg>
+              <span class="hotel-cover__label">{{.Nombre}}</span>
+            </span>
+            {{if .ImagenURL}}<img src="{{.ImagenURL}}" alt="Hotel {{.Nombre}}" loading="lazy" class="hotel-card__image" data-remove-on-error>{{end}}
+          </a>
+        </figure>
+        <a href="/hoteles/{{.Slug}}" class="hotel-card__content">
+          <div class="hotel-card__head">
+            <h3 class="hotel-card__name">{{.Nombre}}</h3>
+            {{if .TieneRating}}
+            <span class="hotel-rating" title="{{.NumResenas}} reseñas">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+              {{printf "%.1f" .Rating}}<small>({{.NumResenas}})</small>
+            </span>
+            {{end}}
+          </div>
+          <p class="hotel-card__location">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+            {{.Ciudad}}{{if .Ciudad}} · {{end}}{{.EstacionNombre}}
+          </p>
+          {{with .ListaAmenities}}
+          <ul class="hotel-card__amenities">
+            {{range $i, $am := .}}{{if lt $i 4}}<li>{{$am}}</li>{{end}}{{end}}
+          </ul>
+          {{end}}
+        </a>
+        <div class="hotel-card__footer-bar">
+          <div class="hotel-card__price">
+            <span class="hotel-card__price-label">Desde</span>
+            <span class="hotel-card__price-value">{{printf "%.0f" .PrecioDesde}} €<small> /noche</small></span>
+          </div>
+          <div class="hotel-card__actions">
+            <a href="/hoteles/{{.Slug}}" class="hotel-card__cta">Ver detalles</a>
+            {{with .EnlaceReserva}}
+            <a href="{{.}}" target="_blank" rel="noopener noreferrer nofollow" class="hotel-card__cta hotel-card__cta--external">
+              Reservar
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+            </a>
+            {{end}}
+          </div>
+        </div>
+      </article>
+    </li>
+    {{end}}
+  </ul>
+  {{else}}
+  <div class="panel panel--empty">
+    <p class="empty-state__icon">🏔</p>
+    <h2>{{if .EstacionNombre}}Todavía no hay hoteles para {{.EstacionNombre}}{{else}}Todavía no hay hoteles publicados{{end}}</h2>
+    <p>Estamos ampliando el catálogo de alojamientos. Mientras tanto, puedes
+      {{if .EstacionFiltro}}<a href="/hoteles" class="text-link">ver hoteles de todas las estaciones</a> o{{end}}
+      <a href="/estaciones" class="text-link">explorar las estaciones</a>.</p>
+  </div>
+  {{end}}
+</section>
+
+<script src="/static/js/hoteles-listado.js" defer></script>
+{{end}}

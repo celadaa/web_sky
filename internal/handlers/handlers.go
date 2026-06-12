@@ -22,6 +22,7 @@ type App struct {
 	SesionSvc   *services.SesionService
 	FavoritoSvc *services.FavoritoService
 	PedidoSvc   *services.PedidoService
+	HotelSvc    *services.HotelService
 	// NieveSvc anade datos en directo de pistas via infonieve.es.
 	// Es opcional: si es nil, los handlers /api/nieve/* devuelven 503.
 	NieveSvc *services.NieveService

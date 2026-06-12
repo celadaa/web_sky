@@ -1,0 +1,121 @@
+{{define "contenido"}}
+{{$h := .Detalle}}
+<section class="hero hero--home">
+  <h1 class="hero__title">{{if .EsNuevo}}Nuevo hotel{{else}}Editar — {{$h.Nombre}}{{end}}</h1>
+  <p class="hero__subtitle">Los campos de URL solo aceptan <strong>https://</strong> o rutas propias <code>/static/...</code>. La reserva se completa siempre en la web externa.</p>
+</section>
+
+<section class="container section-stack">
+  {{if .Error}}
+    <div class="alert alert--error" role="alert">{{.Error}}</div>
+  {{end}}
+
+  <form method="POST" action="/admin/hoteles/guardar" class="panel panel--form form-stack admin-hotel-form">
+    <input type="hidden" name="hotel_id" value="{{$h.ID}}">
+
+    <div class="form-grid-2">
+      <label class="form-field">
+        <span class="form-label">Nombre *</span>
+        <input type="text" name="nombre" value="{{$h.Nombre}}" required maxlength="200" class="form-input">
+      </label>
+      <label class="form-field">
+        <span class="form-label">Estación asociada *</span>
+        <select name="estacion_id" required class="form-input">
+          <option value="">— Selecciona estación —</option>
+          {{$sel := $h.EstacionID}}
+          {{range .Estaciones}}
+            <option value="{{.ID}}" {{if eq .ID $sel}}selected{{end}}>{{.Nombre}}</option>
+          {{end}}
+        </select>
+      </label>
+    </div>
+
+    <label class="form-field">
+      <span class="form-label">Descripción</span>
+      <textarea name="descripcion" rows="4" maxlength="4000" class="form-input">{{$h.Descripcion}}</textarea>
+    </label>
+
+    <div class="form-grid-2">
+      <label class="form-field">
+        <span class="form-label">Dirección</span>
+        <input type="text" name="direccion" value="{{$h.Direccion}}" maxlength="300" class="form-input">
+      </label>
+      <label class="form-field">
+        <span class="form-label">Ciudad</span>
+        <input type="text" name="ciudad" value="{{$h.Ciudad}}" maxlength="120" class="form-input">
+      </label>
+    </div>
+
+    <div class="form-grid-2">
+      <label class="form-field">
+        <span class="form-label">País</span>
+        <input type="text" name="pais" value="{{$h.Pais}}" maxlength="80" class="form-input">
+      </label>
+      <label class="form-field">
+        <span class="form-label">Distancia a la estación (km)</span>
+        <input type="number" name="distancia" value="{{printf "%.2f" $h.DistanciaEstacion}}" min="0" step="0.1" class="form-input">
+      </label>
+    </div>
+
+    <div class="form-grid-2">
+      <label class="form-field">
+        <span class="form-label">Precio desde (por noche)</span>
+        <input type="number" name="precio_desde" value="{{printf "%.2f" $h.PrecioDesde}}" min="0" step="0.01" class="form-input">
+      </label>
+      <label class="form-field">
+        <span class="form-label">Divisa</span>
+        <input type="text" name="divisa" value="{{$h.Divisa}}" maxlength="3" class="form-input" placeholder="EUR">
+      </label>
+    </div>
+
+    <div class="form-grid-2">
+      <label class="form-field">
+        <span class="form-label">Valoración (0–5)</span>
+        <input type="number" name="rating" value="{{printf "%.1f" $h.Rating}}" min="0" max="5" step="0.1" class="form-input">
+      </label>
+      <label class="form-field">
+        <span class="form-label">Nº de reseñas</span>
+        <input type="number" name="num_resenas" value="{{$h.NumResenas}}" min="0" step="1" class="form-input">
+      </label>
+    </div>
+
+    <label class="form-field">
+      <span class="form-label">Servicios (separados por coma)</span>
+      <input type="text" name="amenities" value="{{$h.Amenities}}" maxlength="500" class="form-input" placeholder="wifi,spa,parking,desayuno">
+    </label>
+
+    <div class="form-grid-2">
+      <label class="form-field">
+        <span class="form-label">Enlace Booking (https)</span>
+        <input type="url" name="booking_url" value="{{$h.BookingURL}}" maxlength="500" class="form-input" placeholder="https://www.booking.com/hotel/...">
+      </label>
+      <label class="form-field">
+        <span class="form-label">Web oficial (https)</span>
+        <input type="url" name="official_url" value="{{$h.OficialURL}}" maxlength="500" class="form-input" placeholder="https://...">
+      </label>
+    </div>
+
+    <label class="form-field">
+      <span class="form-label">Imagen principal (URL https o /static/...)</span>
+      <input type="text" name="main_image_url" value="{{$h.ImagenURL}}" maxlength="500" class="form-input" placeholder="https://images.unsplash.com/...">
+    </label>
+
+    <label class="form-field">
+      <span class="form-label">Galería: una URL por línea (la primera será la principal de la galería)</span>
+      <textarea name="galeria" rows="6" class="form-input" placeholder="https://...&#10;https://...">{{.GaleriaTexto}}</textarea>
+    </label>
+
+    <p class="admin-muted">
+      ⚠ Usa solo imágenes con permiso de uso (URLs oficiales facilitadas por el hotel,
+      fotos propias subidas a <code>/static</code>, o bancos con licencia como Unsplash).
+      No copies imágenes de Booking. Recuerda que la CSP solo mostrará imágenes de
+      dominios autorizados.
+    </p>
+
+    <div class="button-row">
+      <button type="submit" class="navbar__btn">{{if .EsNuevo}}Crear hotel{{else}}Guardar cambios{{end}}</button>
+      <a href="/admin/hoteles" class="navbar__btn navbar__btn--ghost">Cancelar</a>
+    </div>
+  </form>
+</section>
+{{end}}
